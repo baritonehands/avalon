@@ -10,6 +10,9 @@
     (dosync (alter groups assoc (:id group) group))
     group))
 
+(defn exists? [id]
+  (contains? @groups id))
+
 (defn get-group [id]
   (@groups id))
 

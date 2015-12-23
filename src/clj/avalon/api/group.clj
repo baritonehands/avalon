@@ -21,11 +21,14 @@
 (defresource get-group [id]
              :available-media-types ["application/json"]
              :allowed-methods [:get]
+             :exists? (groups/exists? id)
              :handle-ok (groups/display-group (groups/get-group id)))
 
 (defresource group-add-person [id]
              :available-media-types ["application/json"]
              :allowed-methods [:post]
+             :exists? (groups/exists? id)
+             :can-post-to-missing? false
              :malformed? (util/malformed? ::data)
              :processable? (util/require-fields [:name] ::data)
              :handle-unprocessable-entity {:message "Unprocessable"}

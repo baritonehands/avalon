@@ -1,5 +1,5 @@
 (ns avalon.handler
-  (:require [compojure.core :refer [GET defroutes]]
+  (:require [compojure.core :refer [GET defroutes context]]
             [compojure.route :refer [not-found resources]]
             [ring.middleware.params :refer [wrap-params]]
             [hiccup.core :refer [html]]
@@ -33,7 +33,8 @@
   (GET "/" [] loading-page)
   (GET "/about" [] loading-page)
 
-  avalon.api.group/routes
+  (context "/api" []
+           avalon.api.group/routes)
   
   (resources "/")
   (not-found "Not Found"))
