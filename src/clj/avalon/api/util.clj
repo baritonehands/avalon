@@ -30,3 +30,8 @@
   #(if (#{:post} (get-in % [:request :request-method]))
     (every? (data-key %) fields)
     true))
+
+(defn update-fields [fields data-key]
+  #(if (#{:put} (get-in % [:request :request-method]))
+    (every? (partial contains? fields) (keys (data-key %)))
+    true))

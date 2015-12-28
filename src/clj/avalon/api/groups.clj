@@ -1,4 +1,4 @@
-(ns avalon.api.group
+(ns avalon.api.groups
   (:require [liberator.core :refer [defresource]]
             [compojure.core :refer [defroutes ANY]]
             [avalon.api.util :as util]
@@ -10,7 +10,6 @@
              :allowed-methods [:get :post]
              :malformed? (util/malformed? ::data)
              :processable? (util/require-fields [:name :code] ::data)
-             :handle-unprocessable-entity {:message "Unprocessable"}
              :handle-ok (groups/display-all)
              :post! (fn [ctx]
                       (let [data (::data ctx)
@@ -31,7 +30,6 @@
              :can-post-to-missing? false
              :malformed? (util/malformed? ::data)
              :processable? (util/require-fields [:name] ::data)
-             :handle-unprocessable-entity {:message "Unprocessable"}
              :post! (fn [ctx]
                       (dosync (let [data (::data ctx)
                                     person (people/create-person (:name data))]

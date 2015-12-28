@@ -7,7 +7,8 @@
             [prone.middleware :refer [wrap-exceptions]]
             [ring.middleware.reload :refer [wrap-reload]]
             [environ.core :refer [env]]
-            [avalon.api.group]))
+            [avalon.api.groups]
+            [avalon.api.games]))
 
 (def mount-target
   [:div#app
@@ -34,7 +35,8 @@
   (GET "/about" [] loading-page)
 
   (context "/api" []
-           avalon.api.group/routes)
+    avalon.api.groups/routes
+    avalon.api.games/routes)
   
   (resources "/")
   (not-found "Not Found"))
