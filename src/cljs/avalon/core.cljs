@@ -9,7 +9,7 @@
 ;; Views
 
 (defn home-page []
-  [:div.mdl-layout.mdl-js-layout
+  [:div.mdl-layout.mdl-js-layout.mdl-layout--fixed-header
    [:header.mdl-layout__header
     [:div.mdl-layout__header-row [:span.mdl-layout__title "Welcome to Avalon!"]]]
    [:main.mdl-layout__content
