@@ -6,11 +6,19 @@
 (defonce state (r/atom {}))
 
 (defn join-view []
-  [:div
-   [:input {:type "text" :on-input (util/set-prop state :group-name)}]
-   [:div (:group-name @state)]
+  [:section.section--center.mdl-grid
+   [:div.mdl-cell.mdl-cell--6-col
+     [:div.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
+      [:input#name.mdl-textfield__input {:type "text" :on-input (util/set-prop state :group-name)}]
+      [:span.mdl-textfield__label {:for "name"} "Group Name"]]
+     [:div (:group-name @state)]]
 
-   [:input {:type "text" :on-input (util/set-prop state :group-code)}]
-   [:div (:group-code @state)]
+   [:div.mdl-cell.mdl-cell--6-col
+     [:div.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
+      [:input#code.mdl-textfield__input {:type "text" :on-input (util/set-prop state :group-code)}]
+      [:span.mdl-textfield__label {:for "code"} "Password"]]
+     [:div (:group-code @state)]]
 
-   [:input {:type "button" :value "Join" :on-click #(route/dispatch! "/about")}]])
+   [:div.mdl-cell.mdl-cell--6-col
+     [:input.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--accent
+      {:type "button" :value "Join" :on-click #(route/dispatch! "/about")}]]])

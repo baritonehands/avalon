@@ -9,9 +9,15 @@
 ;; Views
 
 (defn home-page []
-  [:div [:h2 "Welcome to Avalon!"]
-   [gj/join-view]
-   [:div [:a {:href "/about"} "go to about page"]]])
+  [:div.mdl-layout.mdl-js-layout
+   [:header.mdl-layout__header
+    [:div.mdl-layout__header-row [:span.mdl-layout__title "Welcome to Avalon!"]]]
+   [:main.mdl-layout__content
+    [:form {:action "#"}
+      [gj/join-view]]]
+   [:footer.mdl-mini-footer
+    [:div.mdl-mini-footer__left-section
+     [:ul.mdl-mini-footer__link-list [:li [:a {:href "/about"} "About"]]]]]])
 
 (defn about-page []
   [:div [:h2 "About avalon"]

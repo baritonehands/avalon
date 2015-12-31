@@ -11,7 +11,7 @@
             [avalon.api.games]))
 
 (def mount-target
-  [:div#app
+  [:div#app.mdl-container
       [:h3 "ClojureScript has not been compiled!"]
       [:p "please run "
        [:b "lein figwheel"]
@@ -24,7 +24,10 @@
      [:meta {:charset "utf-8"}]
      [:meta {:name "viewport"
              :content "width=device-width, initial-scale=1"}]
-     (include-css (if (env :dev) "css/site.css" "css/site.min.css"))]
+     (include-css "https://storage.googleapis.com/code.getmdl.io/1.0.6/material.blue-red.min.css")
+     (include-css "https://fonts.googleapis.com/icon?family=Material+Icons")
+     (include-css (if (env :dev) "css/site.css" "css/site.min.css"))
+     (include-js "https://storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js")]
     [:body
      mount-target
      (include-js "js/app.js")]]))

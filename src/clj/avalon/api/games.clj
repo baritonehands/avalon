@@ -19,8 +19,8 @@
              :post! (fn [ctx]
                       (let [data (::data ctx)
                             game (games/create-game (:groupId data))]
-                      {::id (:id game)}))
-             :handle-created #(identity {:id (::id %)}))
+                      {::game game}))
+             :handle-created #(games/display-game (::game %)))
 
 (defresource get-or-put-game [id]
              :available-media-types ["application/json"]
