@@ -1,6 +1,7 @@
 (ns avalon.core
     (:require [reagent.core :as reagent :refer [atom]]
               [reagent.session :as session]
+              [material-ui.core :as ui :include-macros true]
               [avalon.group-join :as gj]
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]))
@@ -9,15 +10,16 @@
 ;; Views
 
 (defn home-page []
-  [:div.mdl-layout.mdl-js-layout.mdl-layout--fixed-header
-   [:header.mdl-layout__header
-    [:div.mdl-layout__header-row [:span.mdl-layout__title "Welcome to Avalon!"]]]
-   [:main.mdl-layout__content
-    [:form {:action "#"}
-      [gj/join-view]]]
-   [:footer.mdl-mini-footer
-    [:div.mdl-mini-footer__left-section
-     [:ul.mdl-mini-footer__link-list [:li [:a {:href "/about"} "About"]]]]]])
+  [ui/AppCanvas {:predefinedLayout 1}
+   [ui/AppBar {:class                    "mui-dark-theme"
+               :title                    "Welcome to Avalon!"
+               :zDepth                   0}
+    [:div.action-icons
+     [ui/IconButton {:iconClassName "mdfi_navigation_more_vert"}]
+     [ui/IconButton {:iconClassName "mdfi_action_favorite_outline"}]
+     [ui/IconButton {:iconClassName "mdfi_action_search"}]]]
+   [:div.mui-app-content-canvas
+    [gj/join-form]]])
 
 (defn about-page []
   [:div [:h2 "About avalon"]

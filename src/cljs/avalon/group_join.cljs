@@ -1,24 +1,41 @@
 (ns avalon.group-join
   (:require [reagent.core :as r]
-            [avalon.util :as util]
-            [secretary.core :as route]))
+            [reagent-forms.core :refer [bind-fields]]
+            [material-ui.core :as ui :include-macros true]
+            ;[avalon.util :as util]
+            [accountant.core :as route]))
 
 (defonce state (r/atom {}))
 
-(defn join-view []
+(def join-template
   [:section.section--center.mdl-grid
    [:div.mdl-cell.mdl-cell--6-col
-     [:div.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
-      [:input#name.mdl-textfield__input {:type "text" :on-input (util/set-prop state :group-name)}]
-      [:span.mdl-textfield__label {:for "name"} "Group Name"]]
-     [:div (:group-name @state)]]
+    [:div.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
+     [ui/TextField {:hintText "Please enter a group name"
+                    :floatingLabelText "Group Name"
+                    :value (:group-name @state)
+                    :on-change #(swap! state assoc :group-name (-> % .-target .-value))
+                    }]]]
 
    [:div.mdl-cell.mdl-cell--6-col
-     [:div.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
-      [:input#code.mdl-textfield__input {:type "text" :on-input (util/set-prop state :group-code)}]
-      [:span.mdl-textfield__label {:for "code"} "Password"]]
-     [:div (:group-code @state)]]
+
+    [:div.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
+     [ui/TextField {:hintText "Please enter a passcode"
+                    :floatingLabelText "Password"
+                    :value (:group-code @state)
+                    :on-change #(swap! state assoc :group-code (-> % .-target .-value))
+                    }]]]
 
    [:div.mdl-cell.mdl-cell--6-col
-     [:input.mdl-button.mdl-js-button.mdl-button--raised.mdl-button--accent
-      {:type "button" :value "Join" :on-click #(route/dispatch! "/about")}]]])
+    [ui/RaisedButton {:primary true
+                      :label "Join"
+                      :on-click #(js/alert "Clicked!")
+                      }]]])
+
+(defn join-form []
+  (let [doc (r/atom {:group-name "GrubHub" :group-code "merlinity"})]
+    (fn []
+      [:div
+        [bind-fields join-template doc]
+        [:div (:group-name @state)]
+        [:div (:group-code @state)]])))

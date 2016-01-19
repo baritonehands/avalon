@@ -7,7 +7,8 @@
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [ring-server "0.4.0"]
                  [reagent "0.5.1"
-                  :exclusions [org.clojure/tools.reader]]
+                  :exclusions [org.clojure/tools.reader
+                               cljsjs/react]]
                  [reagent-forms "0.5.13"]
                  [reagent-utils "0.1.5"]
                  [ring "1.4.0"]
@@ -48,10 +49,12 @@
 
   :minify-assets
   {:assets
-   {"resources/public/css/site.min.css" "resources/public/css/site.css"}}
+   {"resources/public/css/site.min.css" ["resources/public/vendor/material-ui/material.css"
+                                         "resources/public/css/site.css"]}}
 
-  :cljsbuild {:builds {:app {:source-paths ["src/cljs" "src/cljc"]
-                             :compiler {:output-to "target/cljsbuild/public/js/app.js"
+  :cljsbuild {:builds {:app {:source-paths ["src/cljs"]
+                             :compiler {:preamble ["resources/vendor/material-ui/material.js"]
+                                        :output-to "target/cljsbuild/public/js/app.js"
                                         :output-dir "target/cljsbuild/public/js/out"
                                         :asset-path   "js/out"
                                         :optimizations :none
