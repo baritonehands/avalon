@@ -9,21 +9,26 @@
 ;; -------------------------
 ;; Views
 
-(defn home-page []
+(defn base-layout [& children]
   [ui/AppCanvas {:predefinedLayout 1}
    [ui/AppBar {:class                    "mui-dark-theme"
-               :title                    "Welcome to Avalon!"
-               :zDepth                   0}
+               :title                    "Avalon"
+               :zDepth                   0
+               :showMenuIconButton       false}
     [:div.action-icons
-     [ui/IconButton {:iconClassName "mdfi_navigation_more_vert"}]
+     [ui/IconButton {:iconClassName "mdfi_navigation_more_vert"
+                     :on-click #(accountant/navigate! "/about")}]
      [ui/IconButton {:iconClassName "mdfi_action_favorite_outline"}]
      [ui/IconButton {:iconClassName "mdfi_action_search"}]]]
    [:div.mui-app-content-canvas
-    [gj/join-form]]])
+    children]])
+
+(defn home-page []
+  [base-layout [gj/join-form]])
 
 (defn about-page []
-  [:div [:h2 "About avalon"]
-   [:div [:a {:href "/"} "go to the home page"]]])
+  [base-layout [:div [:h2 "About avalon"]
+   [:div [:a {:href "/"} "go to the home page"]]]])
 
 (defn current-page []
   [:div [(session/get :current-page)]])
