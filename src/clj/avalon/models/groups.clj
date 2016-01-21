@@ -1,28 +1,23 @@
 (ns avalon.models.groups
-  (:require [avalon.models.people :as people]))
+  (:require [avalon.models.people :as people]
+            [avalon.models.crud :as crud]
+            [avalon.models.memdb :as db]))
 
-(defonce groups (ref {}))
+(defonce groups (db/create-db))
 
-(defrecord Group [id name code people])
+(defrecord Group [name code people])
 
 (defn create-group [name code]
-  (let [group (->Group (str (java.util.UUID/randomUUID)) name code #{})]
-    (dosync (alter groups assoc (:id group) group))
-    group))
-
-(defn exists? [id]
-  (contains? @groups id))
-
-(defn get-group [id]
-  (@groups id))
+  (let [group (->Group name code #{})]
+    (crud/create groups group)))
 
 (defn add-person [id person]
-  (dosync (alter groups update-in [id :people] conj (:id person))))
+  (crud/relate groups id :people (:id person)))
 
 (defn display-group [group]
     (-> group
         (dissoc :code)
-        (assoc :people (map people/get-person (:people group)))))
+        (assoc :people (map (partial crud/get people/people) (:people group)))))
 
 (defn display-all []
-  (vec (for [[_ v] @groups] (display-group v))))
+  (mapv display-group (crud/all groups)))

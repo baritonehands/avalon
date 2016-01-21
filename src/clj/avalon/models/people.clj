@@ -1,13 +1,11 @@
-(ns avalon.models.people)
+(ns avalon.models.people
+  (:require [avalon.models.crud :as crud]
+            [avalon.models.memdb :as db]))
 
-(defonce people (ref {}))
+(defonce people (db/create-db))
 
-(defrecord Person [id name])
+(defrecord Person [name])
 
 (defn create-person [name]
-  (let [person (->Person (str (java.util.UUID/randomUUID)) name)]
-    (dosync (alter people assoc (:id person) person))
-    person))
-
-(defn get-person [id]
-  (@people id))
+  (let [person (->Person name)]
+    (crud/create people person)))

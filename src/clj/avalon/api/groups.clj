@@ -2,6 +2,7 @@
   (:require [liberator.core :refer [defresource]]
             [compojure.core :refer [defroutes ANY]]
             [avalon.api.util :as util]
+            [avalon.models.crud :as crud]
             [avalon.models.groups :as groups]
             [avalon.models.people :as people]))
 
@@ -20,13 +21,13 @@
 (defresource get-group [id]
              :available-media-types ["application/json"]
              :allowed-methods [:get]
-             :exists? (groups/exists? id)
-             :handle-ok (groups/display-group (groups/get-group id)))
+             :exists? (crud/exists? groups/groups id)
+             :handle-ok (groups/display-group (crud/get groups/groups id)))
 
 (defresource group-add-person [id]
              :available-media-types ["application/json"]
              :allowed-methods [:post]
-             :exists? (groups/exists? id)
+             :exists? (crud/exists? groups/groups id)
              :can-post-to-missing? false
              :malformed? (util/malformed? ::data)
              :processable? (util/require-fields [:name] ::data)

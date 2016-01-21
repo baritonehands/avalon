@@ -3,6 +3,7 @@
             [liberator.representation :refer [ring-response]]
             [compojure.core :refer [defroutes ANY]]
             [avalon.api.util :as util]
+            [avalon.models.crud :as crud]
             [avalon.models.games :as games]
             [avalon.models.groups :as groups]
             [avalon.models.people :as people]))
@@ -15,7 +16,7 @@
                              (let [group-id (:groupId (::data ctx))]
                                (if (nil? group-id)
                                  true
-                                 (groups/exists? group-id))))
+                                 (crud/exists? groups/groups group-id))))
              :post! (fn [ctx]
                       (let [data (::data ctx)
                             game (games/create-game (:groupId data))]
@@ -25,17 +26,17 @@
 (defresource get-or-put-game [id]
              :available-media-types ["application/json"]
              :allowed-methods [:get :put]
-             :exists? (games/exists? id)
+             :exists? (crud/exists? games/games id)
              :can-put-to-missing? false
              :malformed? (util/malformed? ::data)
              :processable? (util/update-fields #{:roles :status} ::data)
-             :handle-ok (games/display-game (games/get-game id))
-             :put! #(games/update-game id (::data %)))
+             :handle-ok (games/display-game (crud/get games/games id))
+             :put! #(crud/save games/games id (::data %)))
 
 (defresource game-add-person [id]
              :available-media-types ["application/json"]
              :allowed-methods [:post]
-             :exists? (games/exists? id)
+             :exists? (crud/exists? games/games id)
              :can-post-to-missing? false
              :malformed? (util/malformed? ::data)
              :processable? (util/require-fields [:name] ::data)
