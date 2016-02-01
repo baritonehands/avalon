@@ -1,10 +1,10 @@
 (ns avalon.api.groups
   (:require [liberator.core :refer [defresource]]
             [compojure.core :refer [defroutes ANY]]
+            [clojure.pprint :refer [pprint]]
             [avalon.api.util :as util]
             [avalon.models.crud :as crud]
-            [avalon.models.groups :as groups]
-            [avalon.models.people :as people]))
+            [avalon.models.groups :as groups]))
 
 (defresource groups-resource
              :available-media-types ["application/json"]
@@ -24,19 +24,19 @@
              :exists? (crud/exists? groups/groups id)
              :handle-ok (groups/display-group (crud/get groups/groups id)))
 
-(defresource group-add-person [id]
+(defresource join-group
              :available-media-types ["application/json"]
              :allowed-methods [:post]
-             :exists? (crud/exists? groups/groups id)
-             :can-post-to-missing? false
              :malformed? (util/malformed? ::data)
-             :processable? (util/require-fields [:name] ::data)
-             :post! (fn [ctx]
-                      (dosync (let [data (::data ctx)
-                                    person (people/create-person (:name data))]
-                                (groups/add-person id person)))))
+             :authorized? (fn [ctx]
+                            (let [data (::data ctx)
+                                  group (first (filter #(and (= (:name %) (:name data)) (= (:code %) (:code data)))
+                                                    (crud/all groups/groups)))]
+                              [group {::group group}]))
+             :processable? (util/require-fields [:name :code] ::data)
+             :handle-created #(groups/display-group (::group %)))
 
 (defroutes routes
   (ANY "/groups" [] groups-resource)
-  (ANY "/groups/:id" [id] (get-group id))
-  (ANY "/groups/:id/people" [id] (group-add-person id)))
+  (ANY "/groups/join" [] join-group)
+  (ANY "/groups/:id" [id] (get-group id)))

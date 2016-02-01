@@ -14,12 +14,9 @@
                  #{:merlin :percival :mordred :morgana}
                  :waiting
                  #{})]
-    (crud/create games game)))
+    (crud/create! games game)))
 
 (defn display-game [game]
   (-> (into {} (seq game))
       (rename-keys {:group-id :groupId})
       (assoc :people (map (partial crud/get people/people) (:people game)))))
-
-(defn add-person [id person]
-  (crud/relate games id :people (:id person)))

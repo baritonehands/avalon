@@ -8,7 +8,8 @@
             [ring.middleware.reload :refer [wrap-reload]]
             [environ.core :refer [env]]
             [avalon.api.groups]
-            [avalon.api.games]))
+            [avalon.api.games]
+            [avalon.api.people]))
 
 (def mount-target
   [:div#app
@@ -38,7 +39,8 @@
 
   (context "/api" []
     avalon.api.groups/routes
-    avalon.api.games/routes)
+    avalon.api.games/routes
+    avalon.api.people/routes)
   
   (resources "/")
   (not-found "Not Found"))

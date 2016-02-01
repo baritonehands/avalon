@@ -1,10 +1,10 @@
 (ns avalon.models.memdb
-  (:require [avalon.models.crud :refer :all]))
+  (:use avalon.models.crud))
 
 (defn create-db []
   (let [db (ref {})]
     (reify CRUD
-      (create [_ entity]
+      (create! [_ entity]
         (let [id (str (java.util.UUID/randomUUID))
               entity (assoc entity :id id)]
           (dosync (alter db assoc id entity))
@@ -15,9 +15,9 @@
         (@db id))
       (exists? [_ id]
         (contains? @db id))
-      (save [_ id updates]
+      (save! [_ id updates]
         (dosync (alter db update-in [id] merge updates)))
-      (relate [_ id k v]
+      (relate! [_ id k v]
         (dosync (alter db update-in [id k] conj v)))
-      (delete [_ id]
+      (delete! [_ id]
         (dosync (dissoc db id))))))

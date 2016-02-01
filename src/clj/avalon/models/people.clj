@@ -8,4 +8,4 @@
 
 (defn create-person [name]
   (let [person (->Person name)]
-    (crud/create people person)))
+    (crud/create! people person)))

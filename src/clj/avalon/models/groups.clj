@@ -9,10 +9,7 @@
 
 (defn create-group [name code]
   (let [group (->Group name code #{})]
-    (crud/create groups group)))
-
-(defn add-person [id person]
-  (crud/relate groups id :people (:id person)))
+    (crud/create! groups group)))
 
 (defn display-group [group]
     (-> group

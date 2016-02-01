@@ -5,8 +5,7 @@
             [avalon.api.util :as util]
             [avalon.models.crud :as crud]
             [avalon.models.games :as games]
-            [avalon.models.groups :as groups]
-            [avalon.models.people :as people]))
+            [avalon.models.groups :as groups]))
 
 (defresource games-resource
              :available-media-types ["application/json"]
@@ -31,21 +30,15 @@
              :malformed? (util/malformed? ::data)
              :processable? (util/update-fields #{:roles :status} ::data)
              :handle-ok (games/display-game (crud/get games/games id))
-             :put! #(crud/save games/games id (::data %)))
+             :put! #(crud/save! games/games id (::data %)))
 
-(defresource game-add-person [id]
+(defresource games-by-group [id]
              :available-media-types ["application/json"]
-             :allowed-methods [:post]
-             :exists? (crud/exists? games/games id)
-             :can-post-to-missing? false
-             :malformed? (util/malformed? ::data)
-             :processable? (util/require-fields [:name] ::data)
-             :post! (fn [ctx]
-                      (dosync (let [data (::data ctx)
-                                    person (people/create-person (:name data))]
-                                (games/add-person id person)))))
+             :allowed-methods [:get]
+             :exists? (crud/exists? groups/groups id)
+             :handle-ok (mapv games/display-game (filter #(= id (:group-id %)) (crud/all games/games))))
 
 (defroutes routes
   (ANY "/games" [] games-resource)
   (ANY "/games/:id" [id] (get-or-put-game id))
-  (ANY "/games/:id/people" [id] (game-add-person id)))
+  (ANY "/groups/:id/games" [id] (games-by-group id)))
