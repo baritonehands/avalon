@@ -11,6 +11,7 @@
                                cljsjs/react]]
                  [reagent-forms "0.5.13"]
                  [reagent-utils "0.1.5"]
+                 [cljs-ajax "0.5.3"]
                  [ring "1.4.0"]
                  [ring/ring-defaults "0.1.5"]
                  [liberator "0.13"]
@@ -49,8 +50,8 @@
 
   :minify-assets
   {:assets
-   {"resources/public/css/site.min.css" ["resources/public/vendor/material-ui/material.css"
-                                         "resources/public/css/site.css"]}}
+   {"resources/public/css/site.min.css" ["resources/public/css/site.css"
+                                         "resources/public/css/app.css"]}}
 
   :cljsbuild {:builds {:app {:source-paths ["src/cljs"]
                              :compiler {:preamble ["resources/vendor/material-ui/material.js"]

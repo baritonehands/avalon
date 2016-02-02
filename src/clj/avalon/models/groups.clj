@@ -11,6 +11,9 @@
   (let [group (->Group name code #{})]
     (crud/create! groups group)))
 
+(defn add-person [id person]
+  (crud/relate! groups id :people (:id person)))
+
 (defn display-group [group]
     (-> group
         (dissoc :code)

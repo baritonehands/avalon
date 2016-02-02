@@ -26,7 +26,7 @@
      [:meta {:name "viewport"
              :content "width=device-width, initial-scale=1"}]
      (if (env :dev)
-       (include-css "vendor/material-ui/material.css" "css/site.css")
+       (include-css "css/site.css" "css/app.css")
        (include-css "css/site.min.css"))]
     [:body
      mount-target
@@ -35,6 +35,7 @@
 
 (defroutes routes
   (GET "/" [] loading-page)
+  (GET "/groups" [] loading-page)
   (GET "/about" [] loading-page)
 
   (context "/api" []

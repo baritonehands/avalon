@@ -3,6 +3,7 @@
               [reagent.session :as session]
               [material-ui.core :as ui :include-macros true]
               [avalon.group-join :as gj]
+              [avalon.groups :as groups]
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]))
 
@@ -20,11 +21,14 @@
                      :on-click #(accountant/navigate! "/about")}]
      [ui/IconButton {:iconClassName "mdfi_action_favorite_outline"}]
      [ui/IconButton {:iconClassName "mdfi_action_search"}]]]
-   [:div.mui-app-content-canvas
+   [:div.mui-app-content-canvas.container-fluid
     children]])
 
 (defn home-page []
   [base-layout [gj/join-form]])
+
+(defn group-page []
+  [base-layout [groups/group]])
 
 (defn about-page []
   [base-layout [:div [:h2 "About avalon"]
@@ -38,6 +42,9 @@
 
 (secretary/defroute "/" []
   (session/put! :current-page #'home-page))
+
+(secretary/defroute "/groups/:id" [id]
+  (session/put! :current-page #'group-page))
 
 (secretary/defroute "/about" []
   (session/put! :current-page #'about-page))

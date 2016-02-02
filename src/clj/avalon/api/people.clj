@@ -20,8 +20,8 @@
                            person (people/create-person (:name data))]
                        (create-fn id person)))))
 
-(defn group-add-person [id] (gen-endpoint id groups/groups groups/create-group))
-(defn game-add-person [id] (gen-endpoint id games/games games/create-game))
+(defn group-add-person [id] (gen-endpoint id groups/groups groups/add-person))
+(defn game-add-person [id] (gen-endpoint id games/games games/add-person))
 
 (defroutes routes
   (ANY "/groups/:id/people" [id] (group-add-person id))

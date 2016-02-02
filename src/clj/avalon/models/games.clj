@@ -20,3 +20,6 @@
   (-> (into {} (seq game))
       (rename-keys {:group-id :groupId})
       (assoc :people (map (partial crud/get people/people) (:people game)))))
+
+(defn add-person [id person]
+  (crud/relate! games id :people (:id person)))
