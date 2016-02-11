@@ -4,13 +4,20 @@
             [clojure.pprint :refer [pprint]]
             [avalon.api.util :as util]
             [avalon.models.crud :as crud]
-            [avalon.models.groups :as groups]))
+            [avalon.models.groups :as groups]
+            [bouncer.core :as b]
+            [bouncer.validators :as v]))
+
+(def groups-resource-rules
+  {:name v/required
+   :code v/required})
 
 (defresource groups-resource
              :available-media-types ["application/json"]
              :allowed-methods [:get :post]
              :malformed? (util/malformed? ::data)
-             :processable? (util/require-fields [:name :code] ::data)
+             :processable? #(b/valid? (::data %) groups-resource-rules)
+             :handle-unprocessable-entity #(first (b/validate (::data %) groups-resource-rules))
              :handle-ok (groups/display-all)
              :post! (fn [ctx]
                       (let [data (::data ctx)

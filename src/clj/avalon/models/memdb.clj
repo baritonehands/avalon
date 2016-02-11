@@ -15,6 +15,8 @@
         (@db id))
       (exists? [_ id]
         (contains? @db id))
+      (update! [_ id f]
+        (dosync (alter db update id f)))
       (save! [_ id updates]
         (dosync (alter db update-in [id] merge updates)))
       (relate! [_ id k v]
