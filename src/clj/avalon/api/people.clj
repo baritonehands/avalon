@@ -7,17 +7,7 @@
             [avalon.models.groups :as groups]
             [avalon.models.people :as people]
             [avalon.models.games :as games]
-            [bouncer.core :as b]
-            [bouncer.validators :as v]))
-
-(def person-rules
-  {:name v/required})
-
-(defn valid-person? [kw]
-  (fn [ctx]
-    (let [valid (b/valid? (kw ctx) person-rules)
-          errors (first (b/validate (kw ctx) person-rules))]
-      [valid {::errors errors}])))
+            [avalon.rules.people :as rules]))
 
 (defn gen-endpoint [id db create-fn]
   (resource :available-media-types ["application/json"]
@@ -25,7 +15,7 @@
             :exists? (crud/exists? db id)
             :can-post-to-missing? false
             :malformed? (util/malformed? ::data)
-            :processable? (valid-person? ::data)
+            :processable? (rules/valid-person? ::data ::errors)
             :handle-unprocessable-entity ::errors
             :post! (fn [ctx]
                      (let [data (::data ctx)

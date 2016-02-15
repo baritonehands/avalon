@@ -49,7 +49,7 @@
              :allowed-methods [:post]
              :exists? (crud/exists? games/games id)
              :can-post-to-missing? false
-             :processable? (rules/valid-play? id)
+             :processable? (rules/valid-play? id ::errors)
              :handle-unprocessable-entity ::errors
              :post! (fn [_] (crud/update! games/games id start-game))
              :handle-created (fn [_] (games/display-game (crud/get games/games id))))
@@ -64,7 +64,7 @@
              :allowed-methods [:post :delete]
              :exists? (crud/exists? games/games id)
              :can-post-to-missing? false
-             :processable? (rules/valid-role? id name)
+             :processable? (rules/valid-role? id name ::errors)
              :handle-unprocessable-entity ::errors
              :new? false
              :respond-with-entity? true

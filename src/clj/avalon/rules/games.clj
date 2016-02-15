@@ -10,11 +10,11 @@
    :status [[#{:waiting} :message "Game already started"]]})
 
 (defn- create-validator [rules]
-  (fn [id]
+  (fn [id key]
     (let [game (crud/get games/games id)
           valid (b/valid? game rules)
           errors (first (b/validate game rules))]
-      [valid {::errors errors}])))
+      [valid {key errors}])))
 
 (def valid-play? (create-validator play-game-rules))
 
@@ -22,12 +22,12 @@
   {:name [[v/member #{"merlin" "morgana" "percival" "mordred" "oberon" "assassin"}]]
    :status [[#{:waiting} :message "Roles cannot be updated after game is started"]]})
 
-(defn valid-role? [id name]
+(defn valid-role? [id name key]
   (let [game (crud/get games/games id)
         to-validate {:name name :status (.status game)}
         valid (b/valid? to-validate update-roles-rules)
         errors (first (b/validate to-validate update-roles-rules))]
-    [valid {::errors errors}]))
+    [valid {key errors}]))
 
 (def good {:roles #{:merlin :percival}
            :counts [3 4 4 5 6 6]})
