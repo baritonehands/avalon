@@ -19,7 +19,7 @@
 (def valid-play? (create-validator play-game-rules))
 
 (def update-roles-rules
-  {:name [[v/member #{"merlin" "morgana" "percival" "mordred" "oberon" "assassin"}]]
+  {:name   [[v/member #{"merlin" "morgana" "percival" "mordred" "oberon" "assassin"}]]
    :status [[#{:waiting} :message "Roles cannot be updated after game is started"]]})
 
 (defn valid-role? [id name key]
@@ -29,14 +29,14 @@
         errors (first (b/validate to-validate update-roles-rules))]
     [valid {key errors}]))
 
-(def good {:roles #{:merlin :percival}
-           :counts [3 4 4 5 6 6]})
+(def good {:specials #{:merlin :percival}
+           :counts   [3 4 4 5 6 6]})
 
-(def bad {:roles #{:mordred :morgana :oberon :assassin}
-          :counts [2 2 3 3 3 4]})
+(def bad {:specials #{:mordred :morgana :oberon :assassin}
+          :counts   [2 2 3 3 3 4]})
 
 (defn assign-team [m team roles n]
-  (let [special (filter (:roles m) roles)
+  (let [special (filter (:specials m) roles)
         unnamed (repeat (- ((:counts m) (- n 5)) (count special)) team)]
     (concat special unnamed)))
 

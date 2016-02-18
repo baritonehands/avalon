@@ -18,9 +18,10 @@
     (crud/create! games game)))
 
 (defn display-game [game]
-  (-> (into {} (seq game))
+  (-> (dissoc game :teams)
+      (dissoc :first)
       (rename-keys {:group-id :groupId})
-      (update :people (partial map (partial crud/get people/people)))))
+      (update :people (partial map #(:name (crud/get people/people %))))))
 
 (defn add-person [id person]
   (crud/relate! games id :people (:id person)))

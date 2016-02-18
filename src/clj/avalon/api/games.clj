@@ -42,7 +42,8 @@
 (defn start-game [game]
   (-> game
       (assoc :status :playing)
-      (assoc :teams (rules/assign-roles game))))
+      (assoc :teams (rules/assign-roles game))
+      (assoc :first (rand-nth (seq (:people game))))))
 
 (defresource play-game [id]
              :available-media-types ["application/json"]
