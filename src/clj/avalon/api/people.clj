@@ -33,7 +33,7 @@
 
 (defn get-info [game role]
   (let [teams (:teams game)
-        evil (get-people #{:morgana :merlin :assassin :bad} teams)]
+        evil (get-people #{:morgana :mordred :assassin :bad} teams)]
     (condp = role
       :merlin (get-people #{:morgana :bad :assassin :oberon} teams)
       :percival (get-people #{:morgana :merlin} teams)
