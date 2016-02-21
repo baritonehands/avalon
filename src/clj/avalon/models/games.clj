@@ -11,7 +11,7 @@
 (defn create-game [group-id]
   (let [game (->Game
                  group-id
-                 #{:merlin :percival :mordred :morgana :assassin}
+                 #{:merlin :percival :mordred :morgana}
                  :waiting
                  #{}
                  {})]

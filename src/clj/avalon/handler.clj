@@ -26,6 +26,7 @@
      [:meta {:charset "utf-8"}]
      [:meta {:name "viewport"
              :content "width=device-width, initial-scale=1"}]
+     [:title "Avalon"]
      (if (env :dev)
        (include-css "css/site.css" "css/app.css")
        (include-css "css/site.min.css"))]

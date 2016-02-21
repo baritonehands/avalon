@@ -1,5 +1,6 @@
 (ns avalon.pages.games
   (:require [ajax.core :refer [GET POST DELETE]]
+            [cljs.pprint :refer [pprint]]
             [reagent.session :as session]
             [avalon.utils :refer [row col]]
             [material-ui.core :as ui :include-macros true]))
@@ -26,8 +27,9 @@
                   :onToggle       #(toggle-role id role (not on))} role]]]))
 
 (defn game-page []
-  (let [{:keys [id people roles]} (session/get :game)]
-    (if id
+  (let [game (session/get :game)
+        {:keys [id people roles]} game]
+    (if game
       [:div
        [row
         [col
@@ -36,7 +38,8 @@
        [row
         [col
          (for [player people]
-           [:div.player player])]]
+           [:div.player player])]
+        [:div.col-sm-8 [:pre (with-out-str (pprint game))]]]
        (for [role ["Merlin" "Percival" "Mordred" "Morgana" "Oberon"]]
          [role-toggle id roles role])
        [row
