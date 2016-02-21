@@ -28,8 +28,8 @@
 (defn game-add-person [id] (gen-endpoint id games/games games/add-person))
 
 (defn get-people [sees teams]
-  (into #{} (for [[k v] teams :when (sees v)]
-              (:name (crud/get people/people k)))))
+  (into #{} (for [[person-id role] teams :when (sees role)]
+              (:name (crud/get people/people person-id)))))
 
 (defn get-info [game role]
   (let [teams (:teams game)
@@ -58,4 +58,4 @@
 (defroutes routes
   (ANY "/groups/:id/people" [id] (group-add-person id))
   (ANY "/games/:id/people" [id] (game-add-person id))
-  (ANY "/games/:id/people/:person-id" [id person-id] (get-person-info id person-id)))
+  (ANY "/games/:id/people/:person-id/info" [id person-id] (get-person-info id person-id)))

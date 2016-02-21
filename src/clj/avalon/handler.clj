@@ -22,6 +22,7 @@
   (html
    [:html
     [:head
+     [:base {:href "/"}]
      [:meta {:charset "utf-8"}]
      [:meta {:name "viewport"
              :content "width=device-width, initial-scale=1"}]
@@ -35,6 +36,7 @@
 
 (defroutes routes
   (GET "/" [] loading-page)
+  (GET "/games/:id" [_] loading-page)
   (GET "/groups" [] loading-page)
   (GET "/about" [] loading-page)
 

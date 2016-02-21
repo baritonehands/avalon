@@ -1,4 +1,4 @@
-(ns avalon.groups
+(ns avalon.pages.groups
   (:require [reagent.core :as r]
             [reagent.session :as session]
             [material-ui.core :as ui :include-macros true]

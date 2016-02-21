@@ -3,7 +3,8 @@
               [reagent.session :as session]
               [material-ui.core :as ui :include-macros true]
               [avalon.group-join :as gj]
-              [avalon.groups :as groups]
+              [avalon.pages.groups :as groups]
+              [avalon.pages.games :as games]
               [secretary.core :as secretary :include-macros true]
               [accountant.core :as accountant]))
 
@@ -27,6 +28,9 @@
 (defn home-page []
   [base-layout [gj/join-form]])
 
+(defn game-page []
+  [base-layout [games/game-page]])
+
 (defn group-page []
   [base-layout [groups/group]])
 
@@ -38,10 +42,19 @@
   [:div [(session/get :current-page)]])
 
 ;; -------------------------
+;; Handlers
+
+
+
+;; -------------------------
 ;; Routes
 
 (secretary/defroute "/" []
   (session/put! :current-page #'home-page))
+
+(secretary/defroute "/games/:id" [id]
+  (games/get-game! id)
+  (session/put! :current-page #'game-page))
 
 (secretary/defroute "/groups/:id" [id]
   (session/put! :current-page #'group-page))
