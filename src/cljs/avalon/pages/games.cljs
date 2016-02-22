@@ -12,6 +12,14 @@
                                    :keywords?       true
                                    :handler         #(session/put! :game %)}))))
 
+(defn delete-player [id name]
+  (DELETE (str "/api/games/" id "/people")
+          {:params          {:name name}
+           :format          :json
+           :response-format :json
+           :keywords?       true
+           :handler         #(session/put! :game %)}))
+
 (defn toggle-role [id role on]
   (let [verb (if on POST DELETE)]
     (verb (str "/api/games/" id "/roles/" (.toLowerCase role))
@@ -26,6 +34,12 @@
       [ui/Toggle {:defaultToggled on
                   :onToggle       #(toggle-role id role (not on))} role]]]))
 
+(defn start-game [id]
+  (POST (str "/api/games/" id "/play")
+          {:response-format :json
+           :keywords?       true
+           :handler         #(session/put! :game %)}))
+
 (defn game-page []
   (let [game (session/get :game)
         {:keys [id people roles]} game]
@@ -33,12 +47,16 @@
       [:div
        [row
         [col
-         [:h2.status "Waiting for players..."]
-         [:h3.code "Access code: " id]]]
+         [:h3.status "Waiting for players..."]
+         [:h4.code "Access code: " id]]]
        [row
         [col
          (for [player people]
-           [:div.player player])]
+           [:div.player
+            [ui/IconButton {:iconClassName "mdfi_action_delete"
+                            :mobile?       true
+                            :on-click      #(delete-player id player)}]
+            player])]
         [:div.col-sm-8 [:pre (with-out-str (pprint game))]]]
        (for [role ["Merlin" "Percival" "Mordred" "Morgana" "Oberon"]]
          [role-toggle id roles role])
@@ -46,5 +64,5 @@
         [col
          [ui/RaisedButton {:primary  true
                            :label    "Start"
-                           :on-click #(js/alert "Hello!")}]]]]
+                           :on-click #(start-game id)}]]]]
       ["Loading..."])))

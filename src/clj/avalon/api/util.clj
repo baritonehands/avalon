@@ -13,7 +13,7 @@
 ;; For PUT and POST parse the body as json and store in the context
 ;; under the given key.
 (defn parse-json [ctx key]
-  (when (#{:put :post} (get-in ctx [:request :request-method]))
+  (when (#{:put :post :delete} (get-in ctx [:request :request-method]))
     (try
       (if-let [body (body-as-string ctx)]
         (let [data (json/read-str body :key-fn keyword)]

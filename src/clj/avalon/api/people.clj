@@ -9,9 +9,9 @@
             [avalon.models.games :as games]
             [avalon.rules.people :as rules]))
 
-(defn gen-endpoint [id db create-fn]
+(defn gen-endpoint [id db create-fn delete-fn]
   (resource :available-media-types ["application/json"]
-            :allowed-methods [:post]
+            :allowed-methods [:post :delete]
             :exists? (crud/exists? db id)
             :can-post-to-missing? false
             :malformed? (util/malformed? ::data)
@@ -22,10 +22,15 @@
                            person (people/create-person (:name data))]
                        (create-fn id person)
                        {::id (:id person)}))
-            :handle-created #(identity {:id (::id %)})))
+            :handle-created #(identity {:id (::id %)})
+            :respond-with-entity? true
+            :delete! (fn [ctx]
+                       (let [name (:name (::data ctx))]
+                         (delete-fn id name)))
+            :handle-ok (fn [_] (games/display-game (crud/get games/games id)))))
 
-(defn group-add-person [id] (gen-endpoint id groups/groups groups/add-person))
-(defn game-add-person [id] (gen-endpoint id games/games games/add-person))
+(defn group-add-person [id] (gen-endpoint id groups/groups groups/add-person nil))
+(defn game-add-person [id] (gen-endpoint id games/games games/add-person games/delete-person))
 
 (defn get-people [sees teams]
   (into #{} (for [[person-id role] teams :when (sees role)]
@@ -41,8 +46,8 @@
       :morgana evil
       :assassin evil
       :bad evil
-      :good []
-      :oberon [])))
+      :good #{}
+      :oberon #{})))
 
 (defresource get-person-info [id person-id]
              :available-media-types ["application/json"]

@@ -25,3 +25,16 @@
 
 (defn add-person [id person]
   (crud/relate! games id :people (:id person)))
+
+(defn- people-named [game name]
+  (let [people (->> (:people game)
+                    (map (partial crud/get people/people))
+                    (filter #(= 0 (.compareToIgnoreCase name (:name %)))))]
+    (map :id people)))
+
+(defn delete-person [id name]
+  (crud/update! games id
+                (fn [game]
+                  (let [people (people-named game name)]
+                    (map (partial crud/delete! people/people) people)
+                    (update game :people #(apply disj % people))))))
