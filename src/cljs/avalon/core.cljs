@@ -2,7 +2,7 @@
     (:require [reagent.core :as reagent :refer [atom]]
               [reagent.session :as session]
               [material-ui.core :as ui :include-macros true]
-              [avalon.group-join :as gj]
+              [avalon.pages.home :as join]
               [avalon.pages.groups :as groups]
               [avalon.pages.games :as games]
               [secretary.core :as secretary :include-macros true]
@@ -26,7 +26,7 @@
     children]])
 
 (defn home-page []
-  [base-layout [gj/join-form]])
+  [base-layout [join/home-page]])
 
 (defn game-page []
   [base-layout [games/game-page]])

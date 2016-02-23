@@ -36,8 +36,8 @@
   (into #{} (for [[person-id role] teams :when (sees role)]
               (:name (crud/get people/people person-id)))))
 
-(defn get-info [game role]
-  (let [teams (:teams game)
+(defn get-info [game role person-id]
+  (let [teams (dissoc (:teams game) person-id)
         evil (get-people #{:morgana :mordred :assassin :bad} teams)]
     (condp = role
       :merlin (get-people #{:morgana :bad :assassin :oberon} teams)
@@ -58,7 +58,7 @@
                                 role ((:teams game) person-id)]
                             {:role role
                              :first (= (:first game) person-id)
-                             :info (get-info game role)})))
+                             :info (get-info game role person-id)})))
 
 (defroutes routes
   (ANY "/groups/:id/people" [id] (group-add-person id))

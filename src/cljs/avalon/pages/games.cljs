@@ -36,9 +36,9 @@
 
 (defn start-game [id]
   (POST (str "/api/games/" id "/play")
-          {:response-format :json
-           :keywords?       true
-           :handler         #(session/put! :game %)}))
+        {:response-format :json
+         :keywords?       true
+         :handler         #(session/put! :game %)}))
 
 (defn game-page []
   (let [game (session/get :game)
@@ -47,8 +47,9 @@
       [:div
        [row
         [col
-         [:h3.status "Waiting for players..."]
-         [:h4.code "Access code: " id]]]
+         [:div.text-center
+          [:h3.status "Waiting for players..."]
+          [:h4.code "Access code: " id]]]]
        [row
         [col
          (for [player people]

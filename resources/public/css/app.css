@@ -1,3 +1,8 @@
 .mui-text-field {
     width: 100%;
 }
+
+.start-btn {
+    display: block;
+    margin-top: 20px;
+}
