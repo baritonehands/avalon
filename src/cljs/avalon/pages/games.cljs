@@ -3,16 +3,17 @@
             [cljs.pprint :refer [pprint]]
             [reagent.session :as session]
             [avalon.utils :refer [row col]]
-            [material-ui.core :as ui :include-macros true]))
+            [material-ui.core :as ui :include-macros true]
+            [accountant.core :as route]))
 
-(defn get-game! [id]
+(defn get-game! [id & {:keys [force] :or {force false}}]
   (let [game (session/get :game)]
-    (when (or (nil? game) (not= id (:id game)))
+    (when (or force (not= id (:id game)))
       (GET (str "/api/games/" id) {:response-format :json
                                    :keywords?       true
                                    :handler         #(session/put! :game %)}))))
 
-(defn delete-player [id name]
+(defn delete-player! [id name]
   (DELETE (str "/api/games/" id "/people")
           {:params          {:name name}
            :format          :json
@@ -20,7 +21,7 @@
            :keywords?       true
            :handler         #(session/put! :game %)}))
 
-(defn toggle-role [id role on]
+(defn toggle-role! [id role on]
   (let [verb (if on POST DELETE)]
     (verb (str "/api/games/" id "/roles/" (.toLowerCase role))
           {:response-format :json
@@ -32,13 +33,15 @@
     [row
      [col
       [ui/Toggle {:defaultToggled on
-                  :onToggle       #(toggle-role id role (not on))} role]]]))
+                  :onToggle       #(toggle-role! id role (not on))} role]]]))
 
-(defn start-game [id]
+(defn start-game! [id]
   (POST (str "/api/games/" id "/play")
         {:response-format :json
          :keywords?       true
-         :handler         #(session/put! :game %)}))
+         :handler         (fn [resp]
+                            (session/put! :game resp)
+                            (route/navigate! (str "/games/" id "/play/" (session/get :person-id))))}))
 
 (defn game-page []
   (let [game (session/get :game)
@@ -55,8 +58,8 @@
          (for [player people]
            [:div.player
             [ui/IconButton {:iconClassName "mdfi_action_delete"
-                            :mobile?       true
-                            :on-click      #(delete-player id player)}]
+                            :tocuh         true
+                            :on-click      #(delete-player! id player)}]
             player])]
         [:div.col-sm-8 [:pre (with-out-str (pprint game))]]]
        (for [role ["Merlin" "Percival" "Mordred" "Morgana" "Oberon"]]
@@ -65,5 +68,5 @@
         [col
          [ui/RaisedButton {:primary  true
                            :label    "Start"
-                           :on-click #(start-game id)}]]]]
-      ["Loading..."])))
+                           :on-click #(start-game! id)}]]]]
+      [:h3.text-center "Loading..."])))
