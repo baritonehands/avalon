@@ -27,6 +27,8 @@
          [row [col [:h5 "You are the " [:strong "first player"] ". The player to your right is the Lady of the Lake."]]])
        [row
         [col
-         (for [player (:info info)]
-           [:div.player player])]]]
+         [:div
+          [:h4 "You see:"]
+          (for [player (:info info)]
+            [:div.player player])]]]]
       [:h3.text-center "Loading..."])))

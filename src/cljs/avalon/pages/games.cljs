@@ -52,21 +52,20 @@
         [col
          [:div.text-center
           [:h3.status "Waiting for players..."]
-          [:h4.code "Access code: " id]]]]
+          [:h4.code "Access code: " [:pre id]]]]]
        [row
         [col
          (for [player people]
            [:div.player
             [ui/IconButton {:iconClassName "mdfi_action_delete"
-                            :tocuh         true
-                            :on-click      #(delete-player! id player)}]
-            player])]
-        [:div.col-sm-8 [:pre (with-out-str (pprint game))]]]
+                            :touch         true
+                            :onTouchTap    #(delete-player! id player)}]
+            player])]]
        (for [role ["Merlin" "Percival" "Mordred" "Morgana" "Oberon"]]
          [role-toggle id roles role])
        [row
         [col
-         [ui/RaisedButton {:primary  true
-                           :label    "Start"
-                           :on-click #(start-game! id)}]]]]
+         [ui/RaisedButton {:primary    true
+                           :label      "Start"
+                           :onTouchTap #(start-game! id)}]]]]
       [:h3.text-center "Loading..."])))

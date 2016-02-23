@@ -45,7 +45,7 @@
                          }]]]
 
         [:div
-         [ui/RaisedButton {:primary  true
-                           :label    "Join"
-                           :on-click #(join-group (:group-name @state) (:group-code @state))
+         [ui/RaisedButton {:primary    true
+                           :label      "Join"
+                           :onTouchTap #(join-group (:group-name @state) (:group-code @state))
                            }]]]])))

@@ -54,7 +54,7 @@
    {"resources/public/css/site.min.css" ["resources/public/css/site.css"
                                          "resources/public/css/app.css"]}}
 
-  :cljsbuild {:builds {:app {:source-paths ["src/cljs"]
+  :cljsbuild {:builds {:app {:source-paths ["src/cljs" "src/cljc"]
                              :compiler {:preamble ["resources/vendor/material-ui/material.js"]
                                         :output-to "target/cljsbuild/public/js/app.js"
                                         :output-dir "target/cljsbuild/public/js/out"

@@ -7,15 +7,16 @@
             [avalon.pages.games :as games]
             [avalon.pages.play :as play]
             [secretary.core :as secretary :include-macros true]
-            [accountant.core :as accountant]))
+            [accountant.core :as accountant]
+            [accountant.core :as route]))
 
 ;; -------------------------
 ;; Views
 
 (defn base-layout [& children]
-  [ui/AppCanvas {:predefinedLayout 1}
-   [ui/AppBar {:class              "mui-dark-theme"
-               :title              "Avalon"
+  [:div
+   [ui/AppBar {:title              "Avalon"
+               :onTitleTouchTap    #(route/navigate! "/")
                :zDepth             0
                :showMenuIconButton false}]
    ;[:div.action-icons
@@ -23,7 +24,7 @@
    ;                 :on-click #(accountant/navigate! "/about")}]
    ; [ui/IconButton {:iconClassName "mdfi_action_favorite_outline"}]
    ; [ui/IconButton {:iconClassName "mdfi_action_search"}]]]
-   [:div.mui-app-content-canvas.container-fluid
+   [:div.container-fluid
     children]])
 
 (defn home-page []

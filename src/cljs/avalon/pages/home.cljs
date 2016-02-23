@@ -19,10 +19,9 @@
                             (route/navigate! (str "/games/" id)))}))
 
 (defn button [label opts]
-  [:div.col-xs-8.col-xs-offset-2
+  [:div.col-xs-8.col-xs-offset-2.start-btn
    [ui/RaisedButton (merge {:label     label
-                            :primary   true
-                            :className "start-btn"} opts)]])
+                            :primary   true} opts)]])
 
 (defn home-page []
   (let [state (r/atom {:joining false})
@@ -34,7 +33,7 @@
                                            (session/put! :game resp)
                                            (swap! state assoc :joining true :code (:id resp)))}))]
     (fn []
-      [:div.text-center
+      [:div.text-center {:style {:float "left"}}
        [row
         [col
          [:h3 "Welcome to Avalon!"]]]
@@ -42,8 +41,8 @@
         [col
          (if-not (:joining @state)
            [row
-            [button "Create Game" {:on-click create!}]
-            [button "Join Game" {:on-click #(swap! state assoc :joining true)}]]
+            [button "Create Game" {:onTouchTap create!}]
+            [button "Join Game" {:onTouchTap #(swap! state assoc :joining true)}]]
 
            [row
             [:div.col-xs-8.col-xs-offset-2
@@ -62,6 +61,6 @@
                             :on-change         #(swap! state assoc :name (-> % .-target .-value))
                             }]]
             [row
-             [button "Join" {:on-click #(join-game! (:code @state) (:name @state))}]
-             [button "Back" {:on-click #(swap! state assoc :joining false)
+             [button "Join" {:onTouchTap #(join-game! (:code @state) (:name @state))}]
+             [button "Back" {:onTouchTap #(swap! state assoc :joining false)
                              :primary  false}]]])]]])))
