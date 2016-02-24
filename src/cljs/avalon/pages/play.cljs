@@ -1,7 +1,8 @@
 (ns avalon.pages.play
   (:require [ajax.core :refer [GET]]
             [reagent.session :as session]
-            [avalon.utils :refer [row col]]))
+            [avalon.utils :refer [row col capitalize]]
+            [avalon.pages.games :as games]))
 
 (defn get-info! [id person-id]
   (GET (str "/api/games/" id "/people/" person-id "/info")
@@ -10,13 +11,10 @@
         :handler         #(session/put! :info %)}))
 
 (defn description [role]
-  (let [name (name role)
-        letter (-> name
-                   (.charAt name 0)
-                   (.toUpperCase))]
-    [:h3 "Your role is " [:strong (str letter (.slice name 1))]]))
+  (let [name (capitalize (name role))]
+    [:h3 "Your role is " [:strong name]]))
 
-(defn play-page []
+(defn info-view []
   (let [info (session/get :info)]
     (if info
       [:div
@@ -28,7 +26,14 @@
        [row
         [col
          [:div
-          [:h4 "You see:"]
+          (if (> (count (:info info)) 0)
+            [:h4 "You see:"])
           (for [player (:info info)]
             [:div.player player])]]]]
       [:h3.text-center "Loading..."])))
+
+(defn play-page []
+  (let [game (session/get :game)]
+    (if (= (:status game) "playing")
+      [info-view]
+      [games/game-page])))

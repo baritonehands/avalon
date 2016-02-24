@@ -32,6 +32,7 @@
          [:div
           [ui/TextField {:hintText          "Please enter a group name"
                          :floatingLabelText "Group Name"
+                         :fullWidth true
                          :value             (:group-name @state)
                          :on-change         #(swap! state assoc :group-name (-> % .-target .-value))
                          }]]
@@ -39,6 +40,7 @@
          [:div
           [ui/TextField {:hintText          "Please enter a passcode"
                          :floatingLabelText "Password"
+                         :fullWidth true
                          :value             (:group-code @state)
                          :type              "password"
                          :on-change         #(swap! state assoc :group-code (-> % .-target .-value))

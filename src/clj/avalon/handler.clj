@@ -13,10 +13,7 @@
 
 (def mount-target
   [:div#app
-      [:h3 "ClojureScript has not been compiled!"]
-      [:p "please run "
-       [:b "lein figwheel"]
-       " in order to start the compiler"]])
+      [:h3.text-center "Loading..."]])
 
 (def loading-page
   (html
@@ -27,6 +24,7 @@
      [:meta {:name "viewport"
              :content "width=device-width, initial-scale=1"}]
      [:title "Avalon"]
+     (include-css "https://fonts.googleapis.com/icon?family=Material+Icons")
      (if (env :dev)
        (include-css "css/site.css" "css/app.css")
        (include-css "css/site.min.css"))]
@@ -37,7 +35,6 @@
 
 (defroutes routes
   (GET "/" [] loading-page)
-  (GET "/games/:id" [_] loading-page)
   (GET "/games/:id/play/:person-id" [_ _] loading-page)
   (GET "/groups" [] loading-page)
   (GET "/about" [] loading-page)

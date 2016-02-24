@@ -16,24 +16,25 @@
          :handler         (fn [resp]
                             (session/put! :person-id (:id resp))
                             (games/get-game! id :force true)
-                            (route/navigate! (str "/games/" id)))}))
+                            (route/navigate! (str "/games/" id "/play/" (:id resp))))}))
 
 (defn button [label opts]
   [:div.col-xs-8.col-xs-offset-2.start-btn
-   [ui/RaisedButton (merge {:label     label
-                            :primary   true} opts)]])
+   [ui/RaisedButton (merge {:label   label
+                            :primary true
+                            :style   {:width "100%"}} opts)]])
 
 (defn home-page []
   (let [state (r/atom {:joining false})
         create! (fn [_]
-                 (POST "/api/games"
-                       {:response-format :json
-                        :keywords?       true
-                        :handler         (fn [resp]
-                                           (session/put! :game resp)
-                                           (swap! state assoc :joining true :code (:id resp)))}))]
+                  (POST "/api/games"
+                        {:response-format :json
+                         :keywords?       true
+                         :handler         (fn [resp]
+                                            (session/put! :game resp)
+                                            (swap! state assoc :joining true :code (:id resp)))}))]
     (fn []
-      [:div.text-center {:style {:float "left"}}
+      [:div.text-center
        [row
         [col
          [:h3 "Welcome to Avalon!"]]]
@@ -49,6 +50,7 @@
 
              [ui/TextField {:hintText          "Enter an access code"
                             :floatingLabelText "Access Code"
+                            :fullWidth         true
                             :value             (:code @state)
                             :on-change         #(swap! state assoc :code (-> % .-target .-value))
                             }]]
@@ -57,10 +59,13 @@
 
              [ui/TextField {:hintText          "Enter your name"
                             :floatingLabelText "Your Name"
+                            :fullWidth         true
                             :value             (:name @state)
                             :on-change         #(swap! state assoc :name (-> % .-target .-value))
                             }]]
             [row
-             [button "Join" {:onTouchTap #(join-game! (:code @state) (:name @state))}]
+             [button "Join" {:onTouchTap #(join-game! (:code @state) (:name @state))
+                             :style      {:width "100%"}}]
              [button "Back" {:onTouchTap #(swap! state assoc :joining false)
-                             :primary  false}]]])]]])))
+                             :primary    false
+                             :style      {:width "100%"}}]]])]]])))

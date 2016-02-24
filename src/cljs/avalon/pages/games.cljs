@@ -4,7 +4,8 @@
             [reagent.session :as session]
             [avalon.utils :refer [row col]]
             [material-ui.core :as ui :include-macros true]
-            [accountant.core :as route]))
+            [accountant.core :as route]
+            [reagent.core :as r]))
 
 (defn get-game! [id & {:keys [force] :or {force false}}]
   (let [game (session/get :game)]
@@ -29,7 +30,7 @@
            :handler         #(session/put! :game %)})))
 
 (defn role-toggle [id roles role]
-  (let [on ((set roles) (.toLowerCase role))]
+  (let [on (string? ((set roles) (.toLowerCase role)))]
     [row
      [col
       [ui/Toggle {:defaultToggled on
@@ -43,29 +44,38 @@
                             (session/put! :game resp)
                             (route/navigate! (str "/games/" id "/play/" (session/get :person-id))))}))
 
-(defn game-page []
-  (let [game (session/get :game)
-        {:keys [id people roles]} game]
-    (if game
-      [:div
-       [row
-        [col
-         [:div.text-center
-          [:h3.status "Waiting for players..."]
-          [:h4.code "Access code: " [:pre id]]]]]
-       [row
-        [col
-         (for [player people]
-           [:div.player
-            [ui/IconButton {:iconClassName "mdfi_action_delete"
-                            :touch         true
-                            :onTouchTap    #(delete-player! id player)}]
-            player])]]
-       (for [role ["Merlin" "Percival" "Mordred" "Morgana" "Oberon"]]
-         [role-toggle id roles role])
-       [row
-        [col
-         [ui/RaisedButton {:primary    true
-                           :label      "Start"
-                           :onTouchTap #(start-game! id)}]]]]
-      [:h3.text-center "Loading..."])))
+(defn refresh-game []
+  (when-let [game (session/get :game)]
+    (get-game! (:id game) :force true)))
+
+(def game-page
+  (let [timer (r/atom nil)]
+    (with-meta
+      (fn []
+        (let [game (session/get :game)
+              {:keys [id people roles]} game]
+          (if game
+            [:div
+             [row
+              [col
+               [:div.text-center
+                [:h3.status "Waiting for players..."]
+                [:h4.code "Access code: " [:pre id]]]]]
+             [row
+              [col
+               (for [player people]
+                 [:div.player
+                  [ui/IconButton {:iconClassName "mdfi_action_delete"
+                                  :touch         true
+                                  :onTouchTap    #(delete-player! id player)}]
+                  player])]]
+             (for [role ["Merlin" "Percival" "Mordred" "Morgana" "Oberon"]]
+               ^{:key role} [role-toggle id roles role])
+             [row
+              [col
+               [ui/RaisedButton {:primary    true
+                                 :label      "Start"
+                                 :onTouchTap #(start-game! id)}]]]]
+            [:h3.text-center "Loading..."])))
+      {:component-did-mount #(reset! timer (js/setInterval refresh-game 5000))
+       :component-will-unmount #(js/clearInterval @timer)})))
