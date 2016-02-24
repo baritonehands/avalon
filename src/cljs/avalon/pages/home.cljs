@@ -62,7 +62,6 @@
              [ui/TextField {:hintText          "Enter your name"
                             :floatingLabelText "Your Name"
                             :fullWidth         true
-                            :autoCapitalize    "none"
                             :autoCorrect       "off"
                             :value             (:name @state)
                             :on-change         #(swap! state assoc :name (-> % .-target .-value))

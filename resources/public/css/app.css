@@ -1,3 +1,7 @@
+html * {
+    font-family: Roboto, sans-serif;
+}
+
 .mui-text-field {
     width: 100%;
 }
