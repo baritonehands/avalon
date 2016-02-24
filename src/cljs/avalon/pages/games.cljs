@@ -37,10 +37,11 @@
 
 (defn role-toggle [id roles role]
   (let [on (string? ((set roles) (.toLowerCase role)))]
-    [row
-     [col
-      [ui/Toggle {:defaultToggled on
-                  :onToggle       #(toggle-role! id role (not on))} role]]]))
+    [ui/Toggle {:label         role
+                :labelPosition "left"
+                :toggled       on
+                :labelStyle    {:font-weight "normal"}
+                :onToggle      #(toggle-role! id role (not on))}]))
 
 (defn start-game! [id]
   (POST (str "/api/games/" id "/play")
@@ -70,19 +71,24 @@
                 [:h4.code "Access code: " [:pre id]]]]]
              [row
               [col
-               (for [player people]
-                 [:div.player
-                  [ui/IconButton {:iconClassName "mdfi_action_delete"
-                                  :touch         true
-                                  :onTouchTap    #(delete-player! id player)}]
-                  player])]]
-             (for [role ["Merlin" "Percival" "Mordred" "Morgana" "Oberon"]]
-               ^{:key role} [role-toggle id roles role])
-             [row
-              [col
-               [ui/RaisedButton {:primary    true
-                                 :label      "Start"
-                                 :onTouchTap #(start-game! id)}]]]]
+               [ui/List {:subheader "Players"}
+                (for [player people]
+                  [ui/ListItem
+                   [:div.player
+                    [ui/IconButton {:iconClassName "mdfi_action_delete"
+                                    :onTouchTap    #(delete-player! id player)}]
+                    player]])]
+               [ui/ListDivider]
+               [ui/List {:subheader "Roles"}
+                (for [role ["Merlin" "Percival" "Mordred" "Morgana" "Oberon"]]
+                  ^{:key role}
+                  [ui/ListItem [role-toggle id roles role]])]
+               [row
+                [:div.col-xs-8.col-xs-offset-2.start-btn {:style {:margin-bottom "40px"}}
+                 [ui/RaisedButton {:primary    true
+                                   :label      "Start"
+                                   :fullWidth  true
+                                   :onTouchTap #(start-game! id)}]]]]]]
             [:h3.text-center "Loading..."])))
-      {:component-did-mount #(reset! timer (js/setInterval refresh-game 5000))
+      {:component-did-mount    #(reset! timer (js/setInterval refresh-game 5000))
        :component-will-unmount #(js/clearInterval @timer)})))

@@ -1,8 +1,8 @@
-(defproject avalon "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+(defproject avalon "0.1.0"
+  :description "An Avalon web app for starting the game and keeping stats"
+  :url "https://github.com/baritonehands/avalon"
+  :license {:name "Apache License, v2.0"
+            :url "http://www.apache.org/licenses/"}
 
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [ring-server "0.4.0"]
