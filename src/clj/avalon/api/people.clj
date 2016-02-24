@@ -53,6 +53,8 @@
              :available-media-types ["application/json"]
              :allowed-methods [:get]
              :exists? (crud/exists? games/games id)
+             :processable? (rules/valid-info? (crud/get games/games id) ::errors)
+             :handle-unprocessable-entity ::errors
              :handle-ok (fn [_]
                           (let [game (crud/get games/games id)
                                 role ((:teams game) person-id)]

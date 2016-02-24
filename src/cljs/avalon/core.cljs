@@ -25,9 +25,6 @@
 (defn home-page []
   [base-layout [join/home-page]])
 
-(defn game-page []
-  [base-layout [games/game-page]])
-
 (defn play-page []
   [base-layout [play/play-page]])
 
@@ -45,20 +42,23 @@
 ;; -------------------------
 ;; Routes
 
-(secretary/defroute "/" []
-                    (session/put! :current-page #'home-page))
+(defn set-page!
+  ([current]
+   (set-page! current {}))
+  ([current kws]
+   (session/put! :current-page current)
+   (session/put! :route-params kws)))
 
-;(secretary/defroute "/games/:id" [id]
-;
-;                    (session/put! :current-page #'game-page))
+(secretary/defroute "/" []
+                    (set-page! #'home-page))
 
 (secretary/defroute "/games/:id/play/:person-id" [id person-id]
                     (games/get-game! id)
-                    (play/get-info! id person-id)
-                    (session/put! :current-page #'play-page))
+                    (games/get-info! id person-id)
+                    (set-page! #'play-page {:id id :person-id person-id}))
 
 (secretary/defroute "/groups/:id" [id]
-                    (session/put! :current-page #'group-page))
+                    (set-page! #'group-page {:id id}))
 
 ;; -------------------------
 ;; Initialize app

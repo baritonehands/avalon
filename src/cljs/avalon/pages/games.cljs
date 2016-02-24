@@ -14,6 +14,12 @@
                                    :keywords?       true
                                    :handler         #(session/put! :game %)}))))
 
+(defn get-info! [id person-id]
+  (GET (str "/api/games/" id "/people/" person-id "/info")
+       {:response-format :json
+        :keywords?       true
+        :handler         #(session/put! :info %)}))
+
 (defn delete-player! [id name]
   (DELETE (str "/api/games/" id "/people")
           {:params          {:name name}
@@ -45,8 +51,9 @@
                             (route/navigate! (str "/games/" id "/play/" (session/get :person-id))))}))
 
 (defn refresh-game []
-  (when-let [game (session/get :game)]
-    (get-game! (:id game) :force true)))
+  (let [params (session/get :route-params)]
+    (get-game! (:id params) :force true)
+    (get-info! (:id params) (:person-id params))))
 
 (def game-page
   (let [timer (r/atom nil)]

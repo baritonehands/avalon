@@ -51,6 +51,8 @@
              [ui/TextField {:hintText          "Enter an access code"
                             :floatingLabelText "Access Code"
                             :fullWidth         true
+                            :autoCapitalize    "none"
+                            :autoCorrect       "off"
                             :value             (:code @state)
                             :on-change         #(swap! state assoc :code (-> % .-target .-value))
                             }]]
@@ -60,12 +62,14 @@
              [ui/TextField {:hintText          "Enter your name"
                             :floatingLabelText "Your Name"
                             :fullWidth         true
+                            :autoCapitalize    "none"
+                            :autoCorrect       "off"
                             :value             (:name @state)
                             :on-change         #(swap! state assoc :name (-> % .-target .-value))
                             }]]
             [row
              [button "Join" {:onTouchTap #(join-game! (:code @state) (:name @state))
-                             :style      {:width "100%"}}]
+                             :fullWidth  true}]
              [button "Back" {:onTouchTap #(swap! state assoc :joining false)
                              :primary    false
-                             :style      {:width "100%"}}]]])]]])))
+                             :fullWidth  true}]]])]]])))
