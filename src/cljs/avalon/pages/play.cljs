@@ -26,8 +26,7 @@
       (= role "percival") [:h4 "Merlin is one of the following:"]
       (= role "mordred") [:h4 "The following are your minions:"]
       ; (= role "morgana") [:h4 "The following are the other minions of Modred:"]
-      (some #{role} '("morgana" "assassin" "bad")) [:h4 "The following are Modred and his other minions:"]
-      :else [:h3 "Your role is " [:strong name]])
+      (some #{role} '("morgana" "assassin" "bad")) [:h4 "The following are Modred and his other minions:"])
     )
 
 (defn info-view []
