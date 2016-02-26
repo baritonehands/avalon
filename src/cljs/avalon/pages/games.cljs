@@ -89,6 +89,6 @@
                                    :label      "Start"
                                    :fullWidth  true
                                    :onTouchTap #(start-game! id)}]]]]]]
-            [:h3.text-center "Loading..."])))
+            [row [col [:div.text-center [ui/CircularProgress]]]])))
       {:component-did-mount    #(reset! timer (js/setInterval refresh-game 5000))
        :component-will-unmount #(js/clearInterval @timer)})))

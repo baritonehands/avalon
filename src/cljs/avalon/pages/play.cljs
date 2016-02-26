@@ -16,17 +16,16 @@
       (= role "morgana") [:h4 "You are the evil witch " [:strong name] "."]
       (= role "oberon") [:h4 "You are the evil force " [:strong name] "."]
       (= role "bad") [:h4 "You are a minion of Mordred."]
-      (= role "assassin") [:h4 "You are the assassin and a minion of Mordred."]
-      :else [:h3 "Your role is " [:strong name]])
+      (= role "assassin") [:h4 "You are the " [:strong name] " and a minion of Mordred."]
+      :else [:h4 "Your role is " [:strong name]])
     ))
 
 (defn view_list [role]
     (cond
-      (= role "merlin") [:h4 "The following are the minions of Modred:"]
-      (= role "percival") [:h4 "Merlin is one of the following:"]
-      (= role "mordred") [:h4 "The following are your minions:"]
-      ; (= role "morgana") [:h4 "The following are the other minions of Modred:"]
-      (some #{role} '("morgana" "assassin" "bad")) [:h4 "The following are Modred and his other minions:"])
+      (= role "merlin") [:h5 "The following are the minions of Mordred:"]
+      (= role "percival") [:h5 "Merlin is one of the following:"]
+      (= role "mordred") [:h5 "The following are your minions:"]
+      (#{"morgana" "assassin" "bad"} role) [:h5 "The following are Mordred and his other minions:"])
     )
 
 (defn info-view []
@@ -38,7 +37,7 @@
          [description (:role info)]]]
        [row
         [col
-         [:div
+         [:div {:style {:padding-bottom "20px"}}
           (if (> (count (:info info)) 0)
             [view_list (:role info)])
           (for [player (:info info)]
@@ -53,7 +52,7 @@
            [ui/RaisedButton {:label      "Leave Game"
                              :fullWidth  true
                              :onTouchTap #(route/navigate! "/")}]]]]]]
-      [:h3.text-center "Loading..."])))
+      [row [col [:div.text-center [ui/CircularProgress]]]])))
 
 (defn play-page []
   (let [game (session/get :game)]
