@@ -59,7 +59,7 @@
                           (let [game (crud/get games/games id)
                                 role ((:teams game) person-id)]
                             {:role role
-                             :first (= (:first game) person-id)
+                             :first (:name (crud/get people/people (:first game)))
                              :info (get-info game role person-id)})))
 
 (defroutes routes
