@@ -80,7 +80,7 @@
                     player]])]
                [ui/ListDivider]
                [ui/List {:subheader "Roles"}
-                (for [role ["Merlin" "Percival" "Mordred" "Morgana" "Oberon"]]
+                (for [role ["Merlin" "Percival" "Mordred" "Morgana" "Oberon" "Lancelot"]]
                   ^{:key role}
                   [ui/ListItem [role-toggle id roles role]])]
                [row

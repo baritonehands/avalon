@@ -17,16 +17,27 @@
       (= role "oberon") [:h4 "You are the evil force " [:strong name] "."]
       (= role "bad") [:h4 "You are a minion of Mordred."]
       (= role "assassin") [:h4 "You are the " [:strong name] " and a minion of Mordred."]
+      (= role "evil-lancelot") [:h4 "You are " [:strong "Evil Lancelot"] " and a minion of Mordred."]
+      (= role "good-lancelot") [:h4 "You are " [:strong "Good Lancelot"] ", a servant of Arthur."]
       :else [:h4 "Your role is " [:strong name]])
     ))
 
-(defn view_list [role]
-    (cond
-      (= role "merlin") [:h5 "The following are the minions of Mordred:"]
-      (= role "percival") [:h5 "Merlin is one of the following:"]
-      (= role "mordred") [:h5 "The following are your minions:"]
-      (#{"morgana" "assassin" "bad"} role) [:h5 "The following are Mordred and his other minions:"])
-    )
+(defn view-list [info]
+  (let [role (:role info)]
+    [:div
+     [:div
+      (cond
+        (= role "merlin") [:h5 "The following are the minions of Mordred:"]
+        (= role "percival") [:h5 "Merlin is one of the following:"]
+        (= role "mordred") [:h5 "The following are your minions:"]
+        (= role "good-lancelot") [:h5 "The following is Evil Lancelot:"]
+        (#{"morgana" "assassin" "bad" "evil-lancelot"} role) [:h5 "The following are Mordred and his other minions:"])
+      (for [player (first (:info info))]
+        [:div.player player])]
+     (if (= role "evil-lancelot")
+       [:div {:style {:padding-top "10px"}}
+        [:h5 "The following is Good Lancelot:"]
+        [:div.player (first (second (:info info)))]])]))
 
 (defn info-view []
   (let [info (session/get :info)]
@@ -38,13 +49,10 @@
        [row
         [col
          [:div {:style {:padding-bottom "20px"}}
-          (if (> (count (:info info)) 0)
-            [view_list (:role info)])
-          (for [player (:info info)]
-            [:div.player player])]]]
-          [row
-            [col
-              [:h5 [:strong (:first info)] " is the first player. The player to his/her right is the Lady of the Lake."]]]
+          [view-list info]]]]
+       [row
+        [col
+         [:h5 [:strong (:first info)] " is the first player. The player to his/her right is the Lady of the Lake."]]]
        [row
         [col
          [row

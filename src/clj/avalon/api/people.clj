@@ -33,21 +33,24 @@
 (defn game-add-person [id] (gen-endpoint id games/games games/add-person games/delete-person))
 
 (defn get-people [sees teams]
-  (into #{} (for [[person-id role] teams :when (sees role)]
-              (:name (crud/get people/people person-id)))))
+  [(into #{} (for [[person-id role] teams :when (sees role)]
+              (:name (crud/get people/people person-id))))])
 
 (defn get-info [game role person-id]
   (let [teams (dissoc (:teams game) person-id)
-        evil (get-people #{:morgana :mordred :assassin :bad} teams)]
+        evil-roles #{:morgana :mordred :assassin :bad :evil-lancelot}
+        evil (get-people evil-roles teams)]
     (condp = role
-      :merlin (get-people #{:morgana :bad :assassin :oberon} teams)
+      :merlin (get-people #{:morgana :bad :assassin :oberon :evil-lancelot} teams)
       :percival (get-people #{:morgana :merlin} teams)
       :mordred evil
       :morgana evil
       :assassin evil
       :bad evil
       :good #{}
-      :oberon #{})))
+      :oberon #{}
+      :good-lancelot (get-people #{:evil-lancelot} teams)
+      :evil-lancelot (concat evil (get-people #{:good-lancelot} teams)))))
 
 (defresource get-person-info [id person-id]
              :available-media-types ["application/json"]
