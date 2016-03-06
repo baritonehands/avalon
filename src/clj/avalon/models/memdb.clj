@@ -10,7 +10,7 @@
             (remove #{\a \e \i \o \u}))))
 
 (defn- id-gen []
-  (apply str (take 6 (shuffle alphabet))))
+  (apply str (take 4 (shuffle alphabet))))
 
 (defn create-db []
   (let [db (ref {})]

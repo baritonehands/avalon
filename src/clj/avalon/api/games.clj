@@ -75,7 +75,7 @@
 
 (defroutes routes
   (ANY "/games" [] games-resource)
-  (ANY "/games/:id" [id] (get-or-put-game id))
-  (ANY "/games/:id/play" [id] (play-game id))
-  (ANY "/games/:id/roles/:name" [id name] (update-roles id name))
-  (ANY "/groups/:id/games" [id] (games-by-group id)))
+  (ANY "/games/:id" [id] (get-or-put-game (.toLowerCase id)))
+  (ANY "/games/:id/play" [id] (play-game (.toLowerCase id)))
+  (ANY "/games/:id/roles/:name" [id name] (update-roles (.toLowerCase id) name))
+  (ANY "/groups/:id/games" [id] (games-by-group (.toLowerCase id))))

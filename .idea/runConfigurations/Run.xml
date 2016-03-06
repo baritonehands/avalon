@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run" type="LeiningenRunConfiguration" factoryName="Leiningen">
+    <LeiningenRunnerParameters>
+      <option name="myGoals">
+        <list>
+          <option value="figwheel" />
+        </list>
+      </option>
+      <option name="myWorkingDirectory" value="$PROJECT_DIR$" />
+      <option name="profiles" value="" />
+      <option name="trampoline" value="true" />
+    </LeiningenRunnerParameters>
+    <method />
+  </configuration>
+</component>

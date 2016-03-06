@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="REPL" type="ClojureREPL" factoryName="Remote">
+    <setting name="host" value="localhost" />
+    <setting name="port" value="7002" />
+    <setting name="replType" value="0" />
+    <module name="avalon" />
+    <method />
+  </configuration>
+</component>

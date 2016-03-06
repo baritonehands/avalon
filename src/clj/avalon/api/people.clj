@@ -66,6 +66,6 @@
                              :info (get-info game role person-id)})))
 
 (defroutes routes
-  (ANY "/groups/:id/people" [id] (group-add-person id))
-  (ANY "/games/:id/people" [id] (game-add-person id))
-  (ANY "/games/:id/people/:person-id/info" [id person-id] (get-person-info id person-id)))
+  (ANY "/groups/:id/people" [id] (group-add-person (.toLowerCase id)))
+  (ANY "/games/:id/people" [id] (game-add-person (.toLowerCase id)))
+  (ANY "/games/:id/people/:person-id/info" [id person-id] (get-person-info (.toLowerCase id) (.toLowerCase person-id))))
