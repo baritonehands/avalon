@@ -7,6 +7,12 @@
             [accountant.core :as route]
             [reagent.core :as r]))
 
+(defn handle-error [{:keys [status response]}]
+  (.log js/console (clj->js (val (first response))))
+  (condp = status
+    422 (js/alert (first (val (first response))))
+    status (js/alert "Unexpected error, please try again.")))
+
 (defn get-game! [id & {:keys [force] :or {force false}}]
   (let [game (session/get :game)]
     (when (or force (not= id (:id game)))
@@ -49,7 +55,8 @@
          :keywords?       true
          :handler         (fn [resp]
                             (session/put! :game resp)
-                            (route/navigate! (str "/games/" id "/play/" (session/get :person-id))))}))
+                            (route/navigate! (str "/games/" id "/play/" (session/get :person-id))))
+         :error-handler   handle-error}))
 
 (defn refresh-game []
   (let [params (session/get :route-params)]
@@ -61,7 +68,8 @@
     (with-meta
       (fn []
         (let [game (session/get :game)
-              {:keys [id people roles]} game]
+              {:keys [id people roles]} game
+              error (session/get :error)]
           (if game
             [:div
              [row
@@ -89,6 +97,6 @@
                                    :label      "Start"
                                    :fullWidth  true
                                    :onTouchTap #(start-game! id)}]]]]]]
-            [row [col [:div.text-center [ui/CircularProgress]]]])))
+             [row [col [:div.text-center [ui/CircularProgress]]]])))
       {:component-did-mount    #(reset! timer (js/setInterval refresh-game 5000))
        :component-will-unmount #(js/clearInterval @timer)})))

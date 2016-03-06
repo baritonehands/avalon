@@ -3,15 +3,31 @@
             [bouncer.validators :as v]
             [avalon.models.games :as games]
             [avalon.models.crud :as crud]))
+(def good {:specials #{:merlin :percival :good-lancelot}
+           :counts   [3 4 4 5 6 6]})
 
-(def play-game-rules
+(def bad {:specials #{:mordred :morgana :oberon :evil-lancelot}
+          :counts   [2 2 3 3 3 4]})
+
+(defn valid-specials? [game]
+  (fn [roles]
+    (let [specials (:specials bad)
+          counts (:counts bad)
+          num-players (count (:people game))
+          in-play (count (filter specials roles))]
+      (and (> num-players 4)
+           (>= (counts (- num-players 5)) in-play)))))
+
+(defn play-game-rules [game]
   {:people [[v/min-count 5]
             [v/max-count 10]]
-   :status [[#{:waiting} :message "Game already started"]]})
+   :status [[#{:waiting} :message "Game already started"]]
+   :roles  [[(valid-specials? game) :message "Too many evil roles"]]})
 
-(defn- create-validator [rules]
+(defn- create-validator [rules-fn]
   (fn [id key]
     (let [game (crud/get games/games id)
+          rules (rules-fn game)
           valid (b/valid? game rules)
           errors (first (b/validate game rules))]
       [valid {key errors}])))
@@ -28,12 +44,6 @@
         valid (b/valid? to-validate update-roles-rules)
         errors (first (b/validate to-validate update-roles-rules))]
     [valid {key errors}]))
-
-(def good {:specials #{:merlin :percival :good-lancelot}
-           :counts   [3 4 4 5 6 6]})
-
-(def bad {:specials #{:mordred :morgana :oberon :evil-lancelot}
-          :counts   [2 2 3 3 3 4]})
 
 (defn assign-team [m team roles n]
   (let [special (filter (:specials m) roles)

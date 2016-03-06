@@ -7,8 +7,7 @@
             [avalon.pages.games :as games]
             [avalon.pages.play :as play]
             [secretary.core :as secretary :include-macros true]
-            [accountant.core :as accountant]
-            [accountant.core :as route]))
+            [accountant.core :as accountant]))
 
 ;; -------------------------
 ;; Views
@@ -16,7 +15,7 @@
 (defn base-layout [& children]
   [:div
    [ui/AppBar {:title              "Avalon"
-               :onTitleTouchTap    #(route/navigate! "/")
+               :onTitleTouchTap    #(accountant/navigate! "/")
                :zDepth             0
                :showMenuIconButton false}]
    [:div.container-fluid
