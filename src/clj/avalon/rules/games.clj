@@ -9,9 +9,15 @@
 (def bad {:specials #{:mordred :morgana :oberon :evil-lancelot}
           :counts   [2 2 3 3 3 4]})
 
+(defn- add-lancelots [roles]
+  (if (roles :lancelot)
+    (disj (conj roles :good-lancelot :evil-lancelot) :lancelot)
+    roles))
+
 (defn valid-specials? [game]
   (fn [roles]
-    (let [specials (:specials bad)
+    (let [roles (add-lancelots roles)
+          specials (:specials bad)
           counts (:counts bad)
           num-players (count (:people game))
           in-play (count (filter specials roles))]
@@ -57,10 +63,7 @@
 
 (defn assign-roles [game]
   (let [people (.people game)
-        roles (.roles game)
-        roles (if (roles :lancelot)
-                (conj roles :good-lancelot :evil-lancelot)
-                roles)
+        roles (add-lancelots (.roles game))
         blue (assign-team good :good roles (count people))
         red (assign-team bad :bad roles (count people))]
     (zipmap people (shuffle (concat red blue)))))

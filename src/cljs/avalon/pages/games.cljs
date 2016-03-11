@@ -2,16 +2,15 @@
   (:require [ajax.core :refer [GET POST DELETE]]
             [cljs.pprint :refer [pprint]]
             [reagent.session :as session]
-            [avalon.utils :refer [row col]]
+            [avalon.utils :refer [row col capitalize]]
             [material-ui.core :as ui :include-macros true]
             [accountant.core :as route]
             [reagent.core :as r]))
 
 (defn handle-error [{:keys [status response]}]
-  (.log js/console (clj->js (val (first response))))
   (condp = status
-    422 (js/alert (first (val (first response))))
-    status (js/alert "Unexpected error, please try again.")))
+    422 (session/put! :error (capitalize (first (val (first response)))))
+    status (session/put! :error "Unexpected error, please try again")))
 
 (defn get-game! [id & {:keys [force] :or {force false}}]
   (let [game (session/get :game)]
@@ -32,7 +31,8 @@
            :format          :json
            :response-format :json
            :keywords?       true
-           :handler         #(session/put! :game %)}))
+           :handler         #(session/put! :game %)
+           :error-handler   handle-error}))
 
 (defn toggle-role! [id role on]
   (let [verb (if on POST DELETE)]
@@ -96,7 +96,15 @@
                  [ui/RaisedButton {:primary    true
                                    :label      "Start"
                                    :fullWidth  true
-                                   :onTouchTap #(start-game! id)}]]]]]]
-             [row [col [:div.text-center [ui/CircularProgress]]]])))
+                                   :onTouchTap #(start-game! id)}]]]]]
+             [ui/Dialog {:title "Unable to Start Game"
+                         :open  error
+                         :style {:max-width "500px"}}
+              [:div error]
+              [:div [ui/FlatButton {:label      "OK"
+                                    :primary    true
+                                    :onTouchTap #(session/put! :error nil)
+                                    :style      {:float "right"}}]]]]
+            [row [col [:div.text-center [ui/CircularProgress]]]])))
       {:component-did-mount    #(reset! timer (js/setInterval refresh-game 5000))
        :component-will-unmount #(js/clearInterval @timer)})))
