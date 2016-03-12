@@ -55,7 +55,7 @@
                                          "resources/public/css/app.css"]}}
 
   :cljsbuild {:builds {:app {:source-paths ["src/cljs" "src/cljc"]
-                             :compiler {:preamble ["resources/vendor/material-ui/material.js"]
+                             :compiler {:preamble ["resources/public/vendor/material-ui/material.min.js"]
                                         :output-to "target/cljsbuild/public/js/app.js"
                                         :output-dir "target/cljsbuild/public/js/out"
                                         :asset-path   "js/out"
