@@ -16,7 +16,8 @@
   (let [db (ref {})]
     (reify CRUD
       (create! [_ entity]
-        (let [id (str (id-gen))
+        ; Careful here, this takes the first available id of a lazy infinite sequence
+        (let [id (first (drop-while #(contains? @db %) (repeatedly id-gen)))
               entity (assoc entity :id id)]
           (dosync (alter db assoc id entity))
           entity))

@@ -43,6 +43,8 @@
     (condp = role
       :merlin (get-people #{:morgana :bad :assassin :oberon :evil-lancelot} teams)
       :percival (get-people #{:morgana :merlin} teams)
+      :twin1 (get-people #{:twin2} teams)
+      :twin2 (get-people #{:twin1} teams)
       :mordred evil
       :morgana evil
       :assassin evil
