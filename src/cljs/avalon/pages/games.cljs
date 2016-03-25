@@ -79,7 +79,7 @@
                 [:h4.code "Access code: " [:pre id]]]]]
              [row
               [col
-               [ui/List {:subheader "Players"}
+               [ui/List {:subheader ["Players - " (count people)] }
                 (for [player people]
                   [ui/ListItem
                    [:div.player
