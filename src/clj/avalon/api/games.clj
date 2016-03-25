@@ -43,7 +43,8 @@
   (-> game
       (assoc :status :playing)
       (assoc :teams (rules/assign-roles game))
-      (assoc :first (rand-nth (seq (:people game))))))
+      (assoc :first (rand-nth (seq (:people game))))
+      (assoc :player-count (count (:people game)))))
 
 (defresource play-game [id]
              :available-media-types ["application/json"]

@@ -28,17 +28,21 @@
       (cond
         (= role "good") [:h6 "You are a simple servant with no knowledge of the others players. Who do you choose to trust?"]
         (= role "merlin") [:h6 "You have knowledge of all the bad players except Mordred. Find a way to make Percival trust you if you hope to win."]
-        (= role "percival") [:h6 "You know two players: one is bad, one is good. You must decide which one to trust as Merlin. Choose wisely." ]
-        (= role "mordred") [:h6 "You are a bad who is hidden even from Merlin. Take care not to expose yourself and your bad intentions."]
-        (= role "morgana") [:h6 "You are known to Merlin but no other goods. Percival believes you may be Merlin. How do you earn his trust?"]
+        (= role "percival") [:h6 "You know two players: one is the evil witch, the other is the great wizard Merlin. You must decide which one to trust. Choose wisely." ]
+        (= role "mordred") [:h6 "You are a bad who is hidden to all good, including Merlin. Take care not to expose yourself and your bad intentions."]
+        (= role "morgana") [:h6 "Merlin and your sinister teammates may know your intentions, but you can still fool Percival. How do you convince Percival that you are Merlin?"]
         (= role "oberon") [:h6 "You are a bad that is unknown to the rest of your team. Only Merlin knows you to be bad."]
-        (= role "bad") [:h6 "You are a regular bad minion. Merlin knows you are bad, but only Merlin."]
-        (= role "assassin") [:h6 "You are a regular bad minion. Merlin knows you are bad, but only Merlin."]
+        (= role "bad") [:h6 "You are an evil minion of Mordred. Merlin knows your true identity."]
+        (= role "assassin") [:h6 "You are an evil minion of Mordred. Merlin knows your true identity."]
         (#{"twin1" "twin2"} role) [:h6 "You are one of the twins. You two know yourselves to be good. Do you share your knowledge with the world?"]
-        (= role "evil-lancelot") [:h6 "You are known to Merlin as bad. You are also known to the other Lancelot, but know he's not Merlin. What do you do with this knowledge?"]
-        (= role "good-lancelot") [:h6 "You know that the other Lancelot is bad. What do you do with this knowledge to help your team?"]
-        :else [:h6 "You somehow got a role not supported by the game. What are you?"])
+        (= role "evil-lancelot") [:h6 "You know the identity of good Lancelot, but he and Merlin know how bad you really are. How do you use this knowledge to win?"]
+        (= role "good-lancelot") [:h6 "You know the identity of bad Lancelot. How do you use this knowledge to win?"]
+        :else [:h6 "You have been cast out of Avalon, unwanted by either Merlin or Mordred."])
       ))
+
+  (defn goodbad [total]
+    [:h5 "There are " [:strong (get [3 4 4 5 6 6] (- total 5))] " good players and " [:strong (get [2 2 3 3 3 4] (- total 5))] " bad players in this game."]
+  )
 
 (defn view-list [info]
   (let [role (:role info)]
@@ -73,7 +77,10 @@
         [col
           [:h5 "Your backstory:"]
           [backstory (:role info)]]]
-       [row
+      [row
+       [col
+        [goodbad (:player-count info)]]]
+      [row
         [col
          [:h5 [:strong (:first info)] " is the first player. The player to his/her right is the Lady of the Lake."]]]
        [row

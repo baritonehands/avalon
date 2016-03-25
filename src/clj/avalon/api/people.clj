@@ -65,6 +65,7 @@
                                 role ((:teams game) person-id)]
                             {:role role
                              :first (:name (crud/get people/people (:first game)))
+                             :player-count (:player-count game)
                              :info (get-info game role person-id)})))
 
 (defroutes routes
