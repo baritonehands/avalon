@@ -69,14 +69,13 @@
        [row
         [col
          [description (:role info)]]]
+      [row
+       [col
+         [backstory (:role info)]]]
        [row
         [col
          [:div {:style {:padding-bottom "20px"}}
           [view-list info]]]]
-       [row
-        [col
-          [:h5 "Your backstory:"]
-          [backstory (:role info)]]]
       [row
        [col
         [goodbad (:player-count info)]]]
