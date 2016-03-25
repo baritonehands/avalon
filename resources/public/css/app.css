@@ -2,11 +2,11 @@ html * {
     font-family: Roboto, sans-serif;
 }
 
-.mui-text-field {
-    width: 100%;
-}
-
 .start-btn {
     display: block;
     margin-top: 20px;
+}
+
+.player {
+    margin-left: 20px;
 }

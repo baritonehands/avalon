@@ -16,18 +16,30 @@
       (= role "morgana") [:h4 "You are the evil witch " [:strong name] "."]
       (= role "oberon") [:h4 "You are the evil force " [:strong name] "."]
       (= role "bad") [:h4 "You are a minion of Mordred."]
-      (= role "assassin") [:h4 "You are the assassin and a minion of Mordred."]
-      :else [:h3 "Your role is " [:strong name]])
+      (= role "assassin") [:h4 "You are the " [:strong name] " and a minion of Mordred."]
+      (#{"twin1" "twin2"} role) [:h4 "You are one of the " [:strong "Twins"] " and a loyal servant of Arthur."]
+      (= role "evil-lancelot") [:h4 "You are " [:strong "Evil Lancelot"] " and a minion of Mordred."]
+      (= role "good-lancelot") [:h4 "You are " [:strong "Good Lancelot"] "and a loyal servant of Arthur."]
+      :else [:h4 "Your role is " [:strong name] "."])
     ))
 
-(defn view_list [role]
-    (cond
-      (= role "merlin") [:h4 "The following are the minions of Modred:"]
-      (= role "percival") [:h4 "Merlin is one of the following:"]
-      (= role "mordred") [:h4 "The following are your minions:"]
-      ; (= role "morgana") [:h4 "The following are the other minions of Modred:"]
-      (some #{role} '("morgana" "assassin" "bad")) [:h4 "The following are Modred and his other minions:"])
-    )
+(defn view-list [info]
+  (let [role (:role info)]
+    [:div
+     [:div
+      (cond
+        (= role "merlin") [:h5 "The following are the minions of Mordred:"]
+        (= role "percival") [:h5 "Merlin is one of the following:"]
+        (= role "mordred") [:h5 "The following are your minions:"]
+        (= role "good-lancelot") [:h5 "The following is Evil Lancelot:"]
+        (#{"twin1" "twin2"} role) [:h5 "The following is your twin and fellow good:"]
+        (#{"morgana" "assassin" "bad" "evil-lancelot"} role) [:h5 "The following are Mordred and his other minions:"])
+      (for [player (first (:info info))]
+        [:div.player player])]
+     (if (= role "evil-lancelot")
+       [:div {:style {:padding-top "10px"}}
+        [:h5 "The following is Good Lancelot:"]
+        [:div.player (first (second (:info info)))]])]))
 
 (defn info-view []
   (let [info (session/get :info)]
@@ -38,14 +50,11 @@
          [description (:role info)]]]
        [row
         [col
-         [:div
-          (if (> (count (:info info)) 0)
-            [view_list (:role info)])
-          (for [player (:info info)]
-            [:div.player player])]]]
-          [row
-            [col
-              [:h5 [:strong (:first info)] " is the first player. The player to his/her right is the Lady of the Lake."]]]
+         [:div {:style {:padding-bottom "20px"}}
+          [view-list info]]]]
+       [row
+        [col
+         [:h5 [:strong (:first info)] " is the first player. The player to his/her right is the Lady of the Lake."]]]
        [row
         [col
          [row
@@ -53,7 +62,7 @@
            [ui/RaisedButton {:label      "Leave Game"
                              :fullWidth  true
                              :onTouchTap #(route/navigate! "/")}]]]]]]
-      [:h3.text-center "Loading..."])))
+      [row [col [:div.text-center [ui/CircularProgress]]]])))
 
 (defn play-page []
   (let [game (session/get :game)]

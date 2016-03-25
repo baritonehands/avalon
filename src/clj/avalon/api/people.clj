@@ -33,21 +33,26 @@
 (defn game-add-person [id] (gen-endpoint id games/games games/add-person games/delete-person))
 
 (defn get-people [sees teams]
-  (into #{} (for [[person-id role] teams :when (sees role)]
-              (:name (crud/get people/people person-id)))))
+  [(into #{} (for [[person-id role] teams :when (sees role)]
+              (:name (crud/get people/people person-id))))])
 
 (defn get-info [game role person-id]
   (let [teams (dissoc (:teams game) person-id)
-        evil (get-people #{:morgana :mordred :assassin :bad} teams)]
+        evil-roles #{:morgana :mordred :assassin :bad :evil-lancelot}
+        evil (get-people evil-roles teams)]
     (condp = role
-      :merlin (get-people #{:morgana :bad :assassin :oberon} teams)
+      :merlin (get-people #{:morgana :bad :assassin :oberon :evil-lancelot} teams)
       :percival (get-people #{:morgana :merlin} teams)
+      :twin1 (get-people #{:twin2} teams)
+      :twin2 (get-people #{:twin1} teams)
       :mordred evil
       :morgana evil
       :assassin evil
       :bad evil
       :good #{}
-      :oberon #{})))
+      :oberon #{}
+      :good-lancelot (get-people #{:evil-lancelot} teams)
+      :evil-lancelot (concat evil (get-people #{:good-lancelot} teams)))))
 
 (defresource get-person-info [id person-id]
              :available-media-types ["application/json"]
@@ -63,6 +68,6 @@
                              :info (get-info game role person-id)})))
 
 (defroutes routes
-  (ANY "/groups/:id/people" [id] (group-add-person id))
-  (ANY "/games/:id/people" [id] (game-add-person id))
-  (ANY "/games/:id/people/:person-id/info" [id person-id] (get-person-info id person-id)))
+  (ANY "/groups/:id/people" [id] (group-add-person (.toLowerCase id)))
+  (ANY "/games/:id/people" [id] (game-add-person (.toLowerCase id)))
+  (ANY "/games/:id/people/:person-id/info" [id person-id] (get-person-info (.toLowerCase id) (.toLowerCase person-id))))

@@ -6,22 +6,21 @@
     (map char (range idx (+ idx n)))))
 
 (def alphabet
-  (let [numbers (char-range \0 10)]
-    (->> (char-range \a 26)
-         (remove #{\a \e \i \o \u})
-         (concat numbers))))
+  (vec (->> (char-range \a 26)
+            (remove #{\a \e \i \o \u}))))
 
 (defn- id-gen []
-  (apply str (repeatedly 6 #(rand-nth alphabet))))
+  (apply str (take 4 (shuffle alphabet))))
 
 (defn create-db []
   (let [db (ref {})]
     (reify CRUD
       (create! [_ entity]
-        (let [id (str (id-gen))
+        ; Careful here, this takes the first available id of a lazy infinite sequence
+        (let [id (first (drop-while #(contains? @db %) (repeatedly id-gen)))
               entity (assoc entity :id id)]
           (dosync (alter db assoc id entity))
-            entity))
+          entity))
       (all [_]
         (vals @db))
       (get [_ id]

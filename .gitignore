@@ -13,5 +13,6 @@ pom.xml.asc
 /.repl
 *.log
 /.env
-.idea/
+.idea/*
+!.idea/runConfigurations
 *.iml

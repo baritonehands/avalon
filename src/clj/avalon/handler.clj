@@ -24,13 +24,13 @@
      [:meta {:name "viewport"
              :content "width=device-width, initial-scale=1"}]
      [:title "Avalon"]
-     (include-css "https://fonts.googleapis.com/icon?family=Material+Icons")
+     ;(include-css "https://fonts.googleapis.com/icon?family=Material+Icons")
      (if (env :dev)
        (include-css "css/site.css" "css/app.css")
        (include-css "css/site.min.css"))]
     [:body
      mount-target
-     (include-js "vendor/material-ui/material.js" "vendor/material-ui/add-robo.js" "js/app.js")]]))
+     (include-js "vendor/material-ui/material.min.js" "vendor/material-ui/add-robo.js" "js/app.js")]]))
 
 
 (defroutes routes
