@@ -9,7 +9,7 @@
 
 (defn named [name]
   (let [group (->> (crud/all groups)
-                    (filter #(= 0 (.compareToIgnoreCase name (:name %)))))]
+                   (filter #(= 0 (.compareToIgnoreCase name (:name %)))))]
     (seq (map :id group))))
 
 (defn create! [name code]
@@ -17,6 +17,6 @@
     (crud/create! groups group)))
 
 (defn display [group]
-    (-> group
-        (dissoc :code)
-        (update :people (partial map #(:name (crud/get people/people %))))))
+  (-> group
+      (dissoc :code)
+      (update :people (partial map #(:name (crud/get people/people %))))))

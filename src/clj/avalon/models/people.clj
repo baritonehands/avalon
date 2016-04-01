@@ -10,8 +10,6 @@
   (let [person (->Person name)]
     (crud/create! people person)))
 
-(defn add [])
-
 (defn named [m name]
   (let [people (->> (:people m)
                     (map (partial crud/get people))

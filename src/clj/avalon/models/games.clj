@@ -10,11 +10,11 @@
 
 (defn create! [group-id]
   (let [game (->Game
-                 group-id
-                 #{:merlin :percival :mordred :morgana}
-                 :waiting
-                 #{}
-                 {})]
+               group-id
+               #{:merlin :percival :mordred :morgana}
+               :waiting
+               #{}
+               {})]
     (crud/create! games game)))
 
 (defn display [game]

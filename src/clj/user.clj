@@ -12,8 +12,12 @@
         (crud/relate! db (:id m) :people (:id person))))
     m))
 
-(defn fill-test-game [n]
-  (println "Game" (:id (fill-test-data games/games games/create! [nil] n))))
+(defn fill-test-game
+  ([n]
+   (fill-test-game n nil))
+  ([n group-id]
+   (println "Game" (:id (fill-test-data games/games games/create! [group-id] n)))))
+
 (defn fill-test-group [name n]
   (if-not (groups/named name)
     (do (println "Group"
