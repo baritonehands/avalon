@@ -5,31 +5,28 @@
             [avalon.api.util :as util]
             [avalon.models.crud :as crud]
             [avalon.models.groups :as groups]
-            [bouncer.core :as b]
-            [bouncer.validators :as v]))
-
-(def groups-resource-rules
-  {:name v/required
-   :code v/required})
+            [avalon.rules.groups :as rules]))
 
 (defresource groups-resource
              :available-media-types ["application/json"]
-             :allowed-methods [:get :post]
+             :allowed-methods [:post]
              :malformed? (util/malformed? ::data)
-             :processable? #(b/valid? (::data %) groups-resource-rules)
-             :handle-unprocessable-entity #(first (b/validate (::data %) groups-resource-rules))
-             :handle-ok (groups/display-all)
+             :post-to-existing? false
+             :exists? #(groups/named (:name (::data %)))
+             :processable? #(rules/valid-group? (::data %) ::error)
+             :handle-unprocessable-entity ::error
              :post! (fn [ctx]
                       (let [data (::data ctx)
-                            group (groups/create-group (:name data) (:code data))]
+                            group (groups/create! (:name data) (:code data))]
                       {::id (:id group)}))
+             :handle-ok "Group already exists by that name"
              :handle-created #(identity {:id (::id %)}))
 
 (defresource get-group [id]
              :available-media-types ["application/json"]
              :allowed-methods [:get]
              :exists? (crud/exists? groups/groups id)
-             :handle-ok (groups/display-group (crud/get groups/groups id)))
+             :handle-ok (groups/display (crud/get groups/groups id)))
 
 (defresource join-group
              :available-media-types ["application/json"]
@@ -40,8 +37,7 @@
                                   group (first (filter #(and (= (:name %) (:name data)) (= (:code %) (:code data)))
                                                     (crud/all groups/groups)))]
                               [group {::group group}]))
-             :processable? (util/require-fields [:name :code] ::data)
-             :handle-created #(groups/display-group (::group %)))
+             :handle-created #(groups/display (::group %)))
 
 (defroutes routes
   (ANY "/groups" [] groups-resource)

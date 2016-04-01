@@ -19,9 +19,9 @@
                                  (crud/exists? groups/groups group-id))))
              :post! (fn [ctx]
                       (let [data (::data ctx)
-                            game (games/create-game (:groupId data))]
+                            game (games/create! (:groupId data))]
                       {::game game}))
-             :handle-created #(games/display-game (::game %)))
+             :handle-created #(games/display (::game %)))
 
 (defresource get-or-put-game [id]
              :available-media-types ["application/json"]
@@ -30,14 +30,14 @@
              :can-put-to-missing? false
              :malformed? (util/malformed? ::data)
              :processable? (util/update-fields #{:roles :status} ::data)
-             :handle-ok (games/display-game (crud/get games/games id))
+             :handle-ok (games/display (crud/get games/games id))
              :put! #(crud/save! games/games id (::data %)))
 
 (defresource games-by-group [id]
              :available-media-types ["application/json"]
              :allowed-methods [:get]
              :exists? (crud/exists? groups/groups id)
-             :handle-ok (mapv games/display-game (filter #(= id (:group-id %)) (crud/all games/games))))
+             :handle-ok (mapv games/display (filter #(= id (:group-id %)) (crud/all games/games))))
 
 (defn start-game [game]
   (-> game
@@ -53,7 +53,7 @@
              :processable? (rules/valid-play? id ::errors)
              :handle-unprocessable-entity ::errors
              :post! (fn [_] (crud/update! games/games id start-game))
-             :handle-created (fn [_] (games/display-game (crud/get games/games id))))
+             :handle-created (fn [_] (games/display (crud/get games/games id))))
 
 (defn update-game [id name f]
   (fn [_]
@@ -71,7 +71,7 @@
              :respond-with-entity? true
              :post! (update-game id name conj)
              :delete! (update-game id name disj)
-             :handle-ok (fn [_] (games/display-game (crud/get games/games id))))
+             :handle-ok (fn [_] (games/display (crud/get games/games id))))
 
 (defroutes routes
   (ANY "/games" [] games-resource)

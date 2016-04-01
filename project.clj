@@ -1,4 +1,4 @@
-(defproject avalon "0.1.0"
+(defproject avalon "0.2.0"
   :description "An Avalon web app for starting the game and keeping stats"
   :url "https://github.com/baritonehands/avalon"
   :license {:name "Apache License, v2.0"

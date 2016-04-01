@@ -7,17 +7,16 @@
 
 (defrecord Group [name code people])
 
-(defn create-group [name code]
+(defn named [name]
+  (let [group (->> (crud/all groups)
+                    (filter #(= 0 (.compareToIgnoreCase name (:name %)))))]
+    (seq (map :id group))))
+
+(defn create! [name code]
   (let [group (->Group name code #{})]
     (crud/create! groups group)))
 
-(defn add-person [id person]
-  (crud/relate! groups id :people (:id person)))
-
-(defn display-group [group]
+(defn display [group]
     (-> group
         (dissoc :code)
-        (assoc :people (map (partial crud/get people/people) (:people group)))))
-
-(defn display-all []
-  (mapv display-group (crud/all groups)))
+        (update :people (partial map #(:name (crud/get people/people %))))))

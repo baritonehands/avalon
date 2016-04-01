@@ -5,14 +5,21 @@
             [avalon.models.crud :as crud]
             [clojure.pprint :refer [pprint]]))
 
-(defn fill-test-data [n]
-  (let [;group (groups/create-group "Testing" "123")
-        game (games/create-game nil)]
+(defn- fill-test-data [db create-fn args n]
+  (let [m (apply create-fn args)]
     (dotimes [player n]
-      (let [person (people/create-person (str "Player" player))]
-        (games/add-person (:id game) person)))
-    ;(println "Group" (:id group))
-    (println "Game" (:id game))))
+      (let [person (people/create! (str "Player" player))]
+        (crud/relate! db (:id m) :people (:id person))))
+    m))
+
+(defn fill-test-game [n]
+  (println "Game" (:id (fill-test-data games/games games/create! [nil] n))))
+(defn fill-test-group [name n]
+  (if-not (groups/named name)
+    (do (println "Group"
+                 (:id (fill-test-data groups/groups groups/create! [name "123"] n)))
+        (println "Code 123"))
+    (println "Group already exists by that name")))
 
 (defn play-roles [id]
   (pprint

@@ -14,7 +14,7 @@ In IntelliJ w/Cursive, you can connect using the REPL run configuration. Once le
 the REPL option.
 
 
-    (fill-test-data 9)
+    (fill-test-game 9)
 
 That will create a game and fill with 9 players. Then you can copy the id and join in the browser.
 Start the game there and you can see individual roles with:
@@ -22,3 +22,7 @@ Start the game there and you can see individual roles with:
     (play-roles "<id>")
 
 That will generate the url to see each player's information.
+
+You can also do the same for groups:
+
+    (fill-test-group "Name" 10)

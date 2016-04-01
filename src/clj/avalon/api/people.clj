@@ -9,7 +9,7 @@
             [avalon.models.games :as games]
             [avalon.rules.people :as rules]))
 
-(defn gen-endpoint [id db create-fn delete-fn]
+(defn gen-endpoint [id db disp-fn delete-fn]
   (resource :available-media-types ["application/json"]
             :allowed-methods [:post :delete]
             :exists? (crud/exists? db id)
@@ -19,18 +19,18 @@
             :handle-unprocessable-entity ::errors
             :post! (fn [ctx]
                      (let [data (::data ctx)
-                           person (people/create-person (:name data))]
-                       (create-fn id person)
+                           person (people/create! (:name data))]
+                       (crud/relate! db id :people (:id person))
                        {::id (:id person)}))
             :handle-created #(identity {:id (::id %)})
             :respond-with-entity? true
             :delete! (fn [ctx]
                        (let [name (:name (::data ctx))]
-                         (delete-fn id name)))
-            :handle-ok (fn [_] (games/display-game (crud/get games/games id)))))
+                         (delete-fn db id name)))
+            :handle-ok (fn [_] (disp-fn (crud/get db id)))))
 
-(defn group-add-person [id] (gen-endpoint id groups/groups groups/add-person nil))
-(defn game-add-person [id] (gen-endpoint id games/games games/add-person games/delete-person))
+(defn group-add-person [id] (gen-endpoint id groups/groups groups/display people/delete!))
+(defn game-add-person [id] (gen-endpoint id games/games games/display people/delete!))
 
 (defn get-people [sees teams]
   [(into #{} (for [[person-id role] teams :when (sees role)]
