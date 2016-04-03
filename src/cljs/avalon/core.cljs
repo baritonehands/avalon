@@ -13,13 +13,22 @@
 ;; Views
 
 (defn base-layout [& children]
-  [:div
-   [ui/AppBar {:title              "Avalon"
-               :onTitleTouchTap    #(accountant/navigate! "/")
-               :zDepth             0
-               :showMenuIconButton false}]
-   [:div.container-fluid
-    children]])
+  (let [error (session/get :error)]
+    [:div
+     [ui/AppBar {:title              "Avalon"
+                 :onTitleTouchTap    #(accountant/navigate! "/")
+                 :zDepth             0
+                 :showMenuIconButton false}]
+     [:div.container-fluid
+      children]
+     [ui/Dialog {:title (:title error)                      ;"Unable to Start Game"
+                 :open  error
+                 :style {:max-width "500px"}}
+      [:div (:message error)]
+      [:div [ui/FlatButton {:label      "OK"
+                            :primary    true
+                            :onTouchTap #(session/put! :error nil)
+                            :style      {:float "right"}}]]]]))
 
 (defn home-page []
   [base-layout [join/home-page]])

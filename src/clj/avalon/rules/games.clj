@@ -25,11 +25,12 @@
           counts (:counts team)
           num-players (count (:people game))
           in-play (count (filter specials roles))]
-      (>= (counts (- num-players 5)) in-play))))
+      (if (and (>= num-players 5) (<= num-players 10))
+        (>= (get counts (- num-players 5)) in-play)))))
 
 (defn play-game-rules [game]
-  {:people [[v/min-count 5]
-            [v/max-count 10]]
+  {:people [[v/min-count 5 :message "Too few players"]
+            [v/max-count 10 :message "Too many players"]]
    :status [[#{:waiting} :message "Game already started"]]
    :roles  [[(valid-specials? game bad) :message "Too many evil roles"]
             [(valid-specials? game good) :message "Too many good roles"]]})
