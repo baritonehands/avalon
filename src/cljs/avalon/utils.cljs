@@ -1,4 +1,5 @@
-(ns avalon.utils)
+(ns avalon.utils
+  (:require [reagent.session :as session]))
 
 (defn row [& children]
   [:div.row children])
@@ -11,3 +12,6 @@
                    (.charAt name 0)
                    (.toUpperCase))]
     (str letter (.slice s 1))))
+
+(defn show-error [title msg]
+  (session/put! :error {:title title :message msg}))

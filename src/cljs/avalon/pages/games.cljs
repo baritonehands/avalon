@@ -2,15 +2,15 @@
   (:require [ajax.core :refer [GET POST DELETE]]
             [cljs.pprint :refer [pprint]]
             [reagent.session :as session]
-            [avalon.utils :refer [row col capitalize]]
+            [avalon.utils :refer [row col capitalize show-error]]
             [material-ui.core :as ui :include-macros true]
             [accountant.core :as route]
             [reagent.core :as r]))
 
 (defn handle-error [{:keys [status response]}]
   (condp = status
-    422 (session/put! :error (capitalize (first (val (first response)))))
-    status (session/put! :error "Unexpected error, please try again")))
+    422 (show-error "Unable to Start Game" (capitalize (first (val (first response)))))
+    status (show-error "Unable to Start Game" "Unexpected error, please try again")))
 
 (defn get-game! [id & {:keys [force] :or {force false}}]
   (let [game (session/get :game)]
@@ -96,15 +96,7 @@
                  [ui/RaisedButton {:primary    true
                                    :label      "Start"
                                    :fullWidth  true
-                                   :onTouchTap #(start-game! id)}]]]]]
-             [ui/Dialog {:title "Unable to Start Game"
-                         :open  error
-                         :style {:max-width "500px"}}
-              [:div error]
-              [:div [ui/FlatButton {:label      "OK"
-                                    :primary    true
-                                    :onTouchTap #(session/put! :error nil)
-                                    :style      {:float "right"}}]]]]
+                                   :onTouchTap #(start-game! id)}]]]]]]
             [row [col [:div.text-center [ui/CircularProgress]]]])))
       {:component-did-mount    #(reset! timer (js/setInterval refresh-game 5000))
        :component-will-unmount #(js/clearInterval @timer)})))
