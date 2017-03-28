@@ -19,8 +19,7 @@
                  :onTitleTouchTap    #(accountant/navigate! "/")
                  :zDepth             0
                  :showMenuIconButton false}]
-     [:div.container-fluid
-      children]
+     (into [:div.container-fluid] children)
      [ui/Dialog {:title (:title error)                      ;"Unable to Start Game"
                  :open  error
                  :style {:max-width "500px"}}

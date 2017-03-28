@@ -34,4 +34,4 @@
       (relate! [_ id k v]
         (dosync (alter db update-in [id k] conj v)))
       (delete! [_ id]
-        (dosync (dissoc db id))))))
+        (dosync (alter db dissoc id))))))

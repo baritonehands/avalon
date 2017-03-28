@@ -46,16 +46,16 @@
 (defn view-list [info]
   (let [role (:role info)]
     [:div
-     [:div
-      (cond
-        (= role "merlin") [:h5 "The following are the minions of Mordred:"]
-        (= role "percival") [:h5 "Merlin is one of the following:"]
-        (= role "mordred") [:h5 "The following are your minions:"]
-        (= role "good-lancelot") [:h5 "The following is Evil Lancelot:"]
-        (twins role) [:h5 "The following is your twin and fellow good:"]
-        (#{"morgana" "assassin" "bad" "evil-lancelot"} role) [:h5 "The following are Mordred and his other minions:"])
-      (for [player (first (:info info))]
-        [:div.player player])]
+     (into [:div
+            (cond
+              (= role "merlin") [:h5 "The following are the minions of Mordred:"]
+              (= role "percival") [:h5 "Merlin is one of the following:"]
+              (= role "mordred") [:h5 "The following are your minions:"]
+              (= role "good-lancelot") [:h5 "The following is Evil Lancelot:"]
+              (twins role) [:h5 "The following is your twin and fellow good:"]
+              (#{"morgana" "assassin" "bad" "evil-lancelot"} role) [:h5 "The following are Mordred and his other minions:"])]
+           (for [player (first (:info info))]
+             [:div.player player]))
      (if (= role "evil-lancelot")
        [:div {:style {:padding-top "10px"}}
         [:h5 "The following is Good Lancelot:"]

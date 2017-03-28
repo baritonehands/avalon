@@ -79,13 +79,13 @@
                 [:h4.code "Access code: " [:pre id]]]]]
              [row
               [col
-               [ui/List {:subheader ["Players - " (count people)] }
-                (for [player people]
-                  [ui/ListItem
-                   [:div.player
-                    [ui/IconButton {:iconClassName "mdfi_action_delete"
-                                    :onTouchTap    #(delete-player! id player)}]
-                    player]])]
+               (into [ui/List {:subheader ["Players - " (count people)]}]
+                     (for [player people]
+                       [ui/ListItem
+                        [:div.player
+                         [ui/IconButton {:iconClassName "mdfi_action_delete"
+                                         :onTouchTap    #(delete-player! id player)}]
+                         player]]))
                [ui/ListDivider]
                [ui/List {:subheader "Roles"}
                 (for [role ["Merlin" "Percival" "Mordred" "Morgana" "Oberon" "Lancelot" "Twins"]]
