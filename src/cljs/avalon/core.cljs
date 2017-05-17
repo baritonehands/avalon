@@ -53,6 +53,9 @@
   ([current]
    (set-page! current {}))
   ([current kws]
+   (when (.-ga js/window)
+     (.ga js/window "set" "page" (name (-> current meta :name)))
+     (.ga js/window "send" "pageview"))
    (session/put! :current-page current)
    (session/put! :route-params kws)))
 
