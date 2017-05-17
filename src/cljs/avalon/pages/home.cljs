@@ -53,7 +53,7 @@
                             :fullWidth         true
                             :autoCapitalize    "none"
                             :autoCorrect       "off"
-                            :value             (:code @state)
+                            :defaultValue      (:code @state)
                             :on-change         #(swap! state assoc :code (-> % .-target .-value))
                             }]]
 
@@ -63,7 +63,7 @@
                             :floatingLabelText "Your Name"
                             :fullWidth         true
                             :autoCorrect       "off"
-                            :value             (:name @state)
+                            :defaultValue      (:name @state)
                             :on-change         #(swap! state assoc :name (-> % .-target .-value))
                             }]]
             [row
