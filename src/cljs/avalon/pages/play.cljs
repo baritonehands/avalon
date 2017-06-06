@@ -90,7 +90,7 @@
            [:h5 "Prepare and shuffle the " [:strong "Loyalty Deck"] " for Lancelot."
             [:ul
              [:li [:strong "Variant 1"] " - Three \"No Change\" cards, two \"Change Allegiance\" cards, draw a card in rounds 3, 4, and 5."]
-             [:li [:strong "Variant 2"] " - Five \"No Change\" cards, two \"Change Allegiance\" cards, reveal 3 cards at game start. Evil Lancelot must always fail any quest."]]]]])
+             [:li [:strong "Variant 2"] " - Five \"No Change\" cards, two \"Change Allegiance\" cards, reveal a card for each round at game start. Evil Lancelot must always fail any quest."]]]]])
        [row
         [col
          [row
