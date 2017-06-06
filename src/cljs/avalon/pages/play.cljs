@@ -40,7 +40,7 @@
     (twins role) [:h6 "You are one of the twins. You two know yourselves to be good. Do you share your knowledge with the world?"]
     (= role "evil-lancelot1") [:h6 "You know the identity of good Lancelot, but he and Merlin know how evil you really are. How do you use this knowledge to win?"]
     (= role "good-lancelot1") [:h6 "You know the identity of evil Lancelot. How do you use this knowledge to win?"]
-    (#{"evil-lancelot2" "good-lancelot2"} role) [:h6 "Your allegiance may change at the beginning of rounds 3, 4, and 5. Pray that fate leads you to victory."]
+    (#{"evil-lancelot2" "good-lancelot2"} role) [:h6 "Your allegiance may change at the beginning of a round. Pray that fate leads you to victory."]
     :else [:h6 "You have been cast out of Avalon, unwanted by either Merlin or Mordred."]))
 
 (defn goodbad [total]
