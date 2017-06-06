@@ -48,6 +48,7 @@
 
 (defn view-list [info]
   (let [role (:role info)]
+    (.log js/console (clj->js (session/get :game)))
     [:div
      (into [:div
             (cond
@@ -62,6 +63,11 @@
      (if (= role "evil-lancelot1")
        [:div {:style {:padding-top "10px"}}
         [:h5 "The following is Good Lancelot:"]
+        [:div.player (first (second (:info info)))]])
+     (if (and (contains? (set (session/get-in [:game :roles])) "lancelot2")
+              (first (second (:info info))))
+       [:div {:style {:padding-top "10px"}}
+        [:h5 "The following is Evil Lancelot:"]
         [:div.player (first (second (:info info)))]])]))
 
 (defn info-view [player-count]

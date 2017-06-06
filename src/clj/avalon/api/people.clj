@@ -38,17 +38,18 @@
 
 (defn get-info [game role person-id]
   (let [teams (dissoc (:teams game) person-id)
-        evil-roles #{:morgana :mordred :assassin :bad :evil-lancelot1 :evil-lancelot2}
-        evil (get-people evil-roles teams)]
+        evil-roles #{:morgana :mordred :assassin :bad :evil-lancelot1}
+        evil (get-people evil-roles teams)
+        evil-lancelot2 (concat evil (get-people #{:evil-lancelot2} teams))]
     (condp = role
       :merlin (get-people #{:morgana :bad :assassin :oberon :evil-lancelot1 :evil-lancelot2} teams)
       :percival (get-people #{:morgana :merlin} teams)
       :twin1 (get-people #{:twin2} teams)
       :twin2 (get-people #{:twin1} teams)
-      :mordred evil
-      :morgana evil
-      :assassin evil
-      :bad evil
+      :mordred evil-lancelot2
+      :morgana evil-lancelot2
+      :assassin evil-lancelot2
+      :bad evil-lancelot2
       :good #{}
       :oberon #{}
       :good-lancelot1 (get-people #{:evil-lancelot1} teams)
