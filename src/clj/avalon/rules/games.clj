@@ -3,10 +3,10 @@
             [bouncer.validators :as v]
             [avalon.models.games :as games]
             [avalon.models.crud :as crud]))
-(def good {:specials #{:merlin :percival :good-lancelot :twin1 :twin2}
+(def good {:specials #{:merlin :percival :good-lancelot1 :good-lancelot2 :twin1 :twin2}
            :counts   [3 4 4 5 6 6]})
 
-(def bad {:specials #{:mordred :morgana :oberon :evil-lancelot}
+(def bad {:specials #{:mordred :morgana :oberon :evil-lancelot1 :evil-lancelot2}
           :counts   [2 2 3 3 3 4]})
 
 (defn- add-doubles [single one two]
@@ -15,12 +15,13 @@
       (disj (conj roles one two) single)
       roles)))
 
-(def add-lancelot (add-doubles :lancelot :good-lancelot :evil-lancelot))
+(def add-lancelot1 (add-doubles :lancelot1 :good-lancelot1 :evil-lancelot1))
+(def add-lancelot2 (add-doubles :lancelot2 :good-lancelot2 :evil-lancelot2))
 (def add-twins (add-doubles :twins :twin1 :twin2))
 
 (defn valid-specials? [game team]
   (fn [roles]
-    (let [roles (add-twins (add-lancelot roles))
+    (let [roles (-> (add-twins roles) add-lancelot1 add-lancelot2)
           specials (:specials team)
           counts (:counts team)
           num-players (count (:people game))
@@ -46,7 +47,7 @@
 (def valid-play? (create-validator play-game-rules))
 
 (def update-roles-rules
-  {:name   [[v/member #{"merlin" "morgana" "percival" "mordred" "oberon" "lancelot" "twins"}]]
+  {:name   [[v/member #{"merlin" "morgana" "percival" "mordred" "oberon" "lancelot1" "lancelot2" "twins"}]]
    :status [[#{:waiting} :message "Roles cannot be updated after game is started"]]})
 
 (defn valid-role? [id name key]
@@ -68,7 +69,7 @@
 
 (defn assign-roles [game]
   (let [people (.people game)
-        roles (add-twins (add-lancelot (.roles game)))
+        roles (-> (add-twins (.roles game)) add-lancelot1 add-lancelot2)
         blue (assign-team good :good roles (count people))
         red (assign-team bad :bad roles (count people))]
     (zipmap people (shuffle (concat red blue)))))

@@ -9,7 +9,17 @@
             [environ.core :refer [env]]
             [avalon.api.groups]
             [avalon.api.games]
-            [avalon.api.people]))
+            [avalon.api.people]
+            [clojure.java.io :as io]
+            [clojure.data.json :as json]))
+
+(def version
+  (json/read-str (slurp (io/resource "version.json"))))
+
+(defn prodify [s]
+  (if (env :dev)
+    s
+    (str s "?v=" (get version "version"))))
 
 (def mount-target
   [:div#app
@@ -27,10 +37,10 @@
      ;(include-css "https://fonts.googleapis.com/icon?family=Material+Icons")
      (if (env :dev)
        (include-css "css/site.css" "css/app.css")
-       (include-css "css/site.min.css"))]
+       (include-css (prodify "css/site.min.css")))]
     [:body
      mount-target
-     (include-js "vendor/material-ui/material.min.js" "vendor/material-ui/add-robo.js" "js/app.js")
+     (include-js "vendor/material-ui/material.min.js" "vendor/material-ui/add-robo.js" (prodify "js/app.js"))
      [:script """(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
                                 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)

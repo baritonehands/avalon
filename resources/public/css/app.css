@@ -10,3 +10,7 @@ html * {
 .player {
     margin-left: 20px;
 }
+
+ul li {
+    margin-left: 20px;
+}

@@ -38,10 +38,10 @@
 
 (defn get-info [game role person-id]
   (let [teams (dissoc (:teams game) person-id)
-        evil-roles #{:morgana :mordred :assassin :bad :evil-lancelot}
+        evil-roles #{:morgana :mordred :assassin :bad :evil-lancelot1 :evil-lancelot2}
         evil (get-people evil-roles teams)]
     (condp = role
-      :merlin (get-people #{:morgana :bad :assassin :oberon :evil-lancelot} teams)
+      :merlin (get-people #{:morgana :bad :assassin :oberon :evil-lancelot1 :evil-lancelot2} teams)
       :percival (get-people #{:morgana :merlin} teams)
       :twin1 (get-people #{:twin2} teams)
       :twin2 (get-people #{:twin1} teams)
@@ -51,8 +51,10 @@
       :bad evil
       :good #{}
       :oberon #{}
-      :good-lancelot (get-people #{:evil-lancelot} teams)
-      :evil-lancelot (concat evil (get-people #{:good-lancelot} teams)))))
+      :good-lancelot1 (get-people #{:evil-lancelot1} teams)
+      :evil-lancelot1 (concat evil (get-people #{:good-lancelot1} teams))
+      :good-lancelot2 #{}
+      :evil-lancelot2 #{})))
 
 (defresource get-person-info [id person-id]
              :available-media-types ["application/json"]

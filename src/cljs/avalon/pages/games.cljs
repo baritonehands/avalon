@@ -41,9 +41,9 @@
            :keywords?       true
            :handler         #(session/put! :game %)})))
 
-(defn role-toggle [id roles role]
-  (let [on (string? ((set roles) (.toLowerCase role)))]
-    [ui/Toggle {:label         role
+(defn role-toggle [id roles role desc]
+  (let [on (string? ((set roles) role))]
+    [ui/Toggle {:label         desc
                 :labelPosition "left"
                 :toggled       on
                 :labelStyle    {:font-weight "normal"}
@@ -63,13 +63,21 @@
     (get-game! (:id params) :force true)
     (get-info! (:id params) (:person-id params))))
 
+(def role-options [["merlin" "Merlin"]
+                   ["percival" "Percival"]
+                   ["mordred" "Mordred"]
+                   ["morgana" "Morgana"]
+                   ["oberon" "Oberon"]
+                   ["lancelot1" "Lancelot (known to each other)"]
+                   ["lancelot2" "Lancelot (switch allegiance)"]
+                   ["twins" "Twins"]])
+
 (def game-page
   (let [timer (r/atom nil)]
     (with-meta
       (fn []
         (let [game (session/get :game)
-              {:keys [id people roles]} game
-              error (session/get :error)]
+              {:keys [id people roles]} game]
           (if game
             [:div
              [row
@@ -88,9 +96,9 @@
                          player]]))
                [ui/ListDivider]
                [ui/List {:subheader "Roles"}
-                (for [role ["Merlin" "Percival" "Mordred" "Morgana" "Oberon" "Lancelot" "Twins"]]
+                (for [[role desc] role-options]
                   ^{:key role}
-                  [ui/ListItem [role-toggle id roles role]])]
+                  [ui/ListItem [role-toggle id roles role desc]])]
                [row
                 [:div.col-xs-8.col-xs-offset-2.start-btn {:style {:margin-bottom "40px"}}
                  [ui/RaisedButton {:primary    true
