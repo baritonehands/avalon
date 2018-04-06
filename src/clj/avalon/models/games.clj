@@ -2,7 +2,8 @@
   (:use [clojure.set])
   (:require [avalon.models.people :as people]
             [avalon.models.crud :as crud]
-            [avalon.models.memdb :as db]))
+            [avalon.models.memdb :as db]
+            [clojure.string :as s]))
 
 (defonce games (db/create-db))
 
@@ -29,7 +30,7 @@
 (defn people-named [game name]
   (let [people (->> (:people game)
                     (map (partial crud/get people/people))
-                    (filter #(= 0 (.compareToIgnoreCase name (:name %)))))]
+                    (filter #(= 0 (.compareToIgnoreCase (s/trim name) (:name %)))))]
     (map :id people)))
 
 (defn delete-person [id name]

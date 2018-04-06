@@ -19,7 +19,6 @@
 (defn valid-person? [id kw key]
   (fn [ctx]
     (let [game (crud/get games/games id)
-          _ (println game)
           rules (person-rules (get-in ctx [:request :request-method]) game)
           valid (and (b/valid? (kw ctx) rules)
                      (b/valid? game add-person-rules))

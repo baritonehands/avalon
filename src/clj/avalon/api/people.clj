@@ -8,7 +8,8 @@
             [avalon.models.groups :as groups]
             [avalon.models.people :as people]
             [avalon.models.games :as games]
-            [avalon.rules.people :as rules]))
+            [avalon.rules.people :as rules]
+            [clojure.string :as s]))
 
 (defn gen-endpoint [id db create-fn delete-fn]
   (resource :available-media-types ["application/json"]
@@ -20,7 +21,7 @@
             :handle-unprocessable-entity ::errors
             :post! (fn [ctx]
                      (let [data (::data ctx)
-                           person (people/create-person (:name data))]
+                           person (people/create-person (s/trim (:name data)))]
                        (create-fn id person)
                        {::id (:id person)}))
             :handle-created #(identity {:id (::id %)})
