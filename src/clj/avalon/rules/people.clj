@@ -1,21 +1,36 @@
 (ns avalon.rules.people
   (:require [bouncer.core :as b]
-            [bouncer.validators :as v]))
+            [bouncer.validators :as v]
+            [avalon.models.crud :as crud]
+            [avalon.models.games :as games]))
 
-(def person-rules
-  {:name v/required})
+(defn person-rules [method game]
+  (let [taken? (fn [name]
+                 (if (= method :post)
+                   (= (count (games/people-named game name)) 0)
+                   true))]
+    {:name [v/required
+            [taken? :message "There is already a player with that name"]]}))
 
-(defn valid-person? [kw key]
+
+(def add-person-rules
+  {:status [[#{:waiting} :message "Game already started"]]})
+
+(defn valid-person? [id kw key]
   (fn [ctx]
-    (let [valid (b/valid? (kw ctx) person-rules)
-          errors (first (b/validate (kw ctx) person-rules))]
+    (let [game (crud/get games/games id)
+          _ (println game)
+          rules (person-rules (get-in ctx [:request :request-method]) game)
+          valid (and (b/valid? (kw ctx) rules)
+                     (b/valid? game add-person-rules))
+          errors (concat (first (b/validate (kw ctx) rules))
+                         (first (b/validate game add-person-rules)))]
       [valid {key errors}])))
 
 (def info-rules
-  {:status #{:playing}})
+  {:status [[#{:playing} :message "Game not started"]]})
 
-(defn valid-info? [game key]
-  (fn [_]
-    (let [valid (b/valid? game info-rules)
-          errors (first (b/validate game info-rules))]
-      [valid {key errors}])))
+(defn valid-info? [game]
+  (let [valid (b/valid? game info-rules)
+        errors (first (b/validate game info-rules))]
+    [valid errors]))

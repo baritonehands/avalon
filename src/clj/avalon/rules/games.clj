@@ -57,6 +57,11 @@
         errors (first (b/validate to-validate update-roles-rules))]
     [valid {key errors}]))
 
+(defn reset-rules [game]
+  {:status [[#{:playing} :message "Game not started"]]})
+
+(def valid-reset? (create-validator reset-rules))
+
 (defn assign-team [m team roles n]
   (let [special (filter (:specials m) roles)
         size ((:counts m) (- n 5))

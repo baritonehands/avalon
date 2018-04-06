@@ -34,8 +34,8 @@
                          :floatingLabelText "Group Name"
                          :fullWidth         true
                          :defaultValue      (:group-name @state)
-                         :on-change         #(swap! state assoc :group-name (-> % .-target .-value))
-                         }]]
+                         :on-change         #(swap! state assoc :group-name (-> % .-target .-value))}]]
+
 
          [:div
           [ui/TextField {:hintText          "Please enter a passcode"
@@ -43,11 +43,10 @@
                          :fullWidth         true
                          :defaultValue      (:group-code @state)
                          :type              "password"
-                         :on-change         #(swap! state assoc :group-code (-> % .-target .-value))
-                         }]]]
+                         :on-change         #(swap! state assoc :group-code (-> % .-target .-value))}]]]
+
 
         [:div
          [ui/RaisedButton {:primary    true
                            :label      "Join"
-                           :onTouchTap #(join-group (:group-name @state) (:group-code @state))
-                           }]]]])))
+                           :onTouchTap #(join-group (:group-name @state) (:group-code @state))}]]]])))

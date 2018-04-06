@@ -1,7 +1,8 @@
 (ns avalon.pages.play
-  (:require [ajax.core :refer [GET]]
+  (:require [ajax.core :refer [POST]]
+            [reagent.core :as r]
             [reagent.session :as session]
-            [avalon.utils :refer [row col capitalize]]
+            [avalon.utils :refer [row col capitalize show-error]]
             [avalon.pages.games :as games]
             [material-ui.core :as ui :include-macros true]
             [accountant.core :as route]))
@@ -24,8 +25,8 @@
       (twins role) [:h4 "You are one of the " [:strong "Twins"] " and a loyal servant of Arthur."]
       (evil-lancelot role) [:h4 "You are " [:strong "Evil Lancelot"] " and a minion of Mordred."]
       (good-lancelot role) [:h4 "You are " [:strong "Good Lancelot"] " and a loyal servant of Arthur."]
-      :else [:h4 "Your role is " [:strong name] "."])
-    ))
+      :else [:h4 "Your role is " [:strong name] "."])))
+
 
 (defn backstory [role]
   (cond
@@ -70,8 +71,26 @@
         [:h5 "The following is Evil Lancelot:"]
         [:div.player (first (second (:info info)))]])]))
 
+(defn handle-error [{:keys [status response]}]
+  (condp = status
+    422 (show-error "Unable to End Game" (capitalize (first (val (first response)))))
+    status (show-error "Unable to End Game" "Unexpected error, please try again")))
+
+(defn end-game! [id]
+  (session/remove! :info)
+  (POST (str "/api/games/" id "/reset")
+        {:response-format :json
+         :keywords?       true
+         :handler         #(session/put! :game %)
+         :error-handler   handle-error}))
+
+(defn leave-game! [id]
+  (session/remove! :info)
+  (route/navigate! "/"))
+
 (defn info-view [player-count]
-  (let [info (session/get :info)]
+  (let [info (session/get :info)
+        params (session/get :route-params)]
     (if info
       [:div
        [row
@@ -101,13 +120,24 @@
         [col
          [row
           [:div.col-xs-8.col-xs-offset-2.start-btn
+           [ui/RaisedButton {:label      "End Game"
+                             :fullWidth  true
+                             :onTouchTap #(end-game! (:id params))}]]]
+         [row
+          [:div.col-xs-8.col-xs-offset-2.start-btn
            [ui/RaisedButton {:label      "Leave Game"
                              :fullWidth  true
-                             :onTouchTap #(route/navigate! "/")}]]]]]]
+                             :onTouchTap #(leave-game! (:id params))}]]]]]]
       [row [col [:div.text-center [ui/CircularProgress]]]])))
 
 (defn play-page []
-  (let [game (session/get :game)]
-    (if (= (:status game) "playing")
-      [info-view (count (:people game))]
-      [games/game-page])))
+  (let [timer (atom nil)]
+    (r/create-class
+      {:reagent-render         (fn []
+                                 (let [game (session/get :game)]
+                                   (if (= (:status game) "playing")
+                                     [info-view (count (:people game))]
+                                     [games/game-page])))
+       :component-did-mount    #(reset! timer (js/setInterval games/refresh-game 5000))
+       :component-will-unmount #(js/clearInterval @timer)})))
+

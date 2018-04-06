@@ -55,6 +55,22 @@
              :post! (fn [_] (crud/update! games/games id start-game))
              :handle-created (fn [_] (games/display-game (crud/get games/games id))))
 
+(defn end-game [game]
+  (-> game
+      (assoc :status :waiting)
+      (assoc :teams {})
+      (dissoc :first)))
+
+(defresource reset-game [id]
+             :available-media-types ["application/json"]
+             :allowed-methods [:post]
+             :exists? (crud/exists? games/games id)
+             :can-post-to-missing? false
+             :processable? (rules/valid-reset? id ::errors)
+             :handle-unprocessable-entity ::errors
+             :post! (fn [_] (crud/update! games/games id end-game))
+             :handle-created (fn [_] (games/display-game (crud/get games/games id))))
+
 (defn toggle-lancelot [game k]
   (cond
     (= k :lancelot1) (update game :roles disj :lancelot2)
@@ -86,5 +102,6 @@
            (ANY "/games" [] games-resource)
            (ANY "/games/:id" [id] (get-or-put-game (.toLowerCase id)))
            (ANY "/games/:id/play" [id] (play-game (.toLowerCase id)))
+           (ANY "/games/:id/reset" [id] (reset-game (.toLowerCase id)))
            (ANY "/games/:id/roles/:name" [id name] (update-roles (.toLowerCase id) name))
            (ANY "/groups/:id/games" [id] (games-by-group (.toLowerCase id))))

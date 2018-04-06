@@ -1,7 +1,7 @@
 (ns avalon.pages.home
   (:require [ajax.core :refer [POST]]
             [reagent.core :as r]
-            [avalon.utils :refer [row col]]
+            [avalon.utils :refer [row col show-error]]
             [avalon.pages.games :as games]
             [accountant.core :as route]
             [material-ui.core :as ui :include-macros true]
@@ -16,7 +16,9 @@
          :handler         (fn [resp]
                             (session/put! :person-id (:id resp))
                             (games/get-game! id :force true)
-                            (route/navigate! (str "/games/" id "/play/" (:id resp))))}))
+                            (route/navigate! (str "/games/" id "/play/" (:id resp))))
+         :error-handler (fn [{:keys [response]}]
+                          (show-error "Unable to join game" (-> response first second first)))}))
 
 (defn button [label opts]
   [:div.col-xs-8.col-xs-offset-2.start-btn
@@ -54,8 +56,8 @@
                             :autoCapitalize    "none"
                             :autoCorrect       "off"
                             :defaultValue      (:code @state)
-                            :on-change         #(swap! state assoc :code (-> % .-target .-value))
-                            }]]
+                            :on-change         #(swap! state assoc :code (-> % .-target .-value))}]]
+
 
             [:div.col-xs-8.col-xs-offset-2
 
@@ -64,8 +66,8 @@
                             :fullWidth         true
                             :autoCorrect       "off"
                             :defaultValue      (:name @state)
-                            :on-change         #(swap! state assoc :name (-> % .-target .-value))
-                            }]]
+                            :on-change         #(swap! state assoc :name (-> % .-target .-value))}]]
+
             [row
              [button "Join" {:onTouchTap #(join-game! (:code @state) (:name @state))
                              :fullWidth  true}]

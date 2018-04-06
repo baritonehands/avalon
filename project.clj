@@ -27,9 +27,9 @@
                  [bouncer "1.0.0"]
                  [secretary "1.2.3"]
                  [venantius/accountant "0.1.5"
-                  :exclusions [org.clojure/tools.reader]]
+                  :exclusions [org.clojure/tools.reader]]]
 
-                 ]
+
 
   :plugins [[lein-environ "1.0.1"]
             [lein-cljsbuild "1.1.1"]
@@ -86,8 +86,8 @@
                                        :exclusions [org.clojure/clojure org.clojure/tools.reader]]
                                       [org.clojure/tools.nrepl "0.2.12"]
                                       [com.cemerick/piggieback "0.2.1"]
-                                      [pjstadig/humane-test-output "0.7.0"]
-                                      ]
+                                      [pjstadig/humane-test-output "0.7.0"]]
+
 
                        :source-paths ["env/dev/clj"]
                        :plugins      [[lein-figwheel "0.5.0-2"
@@ -110,8 +110,8 @@
                        :figwheel     {:http-server-root "public"
                                       :server-port      3449
                                       :nrepl-port       7002
-                                      :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"
-                                                         ]
+                                      :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"]
+
                                       :css-dirs         ["resources/public/css"]
                                       :ring-handler     avalon.handler/app}
 
@@ -123,15 +123,15 @@
                                                       :test {:source-paths ["src/cljs" "src/cljc" "test/cljs"]
                                                              :compiler     {:output-to     "target/test.js"
                                                                             :optimizations :whitespace
-                                                                            :pretty-print  true}}
+                                                                            :pretty-print  true}}}
 
-                                                      }
+
                                       :test-commands {"unit" ["phantomjs" :runner
                                                               "test/vendor/es5-shim.js"
                                                               "test/vendor/es5-sham.js"
                                                               "test/vendor/console-polyfill.js"
-                                                              "target/test.js"]}
-                                      }}
+                                                              "target/test.js"]}}}
+
 
              :uberjar {:hooks       [minify-assets.plugin/hooks]
                        :prep-tasks  ["compile" ["cljsbuild" "once"]]

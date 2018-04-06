@@ -22,7 +22,7 @@
              :post! (fn [ctx]
                       (let [data (::data ctx)
                             group (groups/create-group (:name data) (:code data))]
-                      {::id (:id group)}))
+                       {::id (:id group)}))
              :handle-created #(identity {:id (::id %)}))
 
 (defresource get-group [id]

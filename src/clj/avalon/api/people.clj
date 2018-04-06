@@ -1,5 +1,6 @@
 (ns avalon.api.people
   (:require [liberator.core :refer [defresource resource]]
+            [liberator.representation :refer [ring-response]]
             [compojure.core :refer [defroutes ANY]]
             [clojure.pprint :refer [pprint]]
             [avalon.api.util :as util]
@@ -15,7 +16,7 @@
             :exists? (crud/exists? db id)
             :can-post-to-missing? false
             :malformed? (util/malformed? ::data)
-            :processable? (rules/valid-person? ::data ::errors)
+            :processable? (rules/valid-person? id ::data ::errors)
             :handle-unprocessable-entity ::errors
             :post! (fn [ctx]
                      (let [data (::data ctx)
@@ -57,18 +58,24 @@
       :good-lancelot2 #{}
       :evil-lancelot2 #{})))
 
+(defn person-exists? [id person-id]
+  (if-let [game (crud/get games/games id)]
+    (contains? (:people game) person-id)
+    false))
+
 (defresource get-person-info [id person-id]
              :available-media-types ["application/json"]
              :allowed-methods [:get]
-             :exists? (crud/exists? games/games id)
-             :processable? (rules/valid-info? (crud/get games/games id) ::errors)
-             :handle-unprocessable-entity ::errors
+             :exists? (person-exists? id person-id)
              :handle-ok (fn [_]
                           (let [game (crud/get games/games id)
-                                role ((:teams game) person-id)]
-                            {:role role
-                             :first (:name (crud/get people/people (:first game)))
-                             :info (get-info game role person-id)})))
+                                [valid? errors] (rules/valid-info? game)]
+                            (if-not valid?
+                              (ring-response {:status 422 :body errors})
+                              (let [role ((:teams game) person-id)]
+                                {:role role
+                                 :first (:name (crud/get people/people (:first game)))
+                                 :info (get-info game role person-id)})))))
 
 (defroutes routes
   (ANY "/groups/:id/people" [id] (group-add-person (.toLowerCase id)))
