@@ -9,7 +9,8 @@
                  (if (= method :post)
                    (= (count (games/people-named game name)) 0)
                    true))]
-    {:name [v/required
+    {:id [[(fn [_] (some? game)) :message "Game with that code does not exist"]]
+     :name [v/required
             [taken? :message "There is already a player with that name"]]}))
 
 
