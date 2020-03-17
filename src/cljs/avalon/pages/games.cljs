@@ -4,6 +4,7 @@
             [reagent.session :as session]
             [avalon.utils :refer [row col capitalize show-error]]
             [material-ui :as ui]
+            [material-ui-icons :as icons]
             [accountant.core :as route]
             [reagent.core :as r]))
 
@@ -52,13 +53,22 @@
            :keywords?       true
            :handler         #(session/put! :game %)})))
 
+(def form-control-label-full
+  ((ui/styled ui/FormControlLabel)
+   #js {:display         "flex"
+        :width           "100%"
+        :justify-content "space-between"
+        :margin-right    "auto"}))
+
 (defn role-toggle [id roles role desc]
   (let [on (string? ((set roles) role))]
-    [:> ui/Switch {:label         desc
-                   :labelPosition "left"
-                   :toggled       on
-                   :labelStyle    {:font-weight "normal"}
-                   :onToggle      #(toggle-role! id role (not on))}]))
+    [:> form-control-label-full
+     {:label           desc
+      :label-placement "start"
+      :control         (r/as-element
+                         [:> ui/Switch {:checked   on
+                                        :color     "primary"
+                                        :on-change #(toggle-role! id role (not on))}])}]))
 
 (defn start-game! [id]
   (POST (str "/api/games/" id "/play")
@@ -81,34 +91,60 @@
                    ["lancelot2" "Lancelot (switch allegiance)"]
                    ["twins" "Twins"]])
 
+(def pre
+  ((ui/withStyles
+     #js {:root #js {:background-color "#f5f5f5"
+                     :border           "1px solid #CCCCCC"
+                     :border-radius    "5px"
+                     :font-family      "monospace"
+                     :font-weight      "bold"
+                     :text-align       "center"
+                     :width            "100%"}})
+   ui/Typography))
+
+(defn subheader-element [props & children]
+  (let [defaults {:disable-sticky true}]
+    (r/as-element
+      (if (map? props)
+        (into [:> ui/ListSubheader (merge defaults props)] children)
+        (into [:> ui/ListSubheader defaults] (cons props children))))))
+
 (defn game-page []
   (let [game (session/get :game)
         {:keys [id people roles]} game]
     (if game
-      [:div
-       [row
-        [col
-         [:div.text-center
-          [:h3.status "Waiting for players..."]
-          [:h4.code "Access code: " [:pre id]]]]]
-       [row
-        [col
-         (into [:> ui/List {:subheader ["Players - " (count people)]}]
-               (for [player people]
-                 [:> ui/ListItem
-                  [:div.player
-                   [:> ui/IconButton {:iconClassName "mdfi_action_delete"
-                                      :onTouchTap    #(delete-player! id player)}]
-                   player]]))
-         [:> ui/Divider]
-         [:> ui/List {:subheader "Roles"}
-          (for [[role desc] role-options]
-            ^{:key role}
-            [:> ui/ListItem [role-toggle id roles role desc]])]
-         [row
-          [:div.col-xs-8.col-xs-offset-2.start-btn {:style {:margin-bottom "40px"}}
-           [:> ui/Button {:primary    true
-                          :label      "Start"
-                          :fullWidth  true
-                          :onTouchTap #(start-game! id)}]]]]]]
+      [:> ui/Grid {:container true
+                   :justify   "center"}
+       [col {:xs        8
+             :container true
+             :justify   "center"}
+        [:> ui/Typography {:variant   "h5"
+                           :component "h3"} "Waiting for players..."]]
+       [col {:xs        8
+             :container true
+             :justify   "center"}
+        [:> ui/Typography {:variant   "h6"
+                           :component "h4"} "Access code: "]]
+       [col {:xs 10}
+        [:> pre {:variant   "h6"
+                 :component "h4"} id]]
+       [col {:xs 12}
+        (into [:> ui/List {:subheader (subheader-element "Players - " (count people))}]
+              (for [player people]
+                [:> ui/ListItem
+                 [:> ui/ListItemIcon
+                  [:> ui/IconButton {:on-click #(delete-player! id player)}
+                   [:> icons/Delete]]]
+                 [:> ui/ListItemText player]]))
+        [:> ui/Divider]
+        [:> ui/List {:subheader (subheader-element "Roles")}
+         (for [[role desc] role-options]
+           ^{:key role}
+           [:> ui/ListItem [role-toggle id roles role desc]])]]
+       [col {:xs 8}
+        [:> ui/Button {:color     "secondary"
+                       :variant   "contained"
+                       :fullWidth true
+                       :on-click  #(start-game! id)}
+         "Start"]]]
       [row [col [:div.text-center [:> ui/CircularProgress]]]])))

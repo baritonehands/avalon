@@ -86,6 +86,7 @@
   (rdom/render [:> current-page] (.getElementById js/document "app")))
 
 (defn ^:export init []
-  (accountant/configure-navigation!)
+  (accountant/configure-navigation!
+    {:nav-handler secretary/dispatch!})
   (accountant/dispatch-current!)
   (mount-root))

@@ -23,12 +23,11 @@
                  [reagent-utils "0.3.3"]
                  [cljs-ajax "0.8.0"]
                  [bouncer "1.0.0"]
-                 [secretary "1.2.3"]
-                 [venantius/accountant "0.1.5"
+                 [clj-commons/secretary "1.2.4"]
+                 [venantius/accountant "0.2.5"
                   :exclusions [org.clojure/tools.reader]]
-                 [cljsjs/material-ui "4.9.5-0"]]
-
-
+                 [cljsjs/material-ui "4.9.5-0"]
+                 [cljsjs/material-ui-icons "4.4.1-0"]]
 
   :plugins [[lein-environ "1.0.1"]
             [lein-cljsbuild "1.1.5"]

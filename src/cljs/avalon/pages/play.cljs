@@ -92,7 +92,7 @@
   (let [info (session/get :info)
         params (session/get :route-params)]
     (if info
-      [:div
+      [:> ui/Grid {:container true}
        [row
         [col
          [description (:role info)]]]
@@ -120,14 +120,16 @@
         [col
          [row
           [:div.col-xs-8.col-xs-offset-2.start-btn
-           [:> ui/Button {:label      "End Game"
-                          :fullWidth  true
-                          :onTouchTap #(end-game! (:id params))}]]]
+           [:> ui/Button {:fullWidth true
+                          :variant   "outlined"
+                          :on-click  #(end-game! (:id params))}
+            "End Game"]]]
          [row
           [:div.col-xs-8.col-xs-offset-2.start-btn
-           [:> ui/Button {:label      "Leave Game"
-                          :fullWidth  true
-                          :onTouchTap #(leave-game! (:id params))}]]]]]]
+           [:> ui/Button {:fullWidth true
+                          :variant   "outlined"
+                          :on-click  #(leave-game! (:id params))}
+            "Leave Game"]]]]]]
       [row [col [:div.text-center [ui/CircularProgress]]]])))
 
 (defn play-page []

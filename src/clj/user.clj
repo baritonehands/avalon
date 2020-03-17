@@ -7,7 +7,7 @@
 
 (defn fill-test-data [n]
   (let [;group (groups/create-group "Testing" "123")
-        game (games/create-game nil)]
+        game (games/create-game)]
     (dotimes [player n]
       (let [person (people/create-person (str "Player" player))]
         (games/add-person (:id game) person)))

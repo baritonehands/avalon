@@ -1,7 +1,8 @@
 (ns avalon.repl
   (:require [figwheel.main.api :as fig]
             [avalon.handler :as handler]
-            [ring.server.standalone :as ring]))
+            [ring.server.standalone :as ring]
+            [user :refer :all]))
 ;; This namespace is loaded automatically by nREPL
 
 (defn start-figwheel
