@@ -31,15 +31,17 @@
         "Avalon"]]]
      (into [:> ui/Container {:max-width       "sm"
                              :disable-gutters true}] children)
-     [:> ui/Popover {:title (:title error)                 ;"Unable to Start Game"
-                     :open  error
-                     :style {:max-width "500px"}}
-      [:div (:message error)]
-      [:div
-       [:> ui/Button {:label      "OK"
-                      :primary    true
-                      :onTouchTap #(session/put! :error nil)
-                      :style      {:float "right"}}]]]]))
+     (if error
+       [:> ui/Dialog {:open       true
+                      :max-width  "sm"
+                      :full-width true}
+        [:> ui/DialogTitle (:title error)]
+        [:> ui/DialogContent (:message error)]
+        [:> ui/DialogActions
+         [:> ui/Button {:color    "primary"
+                        :on-click #(session/put! :error nil)
+                        :style    {:float "right"}}
+          "OK"]]])]))
 
 (defn home-page []
   [base-layout [join/home-page]])

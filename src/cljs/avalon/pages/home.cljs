@@ -23,8 +23,9 @@
 (def use-styles
   (make-styles
     (fn [theme]
-      {:button {:margin-bottom (.spacing theme 2)}
-       :header {:padding (.spacing theme 2)}})))
+      {:button     {:margin-bottom (.spacing theme 2)}
+       :header     {:padding (.spacing theme 2)}
+       :text-field {:margin-bottom (.spacing theme 2)}})))
 
 (defn header []
   (let [classes (use-styles)]
@@ -37,11 +38,19 @@
   (let [classes (use-styles)
         props (js->clj js-props :keywordize-keys true)]
     (r/as-element
-      [:> ui/Grid {:xs 8}
+      [:> ui/Grid {:item true :xs 8}
        [:> ui/Button (merge {:variant    "contained"
                              :color      "secondary"
                              :full-width true
                              :class      (:button classes)} props)]])))
+
+(defn text-field [js-props]
+  (let [classes (use-styles)
+        props (js->clj js-props :keywordize-keys true)]
+    (r/as-element
+      [:> ui/Grid {:item true :xs 8}
+       [:> ui/TextField (merge {:full-width true
+                                :class      (:text-field classes)} props)]])))
 
 (defn home-page []
   (let [state (r/atom {:joining false})
@@ -64,27 +73,28 @@
            [:> button {:onClick create!} "Create Game"]
            [:> button {:onClick #(swap! state assoc :joining true)} "Join Game"]]
 
-          [row
-           [:div.col-xs-8.col-xs-offset-2
+          [:<>
+           [col {:container true
+                 :justify   "center"}
+            [:> text-field {:placeholder   "Enter an access code"
+                            :label         "Access Code"
+                            :full-width    true
+                            :input-props   {:auto-capitalize "none"
+                                            :auto-correct    "off"}
+                            :default-value (:code @state)
+                            :on-change     #(swap! state assoc :code (-> % .-target .-value))}]]
 
-            [:> ui/TextField {:hintText          "Enter an access code"
-                              :floatingLabelText "Access Code"
-                              :fullWidth         true
-                              :autoCapitalize    "none"
-                              :autoCorrect       "off"
-                              :defaultValue      (:code @state)
-                              :on-change         #(swap! state assoc :code (-> % .-target .-value))}]]
 
+           [col {:container true
+                 :justify   "center"}
 
-           [:div.col-xs-8.col-xs-offset-2
-
-            [:> ui/TextField {:hintText          "Enter your name"
-                              :floatingLabelText "Your Name"
-                              :fullWidth         true
-                              :autoCorrect       "off"
-                              :defaultValue      (:name @state)
-                              :on-change         #(swap! state assoc :name (-> % .-target .-value))}]]
+            [:> text-field {:placeholder   "Enter your name"
+                            :label         "Your Name"
+                            :full-width    true
+                            :input-props   {:auto-correct "off"}
+                            :default-value (:name @state)
+                            :on-change     #(swap! state assoc :name (-> % .-target .-value))}]]
 
            [:> button {:on-click #(join-game! (:code @state) (:name @state))} "Join"]
            [:> button {:on-click #(swap! state assoc :joining false)
-                        :color    "default"} "Back"]])]])))
+                       :color    "default"} "Back"]])]])))
