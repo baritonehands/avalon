@@ -1,6 +1,5 @@
 (ns user
-  (:require [avalon.models.groups :as groups]
-            [avalon.models.people :as people]
+  (:require [avalon.models.people :as people]
             [avalon.models.games :as games]
             [avalon.models.crud :as crud]
             [clojure.pprint :refer [pprint]]

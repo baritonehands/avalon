@@ -5,22 +5,14 @@
             [avalon.api.util :as util]
             [avalon.models.crud :as crud]
             [avalon.models.games :as games]
-            [avalon.models.groups :as groups]
             [avalon.rules.games :as rules]))
 
 (defresource games-resource
              :available-media-types ["application/json"]
              :allowed-methods [:post]
              :malformed? (util/malformed? ::data)
-             :processable? (fn [ctx]
-                             (let [group-id (:groupId (::data ctx))]
-                               (if (nil? group-id)
-                                 true
-                                 (crud/exists? groups/groups group-id))))
              :post! (fn [ctx]
-                      (let [data (::data ctx)
-                            game (games/create-game (:groupId data))]
-                        {::game game}))
+                      {::game (games/create-game)})
              :handle-created #(games/display-game (::game %)))
 
 (defresource get-or-put-game [id]
@@ -32,12 +24,6 @@
              :processable? (util/update-fields #{:roles :status} ::data)
              :handle-ok (games/display-game (crud/get games/games id))
              :put! #(crud/save! games/games id (::data %)))
-
-(defresource games-by-group [id]
-             :available-media-types ["application/json"]
-             :allowed-methods [:get]
-             :exists? (crud/exists? groups/groups id)
-             :handle-ok (mapv games/display-game (filter #(= id (:group-id %)) (crud/all games/games))))
 
 (defn start-game [game]
   (-> game
@@ -103,5 +89,4 @@
            (ANY "/games/:id" [id] (get-or-put-game (.toLowerCase id)))
            (ANY "/games/:id/play" [id] (play-game (.toLowerCase id)))
            (ANY "/games/:id/reset" [id] (reset-game (.toLowerCase id)))
-           (ANY "/games/:id/roles/:name" [id name] (update-roles (.toLowerCase id) name))
-           (ANY "/groups/:id/games" [id] (games-by-group (.toLowerCase id))))
+           (ANY "/games/:id/roles/:name" [id name] (update-roles (.toLowerCase id) name)))

@@ -1,9 +1,9 @@
 (ns avalon.core
   (:require [reagent.core :as reagent :refer [atom]]
+            [reagent.dom :as rdom]
             [reagent.session :as session]
-            [material-ui.core :as ui :include-macros true]
+            [material-ui :as ui]
             [avalon.pages.home :as join]
-            [avalon.pages.groups :as groups]
             [avalon.pages.games :as games]
             [avalon.pages.play :as play]
             [secretary.core :as secretary :include-macros true]
@@ -12,22 +12,34 @@
 ;; -------------------------
 ;; Views
 
+(def theme
+  (ui/createMuiTheme
+    #js {:palette #js {:primary   (.-blue ui/colors)
+                       :secondary #js {:main "#ff5252"}}}))
+
 (defn base-layout [& children]
   (let [error (session/get :error)]
-    [:div
-     [ui/AppBar {:title              "Avalon"
-                 :onTitleTouchTap    #(accountant/navigate! "/")
-                 :zDepth             0
-                 :showMenuIconButton false}]
-     (into [:div.container-fluid] children)
-     [ui/Dialog {:title (:title error)                      ;"Unable to Start Game"
-                 :open  error
-                 :style {:max-width "500px"}}
+    [:> ui/ThemeProvider {:theme theme}
+     [:> ui/CssBaseline]
+     [:> ui/AppBar {:color    "primary"
+                    :position "static"}
+      [:> ui/Toolbar
+       [:> ui/Link {:href      "/"
+                    :color     "inherit"
+                    :underline "none"
+                    :variant   "h5"}
+        "Avalon"]]]
+     (into [:> ui/Container {:max-width       "sm"
+                             :disable-gutters true}] children)
+     [:> ui/Popover {:title (:title error)                 ;"Unable to Start Game"
+                     :open  error
+                     :style {:max-width "500px"}}
       [:div (:message error)]
-      [:div [ui/FlatButton {:label      "OK"
-                            :primary    true
-                            :onTouchTap #(session/put! :error nil)
-                            :style      {:float "right"}}]]]]))
+      [:div
+       [:> ui/Button {:label      "OK"
+                      :primary    true
+                      :onTouchTap #(session/put! :error nil)
+                      :style      {:float "right"}}]]]]))
 
 (defn home-page []
   [base-layout [join/home-page]])
@@ -35,11 +47,9 @@
 (defn play-page []
   [base-layout [play/play-page]])
 
-(defn group-page []
-  [base-layout [groups/group]])
-
 (defn current-page []
-  [:div [(session/get :current-page)]])
+  (reagent/as-element
+    [(session/get :current-page)]))
 
 ;; -------------------------
 ;; Handlers
@@ -67,16 +77,13 @@
                     (games/get-info! id person-id)
                     (set-page! #'play-page {:id id :person-id person-id}))
 
-(secretary/defroute "/groups/:id" [id]
-                    (set-page! #'group-page {:id id}))
-
 ;; -------------------------
 ;; Initialize app
 
 (defn mount-root []
-  (reagent/render [current-page] (.getElementById js/document "app")))
+  (rdom/render [:> current-page] (.getElementById js/document "app")))
 
-(defn init! []
+(defn ^:export init []
   (accountant/configure-navigation!)
   (accountant/dispatch-current!)
   (mount-root))

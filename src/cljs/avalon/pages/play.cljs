@@ -4,7 +4,7 @@
             [reagent.session :as session]
             [avalon.utils :refer [row col capitalize show-error]]
             [avalon.pages.games :as games]
-            [material-ui.core :as ui :include-macros true]
+            [material-ui :as ui]
             [accountant.core :as route]))
 
 (def twins #{"twin1" "twin2"})
@@ -120,14 +120,14 @@
         [col
          [row
           [:div.col-xs-8.col-xs-offset-2.start-btn
-           [ui/RaisedButton {:label      "End Game"
-                             :fullWidth  true
-                             :onTouchTap #(end-game! (:id params))}]]]
+           [:> ui/Button {:label      "End Game"
+                          :fullWidth  true
+                          :onTouchTap #(end-game! (:id params))}]]]
          [row
           [:div.col-xs-8.col-xs-offset-2.start-btn
-           [ui/RaisedButton {:label      "Leave Game"
-                             :fullWidth  true
-                             :onTouchTap #(leave-game! (:id params))}]]]]]]
+           [:> ui/Button {:label      "Leave Game"
+                          :fullWidth  true
+                          :onTouchTap #(leave-game! (:id params))}]]]]]]
       [row [col [:div.text-center [ui/CircularProgress]]]])))
 
 (defn play-page []

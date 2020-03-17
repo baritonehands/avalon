@@ -1,48 +1,49 @@
 (def build-version (or (System/getenv "BUILD_NUMBER") "0"))
-(def release-version (str "0.1." build-version))
+(def release-version (str "0.3." build-version))
 
-(defproject avalon "0.1.0"
+(defproject baritonehands/avalon "0.3.0"
   :description "An Avalon web app for starting the game and keeping stats"
   :url "https://github.com/baritonehands/avalon"
   :license {:name "Apache License, v2.0"
             :url  "http://www.apache.org/licenses/"}
   :manifest {"Implementation-Version" ~release-version}
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[org.clojure/clojure "1.10.1"]
                  [ring-server "0.4.0"]
-                 [reagent "0.5.1"
-                  :exclusions [org.clojure/tools.reader
-                               cljsjs/react]]
-                 [reagent-forms "0.5.13"]
-                 [reagent-utils "0.1.5"]
-                 [cljs-ajax "0.5.3"]
-                 [ring "1.4.0"]
-                 [ring/ring-defaults "0.1.5"]
-                 [liberator "0.14.0"]
+                 [javax.servlet/javax.servlet-api "3.1.0"]
+                 [ring "1.7.1"]
+                 [liberator "0.15.3"]
                  [org.clojure/data.json "0.2.6"]
                  [prone "0.8.2"]
                  [compojure "1.4.0"]
                  [hiccup "1.0.5"]
                  [environ "1.0.1"]
-                 [org.clojure/clojurescript "1.7.170" :scope "provided"]
+
+                 [org.clojure/clojurescript "1.10.597" :scope "provided"]
+                 [reagent "0.10.0"]
+                 [reagent-utils "0.3.3"]
+                 [cljs-ajax "0.8.0"]
                  [bouncer "1.0.0"]
                  [secretary "1.2.3"]
                  [venantius/accountant "0.1.5"
-                  :exclusions [org.clojure/tools.reader]]]
+                  :exclusions [org.clojure/tools.reader]]
+                 [cljsjs/material-ui "4.9.5-0"]]
 
 
 
   :plugins [[lein-environ "1.0.1"]
-            [lein-cljsbuild "1.1.1"]
+            [lein-cljsbuild "1.1.5"]
             [lein-asset-minifier "0.2.2"
              :exclusions [org.clojure/clojure]]]
 
   :aliases {"version" ^{:doc "Generate version file for cache busting"}
-                      ["run" "-m" "avalon.build/version" ~release-version]}
+                      ["run" "-m" "avalon.build/version" ~release-version]
+            "fig"     ["trampoline" "run" "-m" "figwheel.main"]
+            "fig:app" ["with-profile" "app" "fig" "--" "-b" "app" "-r"]}
 
   :ring {:handler      avalon.handler/app
          :uberwar-name "avalon.war"}
 
-  :min-lein-version "2.5.0"
+  :min-lein-version "2.9.1"
 
   :uberjar-name "avalon.jar"
 
@@ -71,68 +72,24 @@
   :profiles {:dev     {:repl-options {:init-ns avalon.repl}
 
                        :dependencies [[ring/ring-mock "0.3.0"]
-                                      [ring/ring-devel "1.4.0"]
-                                      [lein-figwheel "0.5.0-2"
-                                       :exclusions [org.clojure/core.memoize
-                                                    ring/ring-core
-                                                    org.clojure/clojure
-                                                    org.ow2.asm/asm-all
-                                                    org.clojure/data.priority-map
-                                                    org.clojure/tools.reader
-                                                    org.clojure/clojurescript
-                                                    org.clojure/core.async
-                                                    org.clojure/tools.analyzer.jvm]]
-                                      [org.clojure/clojurescript "1.7.170"
-                                       :exclusions [org.clojure/clojure org.clojure/tools.reader]]
-                                      [org.clojure/tools.nrepl "0.2.12"]
-                                      [com.cemerick/piggieback "0.2.1"]
-                                      [pjstadig/humane-test-output "0.7.0"]]
+                                      [ring/ring-devel "1.7.1"]
+                                      [com.bhauman/figwheel-main "0.2.3"]
+                                      [cider/piggieback "0.4.1"]
+                                      [pjstadig/humane-test-output "0.7.0"]
+                                      [javax.xml.bind/jaxb-api "2.3.0"]
+                                      [com.sun.xml.bind/jaxb-core "2.3.0"]
+                                      [com.sun.xml.bind/jaxb-impl "2.3.0"]]
 
 
-                       :source-paths ["env/dev/clj"]
-                       :plugins      [[lein-figwheel "0.5.0-2"
-                                       :exclusions [org.clojure/core.memoize
-                                                    ring/ring-core
-                                                    org.clojure/clojure
-                                                    org.ow2.asm/asm-all
-                                                    org.clojure/data.priority-map
-                                                    org.clojure/tools.reader
-                                                    org.clojure/clojurescript
-                                                    org.clojure/core.async
-                                                    org.clojure/tools.analyzer.jvm]]
-                                      [org.clojure/clojurescript "1.7.170"]
+                       :source-paths ["env/dev/clj"]}
 
-                                      [com.cemerick/clojurescript.test "0.3.3"]]
-
-                       :injections   [(require 'pjstadig.humane-test-output)
-                                      (pjstadig.humane-test-output/activate!)]
-
-                       :figwheel     {:http-server-root "public"
-                                      :server-port      3449
-                                      :nrepl-port       7002
-                                      :nrepl-middleware ["cemerick.piggieback/wrap-cljs-repl"]
-
-                                      :css-dirs         ["resources/public/css"]
-                                      :ring-handler     avalon.handler/app}
-
-                       :env          {:dev true}
-
-                       :cljsbuild    {:builds        {:app  {:source-paths ["env/dev/cljs"]
-                                                             :compiler     {:main       "avalon.dev"
-                                                                            :source-map true}}
-                                                      :test {:source-paths ["src/cljs" "src/cljc" "test/cljs"]
-                                                             :compiler     {:output-to     "target/test.js"
-                                                                            :optimizations :whitespace
-                                                                            :pretty-print  true}}}
-
-
-                                      :test-commands {"unit" ["phantomjs" :runner
-                                                              "test/vendor/es5-shim.js"
-                                                              "test/vendor/es5-sham.js"
-                                                              "test/vendor/console-polyfill.js"
-                                                              "target/test.js"]}}}
-
-
+             :app     {:dependencies [[com.bhauman/figwheel-main "0.2.3"]
+                                      [cider/piggieback "0.4.1"]]
+                       :source-paths ["env/dev/clj" "src/cljc" "src/cljs"]
+                       :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]
+                                      :init-ns          avalon.repl
+                                      :port             7888}
+                       :env          {:dev true}}
              :uberjar {:hooks       [minify-assets.plugin/hooks]
                        :prep-tasks  ["compile" ["cljsbuild" "once"]]
                        :env         {:production true}

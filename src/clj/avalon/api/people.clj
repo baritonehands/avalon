@@ -5,7 +5,6 @@
             [clojure.pprint :refer [pprint]]
             [avalon.api.util :as util]
             [avalon.models.crud :as crud]
-            [avalon.models.groups :as groups]
             [avalon.models.people :as people]
             [avalon.models.games :as games]
             [avalon.rules.people :as rules]
@@ -31,7 +30,6 @@
                          (delete-fn id name)))
             :handle-ok (fn [_] (games/display-game (crud/get games/games id)))))
 
-(defn group-add-person [id] (gen-endpoint id groups/groups groups/add-person nil))
 (defn game-add-person [id] (gen-endpoint id games/games games/add-person games/delete-person))
 
 (defn get-people [sees teams]
@@ -79,6 +77,5 @@
                                  :info (get-info game role person-id)})))))
 
 (defroutes routes
-  (ANY "/groups/:id/people" [id] (group-add-person (.toLowerCase id)))
   (ANY "/games/:id/people" [id] (game-add-person (.toLowerCase id)))
   (ANY "/games/:id/people/:person-id/info" [id person-id] (get-person-info (.toLowerCase id) (.toLowerCase person-id))))

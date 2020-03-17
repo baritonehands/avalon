@@ -1,11 +1,15 @@
 (ns avalon.utils
-  (:require [reagent.session :as session]))
+  (:require [reagent.session :as session]
+            [material-ui :as ui]))
 
 (defn row [& children]
   (into [:div.row] children))
 
-(defn col [& children]                                      ; {:keys [width m-width] :or {width 4 m-width 12}}]
-  (into [:div.col-xs-12.col-sm-4] children))
+(defn col [props & children]
+  (let [defaults {:item true :xs 12 :sm 4}]
+    (if (map? props)
+      (into [:> ui/Grid (merge defaults props)] children)
+      (into [:> ui/Grid defaults] (cons props children)))))
 
 (defn capitalize [s]
   (let [letter (-> s
@@ -15,3 +19,10 @@
 
 (defn show-error [title msg]
   (session/put! :error {:title title :message msg}))
+
+(defn make-styles [f]
+  (let [mk-fn (ui/makeStyles
+                (fn [theme]
+                  (clj->js (f theme))))]
+    (fn [& args]
+      (js->clj (apply mk-fn args) :keywordize-keys true))))

@@ -3,7 +3,7 @@
             [cljs.pprint :refer [pprint]]
             [reagent.session :as session]
             [avalon.utils :refer [row col capitalize show-error]]
-            [material-ui.core :as ui :include-macros true]
+            [material-ui :as ui]
             [accountant.core :as route]
             [reagent.core :as r]))
 
@@ -54,11 +54,11 @@
 
 (defn role-toggle [id roles role desc]
   (let [on (string? ((set roles) role))]
-    [ui/Toggle {:label         desc
-                :labelPosition "left"
-                :toggled       on
-                :labelStyle    {:font-weight "normal"}
-                :onToggle      #(toggle-role! id role (not on))}]))
+    [:> ui/Switch {:label         desc
+                   :labelPosition "left"
+                   :toggled       on
+                   :labelStyle    {:font-weight "normal"}
+                   :onToggle      #(toggle-role! id role (not on))}]))
 
 (defn start-game! [id]
   (POST (str "/api/games/" id "/play")
@@ -93,22 +93,22 @@
           [:h4.code "Access code: " [:pre id]]]]]
        [row
         [col
-         (into [ui/List {:subheader ["Players - " (count people)]}]
+         (into [:> ui/List {:subheader ["Players - " (count people)]}]
                (for [player people]
-                 [ui/ListItem
+                 [:> ui/ListItem
                   [:div.player
-                   [ui/IconButton {:iconClassName "mdfi_action_delete"
-                                   :onTouchTap    #(delete-player! id player)}]
+                   [:> ui/IconButton {:iconClassName "mdfi_action_delete"
+                                      :onTouchTap    #(delete-player! id player)}]
                    player]]))
-         [ui/ListDivider]
-         [ui/List {:subheader "Roles"}
+         [:> ui/Divider]
+         [:> ui/List {:subheader "Roles"}
           (for [[role desc] role-options]
             ^{:key role}
-            [ui/ListItem [role-toggle id roles role desc]])]
+            [:> ui/ListItem [role-toggle id roles role desc]])]
          [row
           [:div.col-xs-8.col-xs-offset-2.start-btn {:style {:margin-bottom "40px"}}
-           [ui/RaisedButton {:primary    true
-                             :label      "Start"
-                             :fullWidth  true
-                             :onTouchTap #(start-game! id)}]]]]]]
-      [row [col [:div.text-center [ui/CircularProgress]]]])))
+           [:> ui/Button {:primary    true
+                          :label      "Start"
+                          :fullWidth  true
+                          :onTouchTap #(start-game! id)}]]]]]]
+      [row [col [:div.text-center [:> ui/CircularProgress]]]])))

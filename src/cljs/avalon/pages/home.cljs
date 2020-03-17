@@ -1,10 +1,10 @@
 (ns avalon.pages.home
   (:require [ajax.core :refer [POST]]
             [reagent.core :as r]
-            [avalon.utils :refer [row col show-error]]
+            [avalon.utils :refer [row col show-error make-styles]]
             [avalon.pages.games :as games]
             [accountant.core :as route]
-            [material-ui.core :as ui :include-macros true]
+            [material-ui :as ui]
             [reagent.session :as session]))
 
 (defn join-game! [id name]
@@ -17,14 +17,31 @@
                             (session/put! :person-id (:id resp))
                             (games/get-game! id :force true)
                             (route/navigate! (str "/games/" id "/play/" (:id resp))))
-         :error-handler (fn [{:keys [response]}]
-                          (show-error "Unable to join game" (-> response first second first)))}))
+         :error-handler   (fn [{:keys [response]}]
+                            (show-error "Unable to join game" (-> response first second first)))}))
 
-(defn button [label opts]
-  [:div.col-xs-8.col-xs-offset-2.start-btn
-   [ui/RaisedButton (merge {:label   label
-                            :primary true
-                            :style   {:width "100%"}} opts)]])
+(def use-styles
+  (make-styles
+    (fn [theme]
+      {:button {:margin-bottom (.spacing theme 2)}
+       :header {:padding (.spacing theme 2)}})))
+
+(defn header []
+  (let [classes (use-styles)]
+    (r/as-element
+      [:> ui/Typography {:variant "h5"
+                         :class   (:header classes)}
+       "Welcome to Avalon!"])))
+
+(defn button [js-props]
+  (let [classes (use-styles)
+        props (js->clj js-props :keywordize-keys true)]
+    (r/as-element
+      [:> ui/Grid {:xs 8}
+       [:> ui/Button (merge {:variant    "contained"
+                             :color      "secondary"
+                             :full-width true
+                             :class      (:button classes)} props)]])))
 
 (defn home-page []
   (let [state (r/atom {:joining false})
@@ -36,41 +53,38 @@
                                             (session/put! :game resp)
                                             (swap! state assoc :joining true :code (:id resp)))}))]
     (fn []
-      [:div.text-center
-       [row
-        [col
-         [:h3 "Welcome to Avalon!"]]]
-       [row
-        [col
-         (if-not (:joining @state)
-           [row
-            [button "Create Game" {:onTouchTap create!}]
-            [button "Join Game" {:onTouchTap #(swap! state assoc :joining true)}]]
+      [:> ui/Grid {:container true}
+       [col {:container true
+             :justify   "center"}
+        [:> header]]
+       [col {:container true
+             :justify   "center"}
+        (if-not (:joining @state)
+          [:<>
+           [:> button {:onClick create!} "Create Game"]
+           [:> button {:onClick #(swap! state assoc :joining true)} "Join Game"]]
 
-           [row
-            [:div.col-xs-8.col-xs-offset-2
+          [row
+           [:div.col-xs-8.col-xs-offset-2
 
-             [ui/TextField {:hintText          "Enter an access code"
-                            :floatingLabelText "Access Code"
-                            :fullWidth         true
-                            :autoCapitalize    "none"
-                            :autoCorrect       "off"
-                            :defaultValue      (:code @state)
-                            :on-change         #(swap! state assoc :code (-> % .-target .-value))}]]
+            [:> ui/TextField {:hintText          "Enter an access code"
+                              :floatingLabelText "Access Code"
+                              :fullWidth         true
+                              :autoCapitalize    "none"
+                              :autoCorrect       "off"
+                              :defaultValue      (:code @state)
+                              :on-change         #(swap! state assoc :code (-> % .-target .-value))}]]
 
 
-            [:div.col-xs-8.col-xs-offset-2
+           [:div.col-xs-8.col-xs-offset-2
 
-             [ui/TextField {:hintText          "Enter your name"
-                            :floatingLabelText "Your Name"
-                            :fullWidth         true
-                            :autoCorrect       "off"
-                            :defaultValue      (:name @state)
-                            :on-change         #(swap! state assoc :name (-> % .-target .-value))}]]
+            [:> ui/TextField {:hintText          "Enter your name"
+                              :floatingLabelText "Your Name"
+                              :fullWidth         true
+                              :autoCorrect       "off"
+                              :defaultValue      (:name @state)
+                              :on-change         #(swap! state assoc :name (-> % .-target .-value))}]]
 
-            [row
-             [button "Join" {:onTouchTap #(join-game! (:code @state) (:name @state))
-                             :fullWidth  true}]
-             [button "Back" {:onTouchTap #(swap! state assoc :joining false)
-                             :primary    false
-                             :fullWidth  true}]]])]]])))
+           [:> button {:on-click #(join-game! (:code @state) (:name @state))} "Join"]
+           [:> button {:on-click #(swap! state assoc :joining false)
+                        :color    "default"} "Back"]])]])))
