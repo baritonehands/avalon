@@ -8,5 +8,4 @@
  :optimizations   :none
  :cache-analysis  true
  :main            avalon.core
- ;:npm-deps        false
  :closure-defines {goog.DEBUG true}}
