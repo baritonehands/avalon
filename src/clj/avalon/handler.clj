@@ -33,10 +33,6 @@
      [:meta {:name "viewport"
              :content "width=device-width, initial-scale=1"}]
      [:title "Avalon"]
-     ;(include-css "https://fonts.googleapis.com/icon?family=Material+Icons")
-     (if (env :dev)
-       (include-css "css/app.css")
-       (include-css (prodify "css/site.min.css")))
      (include-css "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap")
      (include-css "https://fonts.googleapis.com/icon?family=Material+Icons")]
     [:body

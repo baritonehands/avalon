@@ -14,7 +14,7 @@
 
 (def theme
   (ui/createMuiTheme
-    #js {:palette #js {:primary   (.-blue ui/colors)
+    #js {:palette #js {:primary   (aget js/MaterialUIColors "blue")
                        :secondary #js {:main "#ff5252"}}}))
 
 (defn base-layout [& children]

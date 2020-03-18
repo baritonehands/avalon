@@ -30,9 +30,7 @@
                  [cljsjs/material-ui-icons "4.4.1-0"]]
 
   :plugins [[lein-environ "1.0.1"]
-            [lein-cljsbuild "1.1.5"]
-            [lein-asset-minifier "0.2.2"
-             :exclusions [org.clojure/clojure]]]
+            [lein-cljsbuild "1.1.5"]]
 
   :aliases {"version" ^{:doc "Generate version file for cache busting"}
                       ["run" "-m" "avalon.build/version" ~release-version]
@@ -55,14 +53,8 @@
   :source-paths ["src/clj"]
   :resource-paths ["resources" "target/cljsbuild"]
 
-  :minify-assets
-  {:assets
-   {"resources/public/css/site.min.css" ["resources/public/css/site.css"
-                                         "resources/public/css/app.css"]}}
-
   :cljsbuild {:builds {:app {:source-paths ["src/cljs" "src/cljc"]
-                             :compiler     {:preamble      ["resources/public/vendor/material-ui/material.min.js"]
-                                            :output-to     "target/cljsbuild/public/js/app.js"
+                             :compiler     {:output-to     "target/cljsbuild/public/js/app.js"
                                             :output-dir    "target/cljsbuild/public/js/out"
                                             :asset-path    "js/out"
                                             :optimizations :none
@@ -89,14 +81,11 @@
                                       :init-ns          avalon.repl
                                       :port             7888}
                        :env          {:dev true}}
-             :uberjar {:hooks       [minify-assets.plugin/hooks]
-                       :prep-tasks  ["compile" ["cljsbuild" "once"]]
+             :uberjar {:prep-tasks  ["compile" ["cljsbuild" "once"]]
                        :env         {:production true}
                        :aot         :all
                        :omit-source true
                        :cljsbuild   {:jar    true
-                                     :builds {:app
-                                              {:source-paths ["env/prod/cljs"]
-                                               :compiler
-                                                             {:optimizations :advanced
-                                                              :pretty-print  false}}}}}})
+                                     :builds {:app {:compiler {:optimizations :advanced
+                                                               :pseudo-names  true
+                                                               :main          avalon.core}}}}}})

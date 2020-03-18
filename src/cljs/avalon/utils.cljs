@@ -6,7 +6,7 @@
   (into [:div.row] children))
 
 (defn col [props & children]
-  (let [defaults {:item true :xs 12 :sm 4}]
+  (let [defaults {:item true :xs 12}]
     (if (map? props)
       (into [:> ui/Grid (merge defaults props)] children)
       (into [:> ui/Grid defaults] (cons props children)))))
