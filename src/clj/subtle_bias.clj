@@ -13,7 +13,7 @@
 (defn randomness-proof [n]
   (let [dist (atom {})]
     (dotimes [_ n]
-      (let [game (games/create-game nil)]
+      (let [game (games/create-game)]
         (dotimes [i 10]
           (let [person (people/create-person (str "Player " i))]
             (games/add-person (:id game) person)))

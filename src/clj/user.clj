@@ -1,6 +1,5 @@
 (ns user
-  (:require [avalon.models.groups :as groups]
-            [avalon.models.people :as people]
+  (:require [avalon.models.people :as people]
             [avalon.models.games :as games]
             [avalon.models.crud :as crud]
             [clojure.pprint :refer [pprint]]
@@ -8,7 +7,7 @@
 
 (defn fill-test-data [n]
   (let [;group (groups/create-group "Testing" "123")
-        game (games/create-game nil)]
+        game (games/create-game)]
     (dotimes [player n]
       (let [person (people/create-person (str "Player" player))]
         (games/add-person (:id game) person)))
@@ -18,8 +17,8 @@
 (defn play-roles [id]
   (pprint
     (for [[person-id role] (:teams (crud/get games/games id))]
-      [role (str "http://localhost:3449/games/" id "/play/" person-id)])))
+      [role (str "http://localhost:9500/games/" id "/play/" person-id)])))
 
 (defn browse-roles [id]
   (doseq [[person-id _] (:teams (crud/get games/games id))]
-    (browse-url (str "http://localhost:3449/games/" id "/play/" person-id))))
+    (browse-url (str "http://localhost:9500/games/" id "/play/" person-id))))

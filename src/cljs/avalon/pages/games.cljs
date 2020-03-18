@@ -2,8 +2,9 @@
   (:require [ajax.core :refer [GET POST DELETE]]
             [cljs.pprint :refer [pprint]]
             [reagent.session :as session]
-            [avalon.utils :refer [row col capitalize show-error]]
-            [material-ui.core :as ui :include-macros true]
+            [avalon.utils :refer [row col spinner capitalize show-error make-styles]]
+            [material-ui :as ui]
+            [material-ui-icons :as icons]
             [accountant.core :as route]
             [reagent.core :as r]))
 
@@ -52,13 +53,22 @@
            :keywords?       true
            :handler         #(session/put! :game %)})))
 
+(def form-control-label-full
+  ((ui/styled ui/FormControlLabel)
+   #js {:display         "flex"
+        :width           "100%"
+        :justify-content "space-between"
+        :margin-right    "auto"}))
+
 (defn role-toggle [id roles role desc]
   (let [on (string? ((set roles) role))]
-    [ui/Toggle {:label         desc
-                :labelPosition "left"
-                :toggled       on
-                :labelStyle    {:font-weight "normal"}
-                :onToggle      #(toggle-role! id role (not on))}]))
+    [:> form-control-label-full
+     {:label           desc
+      :label-placement "start"
+      :control         (r/as-element
+                         [:> ui/Switch {:checked   on
+                                        :color     "primary"
+                                        :on-change #(toggle-role! id role (not on))}])}]))
 
 (defn start-game! [id]
   (POST (str "/api/games/" id "/play")
@@ -81,34 +91,67 @@
                    ["lancelot2" "Lancelot (switch allegiance)"]
                    ["twins" "Twins"]])
 
+(def use-styles
+  (make-styles
+    (fn [^Theme theme]
+      {:container {:margin-top    (.spacing theme 2)
+                   :margin-bottom (.spacing theme 4)}
+       :pre       {:background-color "#f5f5f5"
+                   :border           "1px solid #CCCCCC"
+                   :border-radius    "5px"
+                   :text-align       "center"
+                   :width            "100%"}})))
+
+(defn container [js-props]
+  (let [classes (use-styles)]
+    (r/as-element
+      (into
+        [:> ui/Grid {:container true
+                     :justify   "center"
+                     :spacing   2
+                     :class     (:container classes)}]
+        (.-children js-props)))))
+
+(defn pre [js-props]
+  (let [classes (use-styles)
+        props (js->clj js-props :keywordize-keys true)]
+    (r/as-element
+      [:> ui/Typography (merge {:class (:pre classes)} props)])))
+
+(defn subheader-element [& children]
+  (r/as-element
+    (into [:> ui/ListSubheader {:disable-sticky true}] children)))
+
 (defn game-page []
   (let [game (session/get :game)
         {:keys [id people roles]} game]
     (if game
-      [:div
-       [row
-        [col
-         [:div.text-center
-          [:h3.status "Waiting for players..."]
-          [:h4.code "Access code: " [:pre id]]]]]
-       [row
-        [col
-         (into [ui/List {:subheader ["Players - " (count people)]}]
-               (for [player people]
-                 [ui/ListItem
-                  [:div.player
-                   [ui/IconButton {:iconClassName "mdfi_action_delete"
-                                   :onTouchTap    #(delete-player! id player)}]
-                   player]]))
-         [ui/ListDivider]
-         [ui/List {:subheader "Roles"}
-          (for [[role desc] role-options]
-            ^{:key role}
-            [ui/ListItem [role-toggle id roles role desc]])]
-         [row
-          [:div.col-xs-8.col-xs-offset-2.start-btn {:style {:margin-bottom "40px"}}
-           [ui/RaisedButton {:primary    true
-                             :label      "Start"
-                             :fullWidth  true
-                             :onTouchTap #(start-game! id)}]]]]]]
-      [row [col [:div.text-center [ui/CircularProgress]]]])))
+      [:> container
+       [col {:container true
+             :justify   "center"}
+        [:> ui/Typography {:variant       "h5"
+                           :gutter-bottom true} "Waiting for players..."]]
+       [col {:container true
+             :justify   "center"}
+        [:> ui/Typography {:variant "h6"} "Access code: "]
+        [:> pre {:variant "h6"} id]]
+       [col
+        (into [:> ui/List {:subheader (subheader-element "Players - " (count people))}]
+              (for [player people]
+                [:> ui/ListItem
+                 [:> ui/ListItemIcon
+                  [:> ui/IconButton {:on-click #(delete-player! id player)}
+                   [:> icons/Delete]]]
+                 [:> ui/ListItemText player]]))
+        [:> ui/Divider]
+        [:> ui/List {:subheader (subheader-element "Roles")}
+         (for [[role desc] role-options]
+           ^{:key role}
+           [:> ui/ListItem [role-toggle id roles role desc]])]]
+       [col {:xs 8}
+        [:> ui/Button {:color     "secondary"
+                       :variant   "contained"
+                       :fullWidth true
+                       :on-click  #(start-game! id)}
+         "Start"]]]
+      [spinner])))

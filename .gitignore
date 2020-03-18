@@ -16,3 +16,4 @@ pom.xml.asc
 .idea/*
 !.idea/runConfigurations
 *.iml
+node_modules

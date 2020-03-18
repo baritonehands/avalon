@@ -1,0 +1,11 @@
+^{:watch-dirs   ["src/cljc" "src/cljs"]
+  :mode         :serve
+  :ring-handler avalon.handler/app}
+{:output-to       "target/cljsbuild/public/js/app.js"
+ :output-dir      "target/cljsbuild/public/js/out"
+ :asset-path      "js/out"
+ :source-map      true
+ :optimizations   :none
+ :cache-analysis  true
+ :main            avalon.core
+ :closure-defines {goog.DEBUG true}}

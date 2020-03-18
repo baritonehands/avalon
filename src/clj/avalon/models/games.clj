@@ -7,11 +7,10 @@
 
 (defonce games (db/create-db))
 
-(defrecord Game [group-id roles status people teams])
+(defrecord Game [roles status people teams])
 
-(defn create-game [group-id]
+(defn create-game []
   (let [game (->Game
-                 group-id
                  #{:merlin :percival :mordred :morgana}
                  :waiting
                  #{}
@@ -21,7 +20,6 @@
 (defn display-game [game]
   (-> (dissoc game :teams)
       (dissoc :first)
-      (rename-keys {:group-id :groupId})
       (update :people (partial map #(:name (crud/get people/people %))))))
 
 (defn add-person [id person]

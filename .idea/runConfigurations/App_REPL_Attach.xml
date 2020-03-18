@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="nREPL" type="ClojureREPL" factoryName="Remote" activateToolWindowBeforeRun="false">
+  <configuration default="false" name="App REPL Attach" type="ClojureREPL" factoryName="Remote" activateToolWindowBeforeRun="false">
     <module name="avalon" />
     <setting name="host" value="localhost" />
-    <setting name="port" value="7002" />
+    <setting name="port" value="7888" />
     <setting name="replType" value="NREPL" />
     <setting name="configType" value="SPECIFY" />
     <setting name="fixLineNumbers" value="false" />
