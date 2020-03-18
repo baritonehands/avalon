@@ -105,7 +105,7 @@
 
 (def use-styles
   (make-styles
-    (fn [theme]
+    (fn [^Theme theme]
       {:container {:margin-top    (.spacing theme 2)
                    :margin-bottom (.spacing theme 4)}})))
 

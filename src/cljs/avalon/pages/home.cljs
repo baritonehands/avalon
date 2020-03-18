@@ -22,7 +22,7 @@
 
 (def use-styles
   (make-styles
-    (fn [theme]
+    (fn [^Theme theme]
       {:header {:padding (.spacing theme 2)}})))
 
 (defn header []

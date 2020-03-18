@@ -87,5 +87,6 @@
                        :omit-source true
                        :cljsbuild   {:jar    true
                                      :builds {:app {:compiler {:optimizations :advanced
-                                                               :pseudo-names  true
+                                                               :pseudo-names  false
+                                                               :externs       ["material-ui-externs.js"]
                                                                :main          avalon.core}}}}}})
