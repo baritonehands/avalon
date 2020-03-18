@@ -29,8 +29,7 @@
                     :underline "none"
                     :variant   "h5"}
         "Avalon"]]]
-     (into [:> ui/Container {:max-width       "sm"
-                             :disable-gutters true}] children)
+     (into [:> ui/Container {:max-width "sm"}] children)
      (if error
        [:> ui/Dialog {:open       true
                       :max-width  "sm"

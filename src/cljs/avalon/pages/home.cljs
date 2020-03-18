@@ -23,9 +23,7 @@
 (def use-styles
   (make-styles
     (fn [theme]
-      {:button     {:margin-bottom (.spacing theme 2)}
-       :header     {:padding (.spacing theme 2)}
-       :text-field {:margin-bottom (.spacing theme 2)}})))
+      {:header {:padding (.spacing theme 2)}})))
 
 (defn header []
   (let [classes (use-styles)]
@@ -34,23 +32,17 @@
                          :class   (:header classes)}
        "Welcome to Avalon!"])))
 
-(defn button [js-props]
-  (let [classes (use-styles)
-        props (js->clj js-props :keywordize-keys true)]
-    (r/as-element
-      [:> ui/Grid {:item true :xs 8}
-       [:> ui/Button (merge {:variant    "contained"
-                             :color      "secondary"
-                             :full-width true
-                             :class      (:button classes)} props)]])))
+(defn button [props & children]
+  [:> ui/Grid {:item true :xs 8}
+   (into
+     [:> ui/Button (merge {:variant    "contained"
+                           :color      "secondary"
+                           :full-width true} props)]
+     children)])
 
-(defn text-field [js-props]
-  (let [classes (use-styles)
-        props (js->clj js-props :keywordize-keys true)]
-    (r/as-element
-      [:> ui/Grid {:item true :xs 8}
-       [:> ui/TextField (merge {:full-width true
-                                :class      (:text-field classes)} props)]])))
+(defn text-field [props]
+  [:> ui/Grid {:item true :xs 8}
+   [:> ui/TextField (merge {:full-width true} props)]])
 
 (defn home-page []
   (let [state (r/atom {:joining false})
@@ -62,39 +54,39 @@
                                             (session/put! :game resp)
                                             (swap! state assoc :joining true :code (:id resp)))}))]
     (fn []
-      [:> ui/Grid {:container true}
+      [:> ui/Grid {:container true
+                   :spacing   2}
        [col {:container true
              :justify   "center"}
         [:> header]]
        [col {:container true
-             :justify   "center"}
+             :justify   "center"
+             :spacing   2}
         (if-not (:joining @state)
           [:<>
-           [:> button {:onClick create!} "Create Game"]
-           [:> button {:onClick #(swap! state assoc :joining true)} "Join Game"]]
+           [button {:onClick create!} "Create Game"]
+           [button {:onClick #(swap! state assoc :joining true)} "Join Game"]]
 
           [:<>
            [col {:container true
                  :justify   "center"}
-            [:> text-field {:placeholder   "Enter an access code"
-                            :label         "Access Code"
-                            :full-width    true
-                            :input-props   {:auto-capitalize "none"
-                                            :auto-correct    "off"}
-                            :default-value (:code @state)
-                            :on-change     #(swap! state assoc :code (-> % .-target .-value))}]]
-
+            [text-field {:placeholder   "Enter an access code"
+                         :label         "Access Code"
+                         :full-width    true
+                         :input-props   {:auto-capitalize "none"
+                                         :auto-correct    "off"}
+                         :default-value (:code @state)
+                         :on-change     #(swap! state assoc :code (-> % .-target .-value))}]]
 
            [col {:container true
                  :justify   "center"}
+            [text-field {:placeholder   "Enter your name"
+                         :label         "Your Name"
+                         :full-width    true
+                         :input-props   {:auto-correct "off"}
+                         :default-value (:name @state)
+                         :on-change     #(swap! state assoc :name (-> % .-target .-value))}]]
 
-            [:> text-field {:placeholder   "Enter your name"
-                            :label         "Your Name"
-                            :full-width    true
-                            :input-props   {:auto-correct "off"}
-                            :default-value (:name @state)
-                            :on-change     #(swap! state assoc :name (-> % .-target .-value))}]]
-
-           [:> button {:on-click #(join-game! (:code @state) (:name @state))} "Join"]
-           [:> button {:on-click #(swap! state assoc :joining false)
-                       :color    "default"} "Back"]])]])))
+           [button {:on-click #(join-game! (:code @state) (:name @state))} "Join"]
+           [button {:on-click #(swap! state assoc :joining false)
+                    :color    "default"} "Back"]])]])))

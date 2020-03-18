@@ -2,7 +2,7 @@
   (:require [ajax.core :refer [GET POST DELETE]]
             [cljs.pprint :refer [pprint]]
             [reagent.session :as session]
-            [avalon.utils :refer [row col capitalize show-error]]
+            [avalon.utils :refer [row col capitalize show-error make-styles]]
             [material-ui :as ui]
             [material-ui-icons :as icons]
             [accountant.core :as route]
@@ -91,41 +91,51 @@
                    ["lancelot2" "Lancelot (switch allegiance)"]
                    ["twins" "Twins"]])
 
-(def pre
-  ((ui/withStyles
-     #js {:root #js {:background-color "#f5f5f5"
-                     :border           "1px solid #CCCCCC"
-                     :border-radius    "5px"
-                     :text-align       "center"
-                     :width            "100%"}})
-   ui/Typography))
+(def use-styles
+  (make-styles
+    (fn [theme]
+      {:container {:margin-top    (.spacing theme 2)
+                   :margin-bottom (.spacing theme 4)}
+       :pre       {:background-color "#f5f5f5"
+                   :border           "1px solid #CCCCCC"
+                   :border-radius    "5px"
+                   :text-align       "center"
+                   :width            "100%"}})))
 
-(defn subheader-element [props & children]
-  (let [defaults {:disable-sticky true}]
+(defn container [js-props]
+  (let [classes (use-styles)]
     (r/as-element
-      (if (map? props)
-        (into [:> ui/ListSubheader (merge defaults props)] children)
-        (into [:> ui/ListSubheader defaults] (cons props children))))))
+      (into
+        [:> ui/Grid {:container true
+                     :justify   "center"
+                     :spacing   2
+                     :class     (:container classes)}]
+        (.-children js-props)))))
+
+(defn pre [js-props]
+  (let [classes (use-styles)
+        props (js->clj js-props :keywordize-keys true)]
+    (r/as-element
+      [:> ui/Typography (merge {:class (:pre classes)} props)])))
+
+(defn subheader-element [& children]
+  (r/as-element
+    (into [:> ui/ListSubheader {:disable-sticky true}] children)))
 
 (defn game-page []
   (let [game (session/get :game)
         {:keys [id people roles]} game]
     (if game
-      [:> ui/Grid {:container true
-                   :justify   "center"}
-       [col {:xs        8
-             :container true
+      [:> container
+       [col {:container true
              :justify   "center"}
         [:> ui/Typography {:variant       "h5"
                            :gutter-bottom true} "Waiting for players..."]]
-       [col {:xs        8
-             :container true
+       [col {:container true
              :justify   "center"}
-        [:> ui/Typography {:variant "h6"} "Access code: "]]
-       [col {:xs 10}
-        [:> pre {:variant       "h6"
-                 :gutter-bottom true} id]]
-       [col {:xs 12}
+        [:> ui/Typography {:variant "h6"} "Access code: "]
+        [:> pre {:variant "h6"} id]]
+       [col
         (into [:> ui/List {:subheader (subheader-element "Players - " (count people))}]
               (for [player people]
                 [:> ui/ListItem
