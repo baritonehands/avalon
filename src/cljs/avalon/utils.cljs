@@ -11,6 +11,11 @@
       (into [:> ui/Grid (merge defaults props)] children)
       (into [:> ui/Grid defaults] (cons props children)))))
 
+(defn spinner []
+  [:> ui/Grid {:container true
+               :justify   "center"}
+   [:> ui/CircularProgress {:color "secondary"}]])
+
 (defn capitalize [s]
   (let [letter (-> s
                    (.charAt name 0)

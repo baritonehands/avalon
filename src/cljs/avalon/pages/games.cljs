@@ -2,7 +2,7 @@
   (:require [ajax.core :refer [GET POST DELETE]]
             [cljs.pprint :refer [pprint]]
             [reagent.session :as session]
-            [avalon.utils :refer [row col capitalize show-error make-styles]]
+            [avalon.utils :refer [row col spinner capitalize show-error make-styles]]
             [material-ui :as ui]
             [material-ui-icons :as icons]
             [accountant.core :as route]
@@ -154,4 +154,4 @@
                        :fullWidth true
                        :on-click  #(start-game! id)}
          "Start"]]]
-      [row [col [:div.text-center [:> ui/CircularProgress]]]])))
+      [spinner])))

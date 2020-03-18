@@ -17,8 +17,8 @@
 (defn play-roles [id]
   (pprint
     (for [[person-id role] (:teams (crud/get games/games id))]
-      [role (str "http://localhost:3449/games/" id "/play/" person-id)])))
+      [role (str "http://localhost:9500/games/" id "/play/" person-id)])))
 
 (defn browse-roles [id]
   (doseq [[person-id _] (:teams (crud/get games/games id))]
-    (browse-url (str "http://localhost:3449/games/" id "/play/" person-id))))
+    (browse-url (str "http://localhost:9500/games/" id "/play/" person-id))))
