@@ -83,10 +83,11 @@
 ;; Initialize app
 
 (defn mount-root []
-  (rdom/render [:> current-page] (.getElementById js/document "app")))
+  (rdom/render [current-page] (.getElementById js/document "app")))
 
 (defn ^:export init []
   (accountant/configure-navigation!
-    {:nav-handler secretary/dispatch!})
+    {:nav-handler  secretary/dispatch!
+     :path-exists? secretary/locate-route})
   (accountant/dispatch-current!)
   (mount-root))

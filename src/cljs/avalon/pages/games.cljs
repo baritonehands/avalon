@@ -96,8 +96,6 @@
      #js {:root #js {:background-color "#f5f5f5"
                      :border           "1px solid #CCCCCC"
                      :border-radius    "5px"
-                     :font-family      "monospace"
-                     :font-weight      "bold"
                      :text-align       "center"
                      :width            "100%"}})
    ui/Typography))
@@ -118,16 +116,15 @@
        [col {:xs        8
              :container true
              :justify   "center"}
-        [:> ui/Typography {:variant   "h5"
-                           :component "h3"} "Waiting for players..."]]
+        [:> ui/Typography {:variant       "h5"
+                           :gutter-bottom true} "Waiting for players..."]]
        [col {:xs        8
              :container true
              :justify   "center"}
-        [:> ui/Typography {:variant   "h6"
-                           :component "h4"} "Access code: "]]
+        [:> ui/Typography {:variant "h6"} "Access code: "]]
        [col {:xs 10}
-        [:> pre {:variant   "h6"
-                 :component "h4"} id]]
+        [:> pre {:variant       "h6"
+                 :gutter-bottom true} id]]
        [col {:xs 12}
         (into [:> ui/List {:subheader (subheader-element "Players - " (count people))}]
               (for [player people]

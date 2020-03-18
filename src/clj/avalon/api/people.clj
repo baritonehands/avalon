@@ -70,7 +70,7 @@
                           (let [game (crud/get games/games id)
                                 [valid? errors] (rules/valid-info? game)]
                             (if-not valid?
-                              (ring-response {:status 422 :body errors})
+                              (ring-response errors {:status 422})
                               (let [role ((:teams game) person-id)]
                                 {:role role
                                  :first (:name (crud/get people/people (:first game)))
