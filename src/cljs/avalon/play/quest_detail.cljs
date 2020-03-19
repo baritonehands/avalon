@@ -1,6 +1,7 @@
 (ns avalon.play.quest-detail
   (:require [reagent.session :as session]
-            [material-ui :as ui]))
+            [material-ui :as ui]
+            [avalon.utils :refer [subheader-element]]))
 
 (defn results [winner]
   [:> ui/Typography {:variant "h2"} winner])
@@ -8,11 +9,14 @@
 (defn pick [n]
   (let [{:keys [people]} (session/get :game)]
     [:<>
-     [:> ui/Typography {:variant "h5"} (str "Pick " n " players:")]
      (into
-       [:> ui/List]
+       [:> ui/List {:disable-padding true
+                    :subheader       (subheader-element
+                                       {:disable-sticky  false
+                                        :disable-gutters true}
+                                       (str "Pick " n " players:"))}]
        (for [[idx player] (map-indexed vector (sort people))]
-         [:> ui/ListItem
+         [:> ui/ListItem {:disable-gutters true}
           [:> ui/ListItemIcon
            [:> ui/Switch {:checked (= idx 2)
                           :color   "primary"
@@ -35,5 +39,4 @@
        "Cancel"]
       [:> ui/Button {:color    "primary"
                      :on-click close}
-       "OK"]]]
-    [:div "No editing"]))
+       "OK"]]]))

@@ -9,7 +9,7 @@
   (let [;group (groups/create-group "Testing" "123")
         game (games/create-game)]
     (dotimes [player n]
-      (let [person (people/create-person (str "Player" player))]
+      (let [person (people/create-person (str "Player " (inc player)))]
         (games/add-person (:id game) person)))
     ;(println "Group" (:id group))
     (println "Game" (:id game))))
