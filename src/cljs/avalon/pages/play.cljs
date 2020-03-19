@@ -2,9 +2,10 @@
   (:require [ajax.core :refer [POST]]
             [reagent.core :as r]
             [reagent.session :as session]
+            [material-ui :as ui]
             [avalon.utils :refer [row col spinner capitalize show-error make-styles]]
             [avalon.pages.games :as games]
-            [material-ui :as ui]
+            [avalon.play.quests :as quests]
             [accountant.core :as route]))
 
 (def twins #{"twin1" "twin2"})
@@ -121,6 +122,7 @@
 
 (defn info-view [player-count]
   (let [info (session/get :info)
+        game (session/get :game)
         params (session/get :route-params)]
     (if info
       [:> container
@@ -133,6 +135,8 @@
         [goodbad player-count]]
        [col
         [text [:strong (:first info)] " is the first player. The player to his/her right is the Lady of the Lake."]]
+       [col
+        [quests/view game]]
        (if (contains? (set (session/get-in [:game :roles])) "lancelot2")
          [col
           [text "Prepare and shuffle the " [:strong "Loyalty Deck"] " for Lancelot."

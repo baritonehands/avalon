@@ -4,11 +4,11 @@ An avalon web app for starting the game and keeping stats, built in Clojure, Clo
 
 ## Installation
 
-Requires [Leiningen](http://leiningen.org/) on Java 1.8+. Follow the README for the [reagent-template](https://github.com/reagent-project/reagent-template) project for more detail.
+Includes [Leiningen](http://leiningen.org/) and requires Java 1.8+. Follow the README for the [reagent-template](https://github.com/reagent-project/reagent-template) project for more detail.
 
 For development, just run:
 
-    ./lein fig:app
+    ./bin/lein fig:app
 
 In IntelliJ w/Cursive, you can connect using the REPL run configuration. Once lein is started, attach using
 the REPL option.
@@ -27,7 +27,7 @@ That will generate the url to see each player's information.
 
 There's a special main function to analyse randomness:
 
-    lein run -m subtle-bias N
+    ./bin/lein run -m subtle-bias N
     
 Where N is the number of iterations to try (default 1000). Larger than 10,000 may take a long time.
 

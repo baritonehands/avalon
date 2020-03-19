@@ -38,8 +38,7 @@
         [:> ui/DialogContent (:message error)]
         [:> ui/DialogActions
          [:> ui/Button {:color    "primary"
-                        :on-click #(session/put! :error nil)
-                        :style    {:float "right"}}
+                        :on-click #(session/put! :error nil)}
           "OK"]]])]))
 
 (defn home-page []

@@ -1,7 +1,7 @@
 (def build-version (or (System/getenv "BUILD_NUMBER") "0"))
-(def release-version (str "0.3." build-version))
+(def release-version (str "0.4." build-version))
 
-(defproject baritonehands/avalon "0.3.0"
+(defproject baritonehands/avalon "0.4.0"
   :description "An Avalon web app for starting the game and keeping stats"
   :url "https://github.com/baritonehands/avalon"
   :license {:name "Apache License, v2.0"

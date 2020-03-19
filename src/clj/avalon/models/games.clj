@@ -7,14 +7,15 @@
 
 (defonce games (db/create-db))
 
-(defrecord Game [roles status people teams])
+(defrecord Game [roles status people teams quests])
 
 (defn create-game []
   (let [game (->Game
                  #{:merlin :percival :mordred :morgana}
                  :waiting
                  #{}
-                 {})]
+                 {}
+                 [])]
     (crud/create! games game)))
 
 (defn display-game [game]
