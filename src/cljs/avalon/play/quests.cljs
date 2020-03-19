@@ -26,20 +26,21 @@
   (let [to-edit (r/atom nil)
         close #(reset! to-edit nil)]
     (fn [{:keys [people quests]}]
-      [:> ui/Grid {:container true
-                   :spacing   1
-                   :justify   "center"}
+      [:<>
        [quest-detail/view @to-edit]
-       [col
-        [:> ui/Typography {:variant "h6"} "Quests:"]]
-       (into
-         [col {:container true
-               :justify   "space-between"}]
-         (for [[n size] (map-indexed vector (rules/counts (count people)))]
-           (let [on-edit #(reset! to-edit {:n      n
-                                           :result (get quests n)
-                                           :close  close})]
-             [single {:size      size
-                      :selected? (= n (count quests))
-                      :result    (get quests n)
-                      :on-edit   on-edit}])))])))
+       [:> ui/Card
+        [:> ui/CardHeader {:title                  "Quests"
+                           :title-typography-props {:variant "subtitle1"}}]
+        [:> ui/CardContent
+         ;[:> ui/Typography {:variant "h6"} "Quests"]
+         (into
+           [col {:container true
+                 :justify   "space-between"}]
+           (for [[n size] (map-indexed vector (rules/counts (count people)))]
+             (let [on-edit #(reset! to-edit {:n      n
+                                             :result (get quests n)
+                                             :close  close})]
+               [single {:size      size
+                        :selected? (= n (count quests))
+                        :result    (get quests n)
+                        :on-edit   on-edit}])))]]])))

@@ -120,21 +120,47 @@
                      :class     (:container classes)}]
         (.-children js-props)))))
 
+(defn parent [& children]
+  (into
+    [:> ui/Grid {:container true
+                 :spacing   2}]
+    children))
+
+(defn role-view [info]
+  (let [hidden (r/atom false)]
+    (fn [info]
+      [col
+       [:> ui/Card
+        (if-not @hidden
+          [:> ui/CardContent
+           [parent
+            [col
+             [description (:role info)]]
+            [col
+             [backstory (:role info)]]
+            [view-list info]]])
+        [:> ui/CardActions
+         [:> ui/Button {:color    "primary"
+                        :on-click #(swap! hidden not)}
+          (if @hidden
+            "Show Role"
+            "Hide")]]]])))
+
 (defn info-view [player-count]
   (let [info (session/get :info)
         game (session/get :game)
         params (session/get :route-params)]
     (if info
       [:> container
+       [role-view info]
        [col
-        [description (:role info)]]
-       [col
-        [backstory (:role info)]]
-       [view-list info]
-       [col
-        [goodbad player-count]]
-       [col
-        [text [:strong (:first info)] " is the first player. The player to his/her right is the Lady of the Lake."]]
+        [:> ui/Card
+         [:> ui/CardContent
+          [col
+           [goodbad player-count]]
+          [col
+           [:> ui/Typography {:variant "body2"}
+            [:strong (:first info)] " is the first player. The player to his/her right is the Lady of the Lake."]]]]]
        [col
         [quests/view game]]
        (if (contains? (set (session/get-in [:game :roles])) "lancelot2")
