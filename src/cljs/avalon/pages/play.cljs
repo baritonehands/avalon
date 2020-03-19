@@ -149,7 +149,8 @@
 (defn info-view [player-count]
   (let [info (session/get :info)
         game (session/get :game)
-        params (session/get :route-params)]
+        params (session/get :route-params)
+        lancelot2? (contains? (set (session/get-in [:game :roles])) "lancelot2")]
     (if info
       [:> container
        [role-view info]
@@ -159,16 +160,17 @@
           [col
            [goodbad player-count]]
           [col
-           [:> ui/Typography {:variant "body2"}
-            [:strong (:first info)] " is the first player. The player to his/her right is the Lady of the Lake."]]]]]
+           [:> ui/Typography {:variant   "body2"
+                              :paragraph lancelot2?}
+            [:strong (:first info)] " is the first player. The player to his/her right is the Lady of the Lake."]]
+          (if lancelot2?
+            [col
+             [text "Prepare and shuffle the " [:strong "Loyalty Deck"] " for Lancelot."
+              [:ul
+               [:li [:strong "Variant 1"] " - Three \"No Change\" cards, two \"Change Allegiance\" cards, draw a card in rounds 3, 4, and 5."]
+               [:li [:strong "Variant 2"] " - Five \"No Change\" cards, two \"Change Allegiance\" cards, reveal a card for each round at game start. Evil Lancelot must always fail any quest."]]]])]]]
        [col
         [quests/view game]]
-       (if (contains? (set (session/get-in [:game :roles])) "lancelot2")
-         [col
-          [text "Prepare and shuffle the " [:strong "Loyalty Deck"] " for Lancelot."
-           [:ul
-            [:li [:strong "Variant 1"] " - Three \"No Change\" cards, two \"Change Allegiance\" cards, draw a card in rounds 3, 4, and 5."]
-            [:li [:strong "Variant 2"] " - Five \"No Change\" cards, two \"Change Allegiance\" cards, reveal a card for each round at game start. Evil Lancelot must always fail any quest."]]]])
        [col {:xs 8}
         [:> ui/Button {:fullWidth true
                        :variant   "outlined"
