@@ -36,10 +36,11 @@
   [(into #{} (for [[person-id role] teams :when (sees role)]
                (:name (crud/get people/people person-id))))])
 
-(defn vote-info [{:keys [type people]}]
-  {:type   type
-   :people (->> people
-                (mapv (comp :name (partial crud/get people/people))))})
+(defn vote-info [{:keys [type people] :as vote}]
+  (if vote
+    {:type   type
+     :people (->> people
+                  (mapv (comp :name (partial crud/get people/people))))}))
 
 (defn get-info [game role person-id]
   (let [teams (dissoc (:teams game) person-id)
@@ -83,6 +84,22 @@
                                  :info  (get-info game role person-id)
                                  :vote  (vote-info (:vote game))})))))
 
+(defresource add-person-vote [id person-id]
+             :available-media-types ["application/json"]
+             :allowed-methods [:post]
+             :exists? (person-exists? id person-id)
+             :can-post-to-missing? false
+             :malformed? (util/malformed? ::data)
+             :new? false
+             :processable? #(rules/valid-vote? id person-id (::data %) ::errors)
+             :handle-unprocessable-entity ::errors
+             :post! (fn [ctx]
+                      (let [choice (-> ctx ::data :choice keyword)]
+                        (games/update-vote id person-id choice)))
+             :respond-with-entity? true
+             :handle-ok (fn [_] (games/display-game (crud/get games/games id))))
+
 (defroutes routes
            (ANY "/games/:id/people" [id] (game-add-person (.toLowerCase id)))
-           (ANY "/games/:id/people/:person-id/info" [id person-id] (get-person-info (.toLowerCase id) (.toLowerCase person-id))))
+           (ANY "/games/:id/people/:person-id/info" [id person-id] (get-person-info (.toLowerCase id) (.toLowerCase person-id)))
+           (ANY "/games/:id/people/:person-id/vote" [id person-id] (add-person-vote (.toLowerCase id) (.toLowerCase person-id))))

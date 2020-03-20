@@ -11,13 +11,13 @@
      #js {:root #js {:font-size "24px"}})
    ui/Fab))
 
-(defn single [{:keys [on-edit size selected? result]}]
+(defn single [{:keys [on-edit size n selected? result]}]
   [:> ui/Grid {:item true :xs 2}
    [:> round-button
-    {:color    (case result
-                 "good" "primary"
-                 "bad" "secondary"
-                 "default")
+    {:color    (cond
+                 (nil? result) "default"
+                 (rules/failed? size n result) "secondary"
+                 :else "primary")
      :size     "large"
      :disabled (and (nil? result) (not selected?))
      :on-click on-edit}
@@ -44,6 +44,7 @@
                                              :result (get quests n)
                                              :close  close})]
                [single {:size      size
+                        :n         n
                         :selected? (= n (count quests))
                         :result    (get quests n)
                         :on-edit   on-edit}])))]]])))

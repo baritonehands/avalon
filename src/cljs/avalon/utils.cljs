@@ -39,3 +39,6 @@
                   (clj->js (f theme))))]
     (fn [& args]
       (js->clj (apply mk-fn args) :keywordize-keys true))))
+
+(defn use-theme []
+  (js->clj (ui/useTheme) :keywordize-keys true))

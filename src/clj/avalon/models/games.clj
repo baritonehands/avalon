@@ -19,9 +19,18 @@
                nil)]
     (crud/create! games game)))
 
+(defn display-people [people]
+  (mapv #(:name (crud/get people/people %)) people))
+
+(defn display-quests [quests]
+  (->> (for [quest quests]
+         (update quest :people display-people))
+       (vec)))
+
 (defn display-game [game]
   (-> (dissoc game :teams :first :vote)
-      (update :people (partial map #(:name (crud/get people/people %))))))
+      (update :people display-people)
+      (update :quests display-quests)))
 
 (defn add-person [id person]
   (crud/relate! games id :people (:id person)))
@@ -33,7 +42,7 @@
         people (->> (:people game)
                     (map (partial crud/get people/people))
                     (filter #(contains? name-set (s/lower-case (:name %)))))]
-    (map :id people)))
+    (set (map :id people))))
 
 (defn delete-person [id pname]
   (dosync
@@ -51,6 +60,24 @@
                     (assoc game :vote {:type   vote
                                        :people people
                                        :votes  {}})))))
+
+(defn vote-complete? [{:keys [people votes]}]
+  (= people (set (keys votes))))
+
+(defn results [{:keys [people votes]}]
+  (let [results (frequencies (vals votes))]
+    (assoc results :people people)))
+
+(defn update-vote [id person-id choice]
+  (crud/update! games id
+                (fn [game]
+                  (let [next-game (assoc-in game [:vote :votes person-id] choice)
+                        next-vote (:vote next-game)]
+                    (if (vote-complete? next-vote)
+                      (-> next-game
+                          (assoc :vote nil)
+                          (update :quests conj (results next-vote)))
+                      next-game)))))
 
 (defn cancel-vote [id]
   (crud/update! games id

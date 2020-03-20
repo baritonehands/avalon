@@ -1,10 +1,64 @@
 (ns avalon.play.quest-detail
   (:require [reagent.session :as session]
             [material-ui :as ui]
-            [avalon.utils :refer [subheader-element]]))
+            [material-ui-icons :as icons]
+            [avalon.utils :refer [col subheader-element]]
+            [clojure.string :as s]
+            [reagent.core :as r]))
 
-(defn results [winner]
-  [:> ui/Typography {:variant "h2"} winner])
+(defn props->color [js-props]
+  (let [color (aget js-props "color")
+        palette (-> js-props (aget "theme") (aget "palette"))]
+    (-> palette (aget color))))
+
+(def card-styles
+  #js {:root #js {:background (fn [js-props]
+                                (-> js-props (props->color) (aget "main")))
+                  :color      (fn [js-props]
+                                (-> js-props (props->color) (aget "contrastText")))}})
+
+(def with-card-styles (ui/withStyles card-styles))
+
+(defn card [{:keys [classes result color] :as props}]
+  (println result)
+  [:> ui/Card {:class (.-root classes)}
+   [:> ui/CardContent
+    (if (= color "primary")
+      [:<>
+       [:> ui/Typography {:variant "h5"} (.-success result)]
+       [:> icons/CheckCircleOutlineOutlined {:font-size "large"}]]
+      [:<>
+       [:> ui/Typography {:variant "h5"} (.-failure result)]
+       [:> icons/HighlightOffOutlined {:font-size "large"}]])]])
+
+(def color-card
+  (-> card
+      (r/reactify-component)
+      (with-card-styles)
+      (ui/withTheme)))
+
+(defn results [{:keys [n size result]}]
+  (let [{:keys [success failure people]} result]
+    [col
+     [:> ui/Typography {:variant "subtitle1"}
+      "Participants: " (s/join ", " (sort people))]
+     [:> ui/Grid {:container true
+                  :spacing   2
+                  :justify   "space-between"}
+      [col {:xs 6}
+       [:> color-card
+        {:color  "primary"
+         :result result}]]
+      ;[:<>
+      ; [:> icons/CheckCircleOutlineOutlined
+      ;  {:font-size "large"}]]]
+
+      [col {:xs 6}
+       [:> color-card {:color  "secondary"
+                       :result result}]]]]))
+;[:<>
+; [:> icons/HighlightOffOutlined
+;  {:font-size "large"}]]]]]))
 
 (defn pick [{:keys [n size]}]
   (let [{:keys [people]} (session/get :game)]
@@ -31,7 +85,7 @@
      [:> ui/DialogTitle (str "Quest " (inc n))]
      [:> ui/DialogContent
       (if result
-        [results result]
+        [results props]
         [pick props])]
      [:> ui/DialogActions
       [:> ui/Button {:color    "default"

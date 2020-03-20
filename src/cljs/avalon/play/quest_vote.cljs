@@ -40,7 +40,7 @@
          [:> ui/DialogContent
           [:> ui/Typography {:variant "subtitle1"}
            "Participants"]
-          [:> ui/Typography {:variant   "p"
+          [:> ui/Typography {:variant   "body1"
                              :paragraph true}
            (s/join ", " (sort (:people vote)))]
           [buttons {:vote      vote
