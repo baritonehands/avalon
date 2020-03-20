@@ -3,6 +3,7 @@
             [avalon.utils :refer [col]]
             [avalon.rules.quests :as rules]
             [avalon.play.quest-detail :as quest-detail]
+            [avalon.play.quest-vote :as quest-vote]
             [reagent.core :as r]))
 
 (def round-button
@@ -28,6 +29,7 @@
     (fn [{:keys [people quests]}]
       [:<>
        [quest-detail/view @to-edit]
+       [quest-vote/view {:n (count quests)}]
        [:> ui/Card
         [:> ui/CardHeader {:title                  "Quests"
                            :title-typography-props {:variant "subtitle1"}}]
@@ -38,6 +40,7 @@
                  :justify   "space-between"}]
            (for [[n size] (map-indexed vector (rules/counts (count people)))]
              (let [on-edit #(reset! to-edit {:n      n
+                                             :size   size
                                              :result (get quests n)
                                              :close  close})]
                [single {:size      size

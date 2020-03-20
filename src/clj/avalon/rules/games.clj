@@ -2,7 +2,8 @@
   (:require [bouncer.core :as b]
             [bouncer.validators :as v]
             [avalon.models.games :as games]
-            [avalon.models.crud :as crud]))
+            [avalon.models.crud :as crud]
+            [avalon.rules.quests :as quests]))
 (def good {:specials #{:merlin :percival :good-lancelot1 :good-lancelot2 :twin1 :twin2}
            :counts   [3 4 4 5 6 6]})
 
@@ -56,6 +57,32 @@
         valid (b/valid? to-validate update-roles-rules)
         errors (first (b/validate to-validate update-roles-rules))]
     [valid {key errors}]))
+
+(defn quests-complete? [quests]
+  (->> (frequencies quests)
+       (vals)
+       (not-any? #(>= % 3))))
+
+(defn quest-rules [{:keys [quests people] :as game}]
+  (let [counts (quests/counts (count people))
+        quest-needs (get counts (count quests) 0)]
+    {:quests [[quests-complete? :message "Game Over"]]
+     :names  [[v/min-count quest-needs :message "Too few players"]
+              [v/max-count quest-needs :message "Too many players"]]
+     :people [[v/min-count quest-needs :message "Too few players"]
+              [v/max-count quest-needs :message "Too many players"]]
+     :vote   [[nil? :message "Vote already in progress"]]}))
+
+(defn valid-quest? [id names error-key]
+  (let [game (crud/get games/games id)
+        rules (quest-rules game)
+        to-validate {:names  names
+                     :quests (:quests game)
+                     :people (games/people-named game names)
+                     :vote   (:vote game)}
+        valid (b/valid? to-validate rules)
+        errors (first (b/validate to-validate rules))]
+    [valid {error-key errors}]))
 
 (defn reset-rules [game]
   {:status [[#{:playing} :message "Game not started"]]})

@@ -67,7 +67,7 @@
   (-> (update game :roles f k)
       (toggle-lancelot k)))
 
-(defn update-game [id name f]
+(defn update-game-roles [id name f]
   (fn [_]
     (crud/update! games/games id #(add-role % f (keyword name)))))
 
@@ -80,8 +80,22 @@
              :handle-unprocessable-entity ::errors
              :new? false
              :respond-with-entity? true
-             :post! (update-game id name conj)
-             :delete! (update-game id name disj)
+             :post! (update-game-roles id name conj)
+             :delete! (update-game-roles id name disj)
+             :handle-ok (fn [_] (games/display-game (crud/get games/games id))))
+
+(defresource create-quest [id]
+             :available-media-types ["application/json"]
+             :allowed-methods [:post :delete]
+             :exists? (crud/exists? games/games id)
+             :can-post-to-missing? false
+             :malformed? (util/malformed? ::data)
+             :processable? #(rules/valid-quest? id (:names (::data %)) ::errors)
+             :handle-unprocessable-entity ::errors
+             :new? false
+             :respond-with-entity? true
+             :post! #(games/add-vote id :quest (:names (::data %)))
+             :delete! #(games/cancel-vote id)
              :handle-ok (fn [_] (games/display-game (crud/get games/games id))))
 
 (defroutes routes
@@ -89,4 +103,5 @@
            (ANY "/games/:id" [id] (get-or-put-game (.toLowerCase id)))
            (ANY "/games/:id/play" [id] (play-game (.toLowerCase id)))
            (ANY "/games/:id/reset" [id] (reset-game (.toLowerCase id)))
-           (ANY "/games/:id/roles/:name" [id name] (update-roles (.toLowerCase id) name)))
+           (ANY "/games/:id/roles/:name" [id name] (update-roles (.toLowerCase id) name))
+           (ANY "/games/:id/quests" [id] (create-quest (.toLowerCase id))))

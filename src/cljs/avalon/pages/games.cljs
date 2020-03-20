@@ -84,8 +84,8 @@
 
 (def role-options [["merlin" "Merlin"]
                    ["percival" "Percival"]
-                   ["mordred" "Mordred"]
                    ["morgana" "Morgana"]
+                   ["mordred" "Mordred"]
                    ["oberon" "Oberon"]
                    ["lancelot1" "Lancelot (known to each other)"]
                    ["lancelot2" "Lancelot (switch allegiance)"]

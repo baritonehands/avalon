@@ -5,9 +5,9 @@
             [avalon.models.games :as games]))
 
 (defn person-rules [method game]
-  (let [taken? (fn [name]
+  (let [taken? (fn [pname]
                  (if (= method :post)
-                   (= (count (games/people-named game name)) 0)
+                   (= (count (games/people-named game [pname])) 0)
                    true))]
     {:id [[(fn [_] (some? game)) :message "Game with that code does not exist"]]
      :name [v/required

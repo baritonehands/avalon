@@ -34,13 +34,19 @@
 
 (defn get-people [sees teams]
   [(into #{} (for [[person-id role] teams :when (sees role)]
-              (:name (crud/get people/people person-id))))])
+               (:name (crud/get people/people person-id))))])
+
+(defn vote-info [{:keys [type people]}]
+  {:type   type
+   :people (->> people
+                (mapv (comp :name (partial crud/get people/people))))})
 
 (defn get-info [game role person-id]
   (let [teams (dissoc (:teams game) person-id)
         evil-roles #{:morgana :mordred :assassin :bad :evil-lancelot1}
         evil (get-people evil-roles teams)
-        evil-lancelot2 (concat evil (get-people #{:evil-lancelot2} teams))]
+        evil-lancelot2 (concat evil (get-people #{:evil-lancelot2} teams))
+        vote (:vote game)]
     (condp = role
       :merlin (get-people #{:morgana :bad :assassin :oberon :evil-lancelot1 :evil-lancelot2} teams)
       :percival (get-people #{:morgana :merlin} teams)
@@ -72,10 +78,11 @@
                             (if-not valid?
                               (ring-response errors {:status 422})
                               (let [role ((:teams game) person-id)]
-                                {:role role
+                                {:role  role
                                  :first (:name (crud/get people/people (:first game)))
-                                 :info (get-info game role person-id)})))))
+                                 :info  (get-info game role person-id)
+                                 :vote  (vote-info (:vote game))})))))
 
 (defroutes routes
-  (ANY "/games/:id/people" [id] (game-add-person (.toLowerCase id)))
-  (ANY "/games/:id/people/:person-id/info" [id person-id] (get-person-info (.toLowerCase id) (.toLowerCase person-id))))
+           (ANY "/games/:id/people" [id] (game-add-person (.toLowerCase id)))
+           (ANY "/games/:id/people/:person-id/info" [id person-id] (get-person-info (.toLowerCase id) (.toLowerCase person-id))))

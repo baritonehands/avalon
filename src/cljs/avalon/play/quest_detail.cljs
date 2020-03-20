@@ -6,7 +6,7 @@
 (defn results [winner]
   [:> ui/Typography {:variant "h2"} winner])
 
-(defn pick [n]
+(defn pick [{:keys [n size]}]
   (let [{:keys [people]} (session/get :game)]
     [:<>
      (into
@@ -14,7 +14,7 @@
                     :subheader       (subheader-element
                                        {:disable-sticky  false
                                         :disable-gutters true}
-                                       (str "Pick " n " players:"))}]
+                                       (str "Pick " size " players:"))}]
        (for [[idx player] (map-indexed vector (sort people))]
          [:> ui/ListItem {:disable-gutters true}
           [:> ui/ListItemIcon
@@ -32,7 +32,7 @@
      [:> ui/DialogContent
       (if result
         [results result]
-        [pick n])]
+        [pick props])]
      [:> ui/DialogActions
       [:> ui/Button {:color    "default"
                      :on-click close}
