@@ -22,16 +22,6 @@
           [quest-results/view]
           [quest-picker/view])]
        [:> ui/DialogActions
-        [:> ui/Button {:color    (if completed?
-                                   "secondary"
-                                   "default")
-                       :on-click #(quests/close-dialog)}
-         (if completed?
-           "Clear Quest"
-           "Cancel")]
-        [:> ui/Button {:color    "primary"
-                       :on-click #(quests/close-dialog)
-                       :disabled (not (quests/valid?))}
-         (if result
-           "Close"
-           "Start Quest")]]])))
+        (if completed?
+          [quest-results/actions]
+          [quest-picker/actions])]])))

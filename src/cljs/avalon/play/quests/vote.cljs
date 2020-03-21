@@ -4,7 +4,8 @@
             [material-ui-icons :as icons]
             [avalon.utils :refer [col]]
             [reagent.session :as session]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [avalon.play.quests :as quests]))
 
 (defn buttons [{:keys [selection]}]
   [:> ui/Grid {:container true
@@ -47,9 +48,9 @@
                     :selection selection}]]
          [:> ui/DialogActions
           [:> ui/Button {:color    "secondary"
-                         :on-click close}
+                         :on-click #(quests/clear-quest!)}
            "Cancel Vote"]
           [:> ui/Button {:color    "primary"
                          :disabled (not @selection)
-                         :on-click close}
+                         :on-click #(quests/vote! @selection)}
            "Send Vote"]]]))))

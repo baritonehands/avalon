@@ -6,25 +6,31 @@
             [avalon.play.quests :as quests]))
 
 (defn view []
-  (let [selected (r/atom #{})]
-    (fn []
-      (let [{:keys [size]} (quests/state)
-            people (session/get-in [:game :people])]
-        [:<>
-         (into
-           [:> ui/List {:disable-padding true
-                        :subheader       (subheader-element
-                                           {:disable-sticky  false
-                                            :disable-gutters true}
-                                           (str "Pick " size " players:"))}]
-           (for [[idx player] (map-indexed vector (sort people))]
-             [:> ui/ListItem {:disable-gutters true}
-              [:> form-control-label-full
-               {:label           player
-                :label-placement "start"
-                :control         (r/as-element
-                                   [:> ui/Switch {:checked   (contains? @selected idx)
-                                                  :on-change (fn [event]
-                                                               (let [op (if (-> event .-target .-checked) conj disj)]
-                                                                 (swap! selected op idx)))
-                                                  :color     "primary"}])}]]))]))))
+  (let [{:keys [size]} (quests/state)
+        people (session/get-in [:game :people])]
+    [:<>
+     (into
+       [:> ui/List {:disable-padding true
+                    :subheader       (subheader-element
+                                       {:disable-sticky  false
+                                        :disable-gutters true}
+                                       (str "Pick " size " players:"))}]
+       (for [[idx player] (map-indexed vector (sort people))]
+         [:> ui/ListItem {:disable-gutters true}
+          [:> form-control-label-full
+           {:label           player
+            :label-placement "start"
+            :control         (r/as-element
+                               [:> ui/Switch {:checked   (-> (quests/state) :picker (contains? player))
+                                              :on-change #(quests/toggle-pick player (-> % .-target .-checked))
+                                              :color     "primary"}])}]]))]))
+
+(defn actions []
+  [:<>
+   [:> ui/Button {:color    "default"
+                  :on-click #(quests/close-dialog)}
+    "Cancel"]
+   [:> ui/Button {:color    "primary"
+                  :on-click #(quests/create-quest!)
+                  :disabled (not (quests/picker-valid?))}
+    "Start Quest"]])

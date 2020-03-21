@@ -50,3 +50,12 @@
       [col {:xs 6}
        [:> color-card {:color  "secondary"
                        :result result}]]]]))
+
+(defn actions []
+  [:<>
+   [:> ui/Button {:color    "secondary"
+                  :on-click #(quests/clear-quest!)}
+    "Clear Quest"]
+   [:> ui/Button {:color    "primary"
+                  :on-click #(quests/close-dialog)}
+    "Close"]])
