@@ -12,10 +12,8 @@
     (-> palette (aget color))))
 
 (def card-styles
-  #js {:root #js {:background (fn [js-props]
-                                (-> js-props (props->color) (aget "main")))
-                  :color      (fn [js-props]
-                                (-> js-props (props->color) (aget "contrastText")))}})
+  #js {:root #js {:background #(-> % (props->color) (aget "main"))
+                  :color      #(-> % (props->color) (aget "contrastText"))}})
 
 (def with-card-styles (ui/withStyles card-styles))
 
@@ -25,10 +23,10 @@
    [:> ui/CardContent
     (if (= color "primary")
       [:<>
-       [:> ui/Typography {:variant "h5"} (.-success result)]
+       [:> ui/Typography {:variant "h5"} (or (.-success result) 0)]
        [:> icons/CheckCircleOutlineOutlined {:font-size "large"}]]
       [:<>
-       [:> ui/Typography {:variant "h5"} (.-failure result)]
+       [:> ui/Typography {:variant "h5"} (or (.-failure result) 0)]
        [:> icons/HighlightOffOutlined {:font-size "large"}]])]])
 
 (def color-card
