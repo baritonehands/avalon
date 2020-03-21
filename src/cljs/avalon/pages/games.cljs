@@ -2,7 +2,7 @@
   (:require [ajax.core :refer [GET POST DELETE]]
             [cljs.pprint :refer [pprint]]
             [reagent.session :as session]
-            [avalon.utils :refer [row col spinner subheader-element capitalize show-error make-styles]]
+            [avalon.utils :refer [row col spinner subheader-element form-control-label-full capitalize show-error make-styles]]
             [material-ui :as ui]
             [material-ui-icons :as icons]
             [accountant.core :as route]
@@ -52,13 +52,6 @@
           {:response-format :json
            :keywords?       true
            :handler         #(session/put! :game %)})))
-
-(def form-control-label-full
-  ((ui/styled ui/FormControlLabel)
-   #js {:display         "flex"
-        :width           "100%"
-        :justify-content "space-between"
-        :margin-right    "auto"}))
 
 (defn role-toggle [id roles role desc]
   (let [on (string? ((set roles) role))]

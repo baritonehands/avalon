@@ -24,6 +24,13 @@
         (into [:> ui/ListSubheader (merge defaults props)] children)
         (into [:> ui/ListSubheader defaults] (cons props children))))))
 
+(def form-control-label-full
+  ((ui/styled ui/FormControlLabel)
+   #js {:display         "flex"
+        :width           "100%"
+        :justify-content "space-between"
+        :margin-right    "auto"}))
+
 (defn capitalize [s]
   (let [letter (-> s
                    (.charAt name 0)
@@ -39,6 +46,3 @@
                   (clj->js (f theme))))]
     (fn [& args]
       (js->clj (apply mk-fn args) :keywordize-keys true))))
-
-(defn use-theme []
-  (js->clj (ui/useTheme) :keywordize-keys true))

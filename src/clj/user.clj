@@ -14,6 +14,15 @@
     ;(println "Group" (:id group))
     (println "Game" (:id game))))
 
+(defn fill-votes
+  ([id] (fill-votes id 0))
+  ([id fails]
+   (let [{:keys [vote]} (crud/get games/games id)
+         people (shuffle (:people vote))
+         choices (concat (repeat fails :failure) (repeat :success))]
+     (doseq [[person-id choice] (map vector people choices)]
+       (games/update-vote id person-id choice)))))
+
 (defn play-roles [id]
   (pprint
     (for [[person-id role] (:teams (crud/get games/games id))]

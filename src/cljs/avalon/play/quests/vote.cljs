@@ -1,4 +1,4 @@
-(ns avalon.play.quest-vote
+(ns avalon.play.quests.vote
   (:require [reagent.core :as r]
             [material-ui :as ui]
             [material-ui-icons :as icons]
@@ -32,7 +32,7 @@
 (defn view [_]
   (let [selection (r/atom nil)]
     (fn [{:keys [n close] :as props}]
-      (if-let [vote (:vote (session/get :info))]
+      (if-let [vote (session/get-in [:info :vote])]
         [:> ui/Dialog {:open       true
                        :max-width  "sm"
                        :full-width true}

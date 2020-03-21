@@ -5,7 +5,7 @@
             [material-ui :as ui]
             [avalon.utils :refer [row col spinner capitalize show-error make-styles]]
             [avalon.pages.games :as games]
-            [avalon.play.quests :as quests]
+            [avalon.play.quests.view :as quest-view]
             [accountant.core :as route]))
 
 (def twins #{"twin1" "twin2"})
@@ -170,7 +170,7 @@
                [:li [:strong "Variant 1"] " - Three \"No Change\" cards, two \"Change Allegiance\" cards, draw a card in rounds 3, 4, and 5."]
                [:li [:strong "Variant 2"] " - Five \"No Change\" cards, two \"Change Allegiance\" cards, reveal a card for each round at game start. Evil Lancelot must always fail any quest."]]]])]]]
        [col
-        [quests/view game]]
+        [quest-view/root game]]
        [col {:xs 8}
         [:> ui/Button {:fullWidth true
                        :variant   "outlined"
