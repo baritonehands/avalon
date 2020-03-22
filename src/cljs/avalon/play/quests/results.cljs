@@ -39,11 +39,11 @@
     (if (= color "primary")
       [:<>
        [:> count-text {:variant "h5"
-                       :display "inline"} (or (.-success result) 0)]
+                       :display "inline"} (or (aget result "success") 0)]
        [:> success-icon {:font-size "large"}]]
       [:<>
        [:> count-text {:variant "h5"
-                       :display "inline"} (or (.-failure result) 0)]
+                       :display "inline"} (or (aget result "failure") 0)]
        [:> failure-icon {:font-size "large"}]])]])
 
 (def color-card

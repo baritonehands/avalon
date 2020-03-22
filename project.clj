@@ -50,7 +50,7 @@
                                     [:cljsbuild :builds :app :compiler :output-dir]
                                     [:cljsbuild :builds :app :compiler :output-to]]
 
-  :source-paths ["src/clj"]
+  :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources" "target/cljsbuild"]
 
   :cljsbuild {:builds {:app {:source-paths ["src/cljs" "src/cljc"]
