@@ -1,6 +1,7 @@
 (ns avalon.play.quests
   (:require [reagent.session :as session]
-            [ajax.core :refer [POST DELETE]]))
+            [ajax.core :refer [POST DELETE]]
+            [avalon.utils :refer [capitalize show-error]]))
 
 (defn state []
   (session/get ::state))
@@ -29,17 +30,20 @@
   ((:on-cancel (alert-state)))
   (session/remove! ::alert))
 
-(defn toggle-pick [pname selected?]
-  (session/update-in!
+(defn picker-selected [names]
+  (session/assoc-in!
     [::state :picker]
-    (fn [picked]
-      (if selected?
-        (conj picked pname)
-        (disj picked pname)))))
+    (into (sorted-set) names)))
 
 (defn picker-valid? []
   (let [{:keys [size picker]} (state)]
     (= size (count picker))))
+
+(defn handle-error [action]
+  (fn [{:keys [status response]}]
+    (condp = status
+      422 (show-error (str "Unable to " action) (capitalize (first (val (first response)))))
+      status (show-error (str "Unable to " action) "Unexpected error, please try again"))))
 
 (defn create-vote! []
   (let [id (session/get-in [:game :id])
@@ -52,7 +56,8 @@
            :keywords?       true
            :handler         (fn [game]
                               (session/put! :game game)
-                              (close-dialog))})))
+                              (close-dialog))
+           :error-handler (handle-error "Start Quest")})))
 
 (defn vote! [choice]
   (let [{:keys [id person-id]} (session/get :route-params)]
@@ -62,7 +67,8 @@
            :response-format :json
            :keywords?       true
            :handler         (fn [game]
-                              (session/put! :game game))})))
+                              (session/put! :game game))
+           :error-handler (handle-error "Vote")})))
 
 (defn clear-vote! []
   (let [id (session/get-in [:game :id])]
@@ -71,7 +77,8 @@
              :keywords?       true
              :handler         (fn [game]
                                 (session/put! :game game)
-                                (close-dialog))})))
+                                (close-dialog))
+             :error-handler (handle-error "Clear Vote")})))
 
 (defn clear-quest! [n]
   (let [id (session/get-in [:game :id])]
@@ -80,4 +87,5 @@
              :keywords?       true
              :handler         (fn [game]
                                 (session/put! :game game)
-                                (close-dialog))})))
+                                (close-dialog))
+             :error-handler (handle-error "Undo Quest")})))

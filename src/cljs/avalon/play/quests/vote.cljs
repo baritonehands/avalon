@@ -39,13 +39,19 @@
                        :full-width true}
          [:> ui/DialogTitle (str "Quest " (inc n))]
          [:> ui/DialogContent
-          [:> ui/Typography {:variant "subtitle1"}
-           "Participants"]
-          [:> ui/Typography {:variant   "body1"
-                             :paragraph true}
-           (s/join ", " (sort (:people vote)))]
-          [buttons {:vote      vote
-                    :selection selection}]]
+          [:> ui/Grid {:container true
+                       :spacing   2}
+           [:> ui/Typography {:variant "subtitle1"}
+            "Participants:"]
+           (into
+             [col {:container true
+                   :spacing   1}]
+             (for [player (sort (:people vote))]
+               [:> ui/Chip {:label player}]))
+           [:> ui/Typography {:variant "subtitle1"}
+            "Vote:"]
+           [buttons {:vote      vote
+                     :selection selection}]]]
          [:> ui/DialogActions
           [:> ui/Button {:color    "secondary"
                          :on-click (fn []

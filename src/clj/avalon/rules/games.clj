@@ -58,15 +58,18 @@
         errors (first (b/validate to-validate update-roles-rules))]
     [valid {key errors}]))
 
-(defn quests-complete? [quests]
-  (->> (frequencies quests)
+(defn quests-complete? [{:keys [people] :as game} quests]
+  (->> (for [[n result] (map-indexed vector quests)
+             :when result]
+         (quests/failed? (count people) n result))
+       (frequencies)
        (vals)
        (not-any? #(>= % 3))))
 
 (defn quest-rules [{:keys [quests people] :as game}]
   (let [counts (quests/counts (count people))
         quest-needs (get counts (count quests) 0)]
-    {:quests [[quests-complete? :message "Game Over"]]
+    {:quests [[#(quests-complete? game %) :message "Game Over"]]
      :names  [[v/min-count quest-needs :message "Too few players"]
               [v/max-count quest-needs :message "Too many players"]]
      :people [[v/min-count quest-needs :message "Too few players"]

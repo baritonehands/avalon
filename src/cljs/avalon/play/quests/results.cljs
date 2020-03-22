@@ -4,7 +4,8 @@
             [material-ui-icons :as icons]
             [avalon.utils :refer [col]]
             [clojure.string :as s]
-            [avalon.play.quests :as quests]))
+            [avalon.play.quests :as quests]
+            [avalon.rules.quests :as rules]))
 
 (defn props->color [js-props]
   (let [color (aget js-props "color")
@@ -13,20 +14,37 @@
 
 (def card-styles
   #js {:root #js {:background #(-> % (props->color) (aget "main"))
-                  :color      #(-> % (props->color) (aget "contrastText"))}})
+                  :color      #(-> % (props->color) (aget "contrastText"))
+                  :text-align "center"}})
 
 (def with-card-styles (ui/withStyles card-styles))
+
+(def count-styles
+  #js {:root #js {:padding        "2px"
+                  :vertical-align "middle"}})
+
+(def count-text
+  ((ui/withStyles count-styles) ui/Typography))
+(def success-icon
+  ((ui/withStyles count-styles) icons/CheckCircleOutlineOutlined))
+(def failure-icon
+  ((ui/withStyles count-styles) icons/HighlightOffOutlined))
+
+(def icon-styles
+  #js {:root #js {:vertical-align "middle"}})
 
 (defn card [{:keys [classes result color] :as props}]
   [:> ui/Card {:class (.-root classes)}
    [:> ui/CardContent
     (if (= color "primary")
       [:<>
-       [:> ui/Typography {:variant "h5"} (or (.-success result) 0)]
-       [:> icons/CheckCircleOutlineOutlined {:font-size "large"}]]
+       [:> count-text {:variant "h5"
+                       :display "inline"} (or (.-success result) 0)]
+       [:> success-icon {:font-size "large"}]]
       [:<>
-       [:> ui/Typography {:variant "h5"} (or (.-failure result) 0)]
-       [:> icons/HighlightOffOutlined {:font-size "large"}]])]])
+       [:> count-text {:variant "h5"
+                       :display "inline"} (or (.-failure result) 0)]
+       [:> failure-icon {:font-size "large"}]])]])
 
 (def color-card
   (-> card
@@ -35,18 +53,25 @@
       (ui/withTheme)))
 
 (defn view []
-  (let [{:keys [result]} (quests/state)
+  (let [{:keys [player-count size n result]} (quests/state)
         {:keys [success failure people]} result]
-    [col
+    [:> ui/Grid {:container true
+                 :spacing   2}
      [:> ui/Typography {:variant "subtitle1"}
-      "Participants: " (s/join ", " (sort people))]
+      "Participants:"]
+     (into
+       [col {:container true
+             :spacing   1}]
+       (for [player (sort people)]
+         [:> ui/Chip {:label player}]))
+     [:> ui/Typography {:variant "subtitle1"}
+      "Votes:"]
      [:> ui/Grid {:container true
                   :spacing   2
                   :justify   "space-between"}
       [col {:xs 6}
-       [:> color-card
-        {:color  "primary"
-         :result result}]]
+       [:> color-card {:color  "primary"
+                       :result result}]]
       [col {:xs 6}
        [:> color-card {:color  "secondary"
                        :result result}]]]]))

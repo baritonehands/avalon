@@ -6,24 +6,27 @@
             [avalon.play.quests :as quests]))
 
 (defn view []
-  (let [{:keys [size]} (quests/state)
+  (let [{:keys [size picker]} (quests/state)
         people (session/get-in [:game :people])]
-    [:<>
+    [:> ui/FormControl {:full-width true}
+     [:> ui/InputLabel
+      {:id "quest-picker-label"}
+      (str "Pick " size " Players")]
      (into
-       [:> ui/List {:disable-padding true
-                    :subheader       (subheader-element
-                                       {:disable-sticky  false
-                                        :disable-gutters true}
-                                       (str "Pick " size " players:"))}]
+       [:> ui/Select {:label-id     "quest-picker-label"
+                      :multiple     true
+                      :value        picker
+                      :on-change    #(quests/picker-selected (-> % .-target .-value))
+                      :render-value (fn [selected]
+                                      (r/as-element
+                                        (into
+                                          [:> ui/Grid {:container true}]
+                                          (for [item selected]
+                                            [:> ui/Chip {:label item}]))))}]
+
        (for [[idx player] (map-indexed vector (sort people))]
-         [:> ui/ListItem {:disable-gutters true}
-          [:> form-control-label-full
-           {:label           player
-            :label-placement "start"
-            :control         (r/as-element
-                               [:> ui/Switch {:checked   (-> (quests/state) :picker (contains? player))
-                                              :on-change #(quests/toggle-pick player (-> % .-target .-checked))
-                                              :color     "primary"}])}]]))]))
+         [:> ui/MenuItem {:value player}
+          player]))]))
 
 (defn actions []
   [:<>

@@ -45,6 +45,8 @@
   (-> game
       (assoc :status :waiting)
       (assoc :teams {})
+      (assoc :quests [])
+      (assoc :vote nil)
       (dissoc :first)))
 
 (defresource reset-game [id]
