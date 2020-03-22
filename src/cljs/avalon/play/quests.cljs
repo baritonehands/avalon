@@ -1,7 +1,8 @@
 (ns avalon.play.quests
   (:require [reagent.session :as session]
             [ajax.core :refer [POST DELETE]]
-            [avalon.utils :refer [capitalize show-error]]))
+            [avalon.utils :refer [capitalize show-error]]
+            [avalon.pages.games :as games]))
 
 (defn state []
   (session/get ::state))
@@ -54,8 +55,8 @@
            :format          :json
            :response-format :json
            :keywords?       true
-           :handler         (fn [game]
-                              (session/put! :game game)
+           :handler         (fn [_]
+                              (games/refresh-game)
                               (close-dialog))
            :error-handler (handle-error "Start Quest")})))
 
@@ -66,17 +67,17 @@
            :format          :json
            :response-format :json
            :keywords?       true
-           :handler         (fn [game]
-                              (session/put! :game game))
-           :error-handler (handle-error "Vote")})))
+           :handler         (fn [_]
+                              (games/refresh-game))
+           :error-handler   (handle-error "Vote")})))
 
 (defn clear-vote! []
   (let [id (session/get-in [:game :id])]
     (DELETE (str "/api/games/" id "/votes")
             {:response-format :json
              :keywords?       true
-             :handler         (fn [game]
-                                (session/put! :game game)
+             :handler         (fn [_]
+                                (games/refresh-game)
                                 (close-dialog))
              :error-handler (handle-error "Clear Vote")})))
 
@@ -86,6 +87,6 @@
             {:response-format :json
              :keywords?       true
              :handler         (fn [game]
-                                (session/put! :game game)
+                                (games/refresh-game)
                                 (close-dialog))
              :error-handler (handle-error "Undo Quest")})))

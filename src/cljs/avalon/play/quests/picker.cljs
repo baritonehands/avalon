@@ -7,11 +7,14 @@
 
 (defn view []
   (let [{:keys [size picker]} (quests/state)
-        people (session/get-in [:game :people])]
-    [:> ui/FormControl {:full-width true}
+        people (session/get-in [:game :people])
+        error? (and (seq picker)
+                    (not= (count picker) size))]
+    [:> ui/FormControl {:full-width true
+                        :error      error?}
      [:> ui/InputLabel
       {:id "quest-picker-label"}
-      (str "Pick " size " Players")]
+      (str "Choose " size " Players")]
      (into
        [:> ui/Select {:label-id     "quest-picker-label"
                       :multiple     true
@@ -26,7 +29,8 @@
 
        (for [[idx player] (map-indexed vector (sort people))]
          [:> ui/MenuItem {:value player}
-          player]))]))
+          player]))
+     (if error? [:> ui/FormHelperText (str "Please choose " size " players")])]))
 
 (defn actions []
   [:<>

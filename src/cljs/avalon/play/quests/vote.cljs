@@ -48,20 +48,35 @@
                    :spacing   1}]
              (for [player (sort (:people vote))]
                [:> ui/Chip {:label player}]))
-           [:> ui/Typography {:variant "subtitle1"}
-            "Vote:"]
-           [buttons {:vote      vote
-                     :selection selection}]]]
+           (if (:participant vote)
+             [:<>
+              [:> ui/Typography {:variant "subtitle1"}
+               "Vote:"]
+              [buttons {:vote      vote
+                        :selection selection}]]
+             [:<>
+              [:> ui/Typography {:variant "subtitle1"}
+               "Waiting For:"]
+              (into
+                [col {:container true
+                      :spacing   1}]
+                (for [player (sort (:waiting vote))]
+                  [:> ui/Chip {:label player}]))])]]
          [:> ui/DialogActions
-          [:> ui/Button {:color    "secondary"
+          [:> ui/Button {:color    "default"
                          :on-click (fn []
                                      (quests/open-alert {:title          "Cancel Vote"
                                                          :message        "Are you sure you want to cancel this vote?"
                                                          :confirm-button "Cancel Vote"
                                                          :cancel-button  "Keep Voting"
-                                                         :on-confirm     #(quests/clear-vote!)}))}
+                                                         :on-confirm     (fn []
+                                                                           (quests/clear-vote!)
+                                                                           (reset! selection nil))}))}
            "Cancel Vote"]
-          [:> ui/Button {:color    "primary"
-                         :disabled (not @selection)
-                         :on-click #(quests/vote! @selection)}
-           "Send Vote"]]]))))
+          (if (:participant vote)
+            [:> ui/Button {:color    "primary"
+                           :disabled (not @selection)
+                           :on-click (fn []
+                                       (quests/vote! @selection)
+                                       (reset! selection nil))}
+             "Send Vote"])]]))))

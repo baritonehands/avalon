@@ -81,7 +81,7 @@
 (defn actions []
   (let [{:keys [n]} (quests/state)]
     [:<>
-     [:> ui/Button {:color    "secondary"
+     [:> ui/Button {:color    "default"
                     :on-click (fn []
                                 (quests/open-alert {:title          "Undo Quest"
                                                     :message        clear-message

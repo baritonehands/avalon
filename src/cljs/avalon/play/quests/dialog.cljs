@@ -7,7 +7,10 @@
             [reagent.core :as r]
             [avalon.play.quests.results :as quest-results]
             [avalon.play.quests.picker :as quest-picker]
-            [avalon.play.quests :as quests]))
+            [avalon.play.quests :as quests]
+            [avalon.rules.quests :as rules]))
+
+
 
 (defn view []
   (let [{:keys [n result] :as quest} (quests/state)
