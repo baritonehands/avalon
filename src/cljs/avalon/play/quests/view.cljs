@@ -5,7 +5,8 @@
             [avalon.play.quests :as quests]
             [avalon.play.quests.dialog :as quest-dialog]
             [avalon.play.quests.vote :as quest-vote]
-            [reagent.core :as r]))
+            [reagent.core :as r]
+            [reagent.session :as session]))
 
 (def round-button
   ((ui/withStyles
@@ -27,10 +28,26 @@
                                       :result result}))}
     size]])
 
+(defn alert []
+  (if-let [alert (quests/alert-state)]
+    [:> ui/Dialog {:open       true
+                   :max-width  "sm"
+                   :full-width true}
+     [:> ui/DialogTitle (:title alert)]
+     [:> ui/DialogContent (:message alert)]
+     [:> ui/DialogActions
+      [:> ui/Button {:color    "default"
+                     :on-click #(quests/cancel-alert)}
+       (:cancel-button alert)]
+      [:> ui/Button {:color    "secondary"
+                     :on-click #(quests/confirm-alert)}
+       (:confirm-button alert)]]]))
+
 (defn root [{:keys [people quests]}]
   [:<>
    [quest-dialog/view]
    [quest-vote/view {:n (count quests)}]
+   [alert]
    [:> ui/Card
     [:> ui/CardHeader {:title                  "Quests"
                        :title-typography-props {:variant "subtitle1"}}]

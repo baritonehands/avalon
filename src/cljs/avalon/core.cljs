@@ -39,7 +39,7 @@
         [:> ui/DialogActions
          [:> ui/Button {:color    "primary"
                         :on-click #(session/put! :error nil)}
-          "OK"]]])]))
+          "Dismiss"]]])]))
 
 (defn home-page []
   [base-layout [join/home-page]])

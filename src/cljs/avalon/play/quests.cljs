@@ -11,6 +11,24 @@
 (defn close-dialog []
   (session/remove! ::state))
 
+(defn alert-state []
+  (session/get ::alert))
+
+(defn open-alert [alert]
+  (let [defaults {:on-confirm     (constantly nil)
+                  :on-cancel      (constantly nil)
+                  :confirm-button "Confirm"
+                  :cancel-button  "Cancel"}]
+    (session/put! ::alert (merge defaults alert))))
+
+(defn confirm-alert []
+  ((:on-confirm (alert-state)))
+  (session/remove! ::alert))
+
+(defn cancel-alert []
+  ((:on-cancel (alert-state)))
+  (session/remove! ::alert))
+
 (defn toggle-pick [pname selected?]
   (session/update-in!
     [::state :picker]
@@ -23,11 +41,12 @@
   (let [{:keys [size picker]} (state)]
     (= size (count picker))))
 
-(defn create-quest! []
+(defn create-vote! []
   (let [id (session/get-in [:game :id])
         names (-> (state) :picker)]
-    (POST (str "/api/games/" id "/quests")
-          {:params          {:names names}
+    (POST (str "/api/games/" id "/votes")
+          {:params          {:type  :quest
+                             :names names}
            :format          :json
            :response-format :json
            :keywords?       true
@@ -45,9 +64,18 @@
            :handler         (fn [game]
                               (session/put! :game game))})))
 
-(defn clear-quest! []
+(defn clear-vote! []
   (let [id (session/get-in [:game :id])]
-    (DELETE (str "/api/games/" id "/quests")
+    (DELETE (str "/api/games/" id "/votes")
+            {:response-format :json
+             :keywords?       true
+             :handler         (fn [game]
+                                (session/put! :game game)
+                                (close-dialog))})))
+
+(defn clear-quest! [n]
+  (let [id (session/get-in [:game :id])]
+    (DELETE (str "/api/games/" id "/quests/" (inc n))
             {:response-format :json
              :keywords?       true
              :handler         (fn [game]

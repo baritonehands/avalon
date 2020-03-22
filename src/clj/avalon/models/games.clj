@@ -83,3 +83,8 @@
   (crud/update! games id
                 (fn [game]
                   (assoc game :vote nil))))
+
+(defn clear-quest [id n]
+  (crud/update! games id
+                (fn [game]
+                  (update game :quests #(vec (take (dec n) %))))))

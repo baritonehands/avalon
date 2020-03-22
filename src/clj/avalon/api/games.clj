@@ -84,18 +84,27 @@
              :delete! (update-game-roles id name disj)
              :handle-ok (fn [_] (games/display-game (crud/get games/games id))))
 
-(defresource create-quest [id]
+(defresource votes-resource [id]
              :available-media-types ["application/json"]
              :allowed-methods [:post :delete]
              :exists? (crud/exists? games/games id)
              :can-post-to-missing? false
              :malformed? (util/malformed? ::data)
-             :processable? #(rules/valid-quest? id (:names (::data %)) ::errors)
+             :processable? (rules/valid-quest? id ::data ::errors)
              :handle-unprocessable-entity ::errors
              :new? false
              :respond-with-entity? true
-             :post! #(games/add-vote id :quest (:names (::data %)))
-             :delete! #(games/cancel-vote id)
+             :post! (fn [ctx]
+                      (let [{:keys [names type]} (::data ctx)]
+                        (games/add-vote id type names)))
+             :delete! (fn [_] (games/cancel-vote id))
+             :handle-ok (fn [_] (games/display-game (crud/get games/games id))))
+
+(defresource quests-resource [id n]
+             :available-media-types ["application/json"]
+             :allowed-methods [:delete]
+             :exists? (crud/exists? games/games id)
+             :delete! (fn [_] (games/clear-quest id n))
              :handle-ok (fn [_] (games/display-game (crud/get games/games id))))
 
 (defroutes routes
@@ -104,4 +113,5 @@
            (ANY "/games/:id/play" [id] (play-game (.toLowerCase id)))
            (ANY "/games/:id/reset" [id] (reset-game (.toLowerCase id)))
            (ANY "/games/:id/roles/:name" [id name] (update-roles (.toLowerCase id) name))
-           (ANY "/games/:id/quests" [id] (create-quest (.toLowerCase id))))
+           (ANY "/games/:id/votes" [id] (votes-resource (.toLowerCase id)))
+           (ANY "/games/:id/quests/:n" [id n] (quests-resource (.toLowerCase id) (Integer/parseInt n))))

@@ -48,7 +48,12 @@
                     :selection selection}]]
          [:> ui/DialogActions
           [:> ui/Button {:color    "secondary"
-                         :on-click #(quests/clear-quest!)}
+                         :on-click (fn []
+                                     (quests/open-alert {:title          "Cancel Vote"
+                                                         :message        "Are you sure you want to cancel this vote?"
+                                                         :confirm-button "Cancel Vote"
+                                                         :cancel-button  "Keep Voting"
+                                                         :on-confirm     #(quests/clear-vote!)}))}
            "Cancel Vote"]
           [:> ui/Button {:color    "primary"
                          :disabled (not @selection)

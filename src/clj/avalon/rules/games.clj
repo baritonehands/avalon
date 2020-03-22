@@ -73,16 +73,20 @@
               [v/max-count quest-needs :message "Too many players"]]
      :vote   [[nil? :message "Vote already in progress"]]}))
 
-(defn valid-quest? [id names error-key]
-  (let [game (crud/get games/games id)
-        rules (quest-rules game)
-        to-validate {:names  names
-                     :quests (:quests game)
-                     :people (games/people-named game names)
-                     :vote   (:vote game)}
-        valid (b/valid? to-validate rules)
-        errors (first (b/validate to-validate rules))]
-    [valid {error-key errors}]))
+(defn valid-quest? [id data-key error-key]
+  (fn [ctx]
+    (if (= :delete (get-in ctx [:request :request-method]))
+      true
+      (let [game (crud/get games/games id)
+            names (get-in ctx [data-key :names])
+            rules (quest-rules game)
+            to-validate {:names  names
+                         :quests (:quests game)
+                         :people (games/people-named game names)
+                         :vote   (:vote game)}
+            valid (b/valid? to-validate rules)
+            errors (first (b/validate to-validate rules))]
+        [valid {error-key errors}]))))
 
 (defn reset-rules [game]
   {:status [[#{:playing} :message "Game not started"]]})

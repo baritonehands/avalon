@@ -31,6 +31,6 @@
                   :on-click #(quests/close-dialog)}
     "Cancel"]
    [:> ui/Button {:color    "primary"
-                  :on-click #(quests/create-quest!)
+                  :on-click #(quests/create-vote!)
                   :disabled (not (quests/picker-valid?))}
     "Start Quest"]])

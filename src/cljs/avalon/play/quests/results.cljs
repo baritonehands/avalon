@@ -51,11 +51,19 @@
        [:> color-card {:color  "secondary"
                        :result result}]]]]))
 
+(def clear-message "Are you sure you want to undo this quest? All following quests will also be undone.")
+
 (defn actions []
-  [:<>
-   [:> ui/Button {:color    "secondary"
-                  :on-click #(quests/clear-quest!)}
-    "Clear Quest"]
-   [:> ui/Button {:color    "primary"
-                  :on-click #(quests/close-dialog)}
-    "Close"]])
+  (let [{:keys [n]} (quests/state)]
+    [:<>
+     [:> ui/Button {:color    "secondary"
+                    :on-click (fn []
+                                (quests/open-alert {:title          "Undo Quest"
+                                                    :message        clear-message
+                                                    :confirm-button "Undo Quest"
+                                                    :cancel-button  "Keep Quest"
+                                                    :on-confirm     #(quests/clear-quest! n)}))}
+      "Undo Quest"]
+     [:> ui/Button {:color    "primary"
+                    :on-click #(quests/close-dialog)}
+      "Dismiss"]]))
