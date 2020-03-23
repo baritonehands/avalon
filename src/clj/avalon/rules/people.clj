@@ -2,7 +2,8 @@
   (:require [bouncer.core :as b]
             [bouncer.validators :as v]
             [avalon.models.crud :as crud]
-            [avalon.models.games :as games]))
+            [avalon.models.games :as games]
+            [avalon.rules.games :as rules]))
 
 (defn person-rules [method game]
   (let [taken? (fn [pname]
@@ -39,15 +40,20 @@
   (fn [{:keys [votes]}]
     (not-any? #(= % person-id) (keys votes))))
 
-(defn vote-rules [person-id]
-  {:vote [[#(contains? (:people %) person-id) :message "You cannot vote"]
-          [(person-voted? person-id) :message "You already voted"]]
-   :choice [[#{"success" "failure"} :message "Choice must be success or failure"]]})
+(defn good-success? [role choice]
+  (or (rules/bad? role)
+      (= choice "success")))
+
+(defn vote-rules [person-id role]
+  {:vote   [[#(contains? (:people %) person-id) :message "You cannot vote"]
+            [(person-voted? person-id) :message "You already voted"]]
+   :choice [[#{"success" "failure"} :message "Choice must be success or failure"]
+            [#(good-success? role %) :message "A loyal servant of Arthur must choose success"]]})
 
 (defn valid-vote? [id person-id data error-key]
-  (let [{:keys [vote]} (crud/get games/games id)
+  (let [{:keys [vote teams]} (crud/get games/games id)
         to-validate (merge data {:vote vote})
-        rules (vote-rules person-id)
+        rules (vote-rules person-id (teams person-id))
         valid (b/valid? to-validate rules)
         errors (first (b/validate to-validate rules))]
     [valid {error-key errors}]))

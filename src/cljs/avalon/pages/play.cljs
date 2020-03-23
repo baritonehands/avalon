@@ -17,20 +17,30 @@
     [:> ui/Typography {:variant "h6"}]
     children))
 
+(defn good [role]
+  [:> ui/Typography {:color   "primary"
+                     :variant "h6"
+                     :display "inline"} role])
+
+(defn bad [role]
+  [:> ui/Typography {:color   "secondary"
+                     :variant "h6"
+                     :display "inline"} role])
+
 (defn description [role]
   (let [name (capitalize (name role))]
     (cond
-      (= role "good") [desc-text "You are a loyal servant of Arthur."]
-      (= role "merlin") [desc-text "You are the great and powerful wizard " [:strong name] "."]
-      (= role "percival") [desc-text "You are " [:strong name]]
-      (= role "mordred") [desc-text "You are the dark lord " [:strong name] "."]
-      (= role "morgana") [desc-text "You are the evil witch " [:strong name] "."]
-      (= role "oberon") [desc-text "You are the evil force " [:strong name] "."]
-      (= role "bad") [desc-text "You are a minion of Mordred."]
-      (= role "assassin") [desc-text "You are the " [:strong name] " and a minion of Mordred."]
-      (twins role) [desc-text "You are one of the " [:strong "Twins"] " and a loyal servant of Arthur."]
-      (evil-lancelot role) [desc-text "You are " [:strong "Evil Lancelot"] " and a minion of Mordred."]
-      (good-lancelot role) [desc-text "You are " [:strong "Good Lancelot"] " and a loyal servant of Arthur."]
+      (= role "good") [desc-text "You are a " [good "loyal servant of Arthur"] "."]
+      (= role "merlin") [desc-text "You are the great and powerful wizard " [good name] "."]
+      (= role "percival") [desc-text "You are " [good name] "."]
+      (= role "mordred") [desc-text "You are the dark lord " [bad name] "."]
+      (= role "morgana") [desc-text "You are the evil witch " [bad name] "."]
+      (= role "oberon") [desc-text "You are the evil force " [bad name] "."]
+      (= role "bad") [desc-text "You are a " [bad "minion of Mordred"] "."]
+      (= role "assassin") [desc-text "You are the " [bad name] "."]
+      (twins role) [desc-text "You are one of the " [good "Twins"] "."]
+      (evil-lancelot role) [desc-text "You are " [bad "Evil Lancelot"] "."]
+      (good-lancelot role) [desc-text "You are " [good "Good Lancelot"] "."]
       :else [desc-text "Your role is " [:strong name] "."])))
 
 (defn sub [& children]
