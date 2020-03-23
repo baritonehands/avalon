@@ -10,6 +10,12 @@
 (def bad {:specials #{:mordred :morgana :oberon :evil-lancelot1 :evil-lancelot2}
           :counts   [2 2 3 3 3 4]})
 
+(defn good? [role]
+  (or (contains? (:specials good) role)
+      (= role :good)))
+
+(def bad? (complement good?))
+
 (defn- add-doubles [single one two]
   (fn [roles]
     (if (roles single)
