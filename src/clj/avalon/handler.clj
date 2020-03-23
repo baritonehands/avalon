@@ -6,6 +6,7 @@
             [hiccup.page :refer [include-js include-css]]
             [prone.middleware :refer [wrap-exceptions]]
             [ring.middleware.reload :refer [wrap-reload]]
+            [ring.middleware.gzip :refer [wrap-gzip]]
             [environ.core :refer [env]]
             [avalon.api.games]
             [avalon.api.people]
@@ -63,4 +64,6 @@ ga('send', 'pageview');"""]
 
 (def app
   (let [handler (wrap-params #'routes)]
-    (if (env :dev) (-> handler wrap-exceptions wrap-reload) handler)))
+    (if (env :dev)
+      (-> handler wrap-exceptions wrap-reload)
+      (-> handler wrap-gzip))))

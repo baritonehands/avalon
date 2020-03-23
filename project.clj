@@ -11,6 +11,7 @@
                  [ring-server "0.4.0"]
                  [javax.servlet/javax.servlet-api "3.1.0"]
                  [ring "1.7.1"]
+                 [amalloy/ring-gzip-middleware "0.1.4"]
                  [liberator "0.15.3"]
                  [org.clojure/data.json "0.2.6"]
                  [prone "0.8.2"]
