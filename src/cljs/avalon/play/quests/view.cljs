@@ -49,8 +49,12 @@
    [quest-vote/view {:n (count quests)}]
    [alert]
    [:> ui/Card
-    [:> ui/CardHeader {:title                  "Quests"
-                       :title-typography-props {:variant "subtitle1"}}]
+    [:> ui/CardHeader {:title                      "Quest Phase"
+                       :title-typography-props     {:variant "subtitle1"}
+                       :subheader                  "Once the team members have been decided, the Leader should enter the
+                       members of that team by clicking the first gray Quest button below. The results of previous Quests
+                       can be viewed and possibly corrected by clicking their button as well."
+                       :subheader-typography-props {:variant "subtitle2"}}]
     [:> ui/CardContent
      (into
        [col {:container true

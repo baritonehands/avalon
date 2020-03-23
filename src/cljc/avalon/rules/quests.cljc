@@ -11,7 +11,7 @@
 (defn failed? [player-count n {:keys [success failure]
                                :or   {success 0
                                       failure 0}}]
-  (if (and (contains? #{8 9 10} player-count)
+  (if (and (contains? #{7 8 9 10} player-count)
            (= n 3))
     (>= failure 2)
     (>= failure 1)))

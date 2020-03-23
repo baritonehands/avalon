@@ -13,9 +13,12 @@
     (-> palette (aget color))))
 
 (def card-styles
-  #js {:root #js {:background #(-> % (props->color) (aget "main"))
-                  :color      #(-> % (props->color) (aget "contrastText"))
-                  :text-align "center"}})
+  #js {:root    #js {:background #(-> % (props->color) (aget "main"))
+                     :color      #(-> % (props->color) (aget "contrastText"))
+                     :text-align "center"}
+       :content #js {:padding       "8px 2px"
+                     :white-space   "nowrap"
+                     "&:last-child" #js {:padding-bottom "8px"}}})
 
 (def with-card-styles (ui/withStyles card-styles))
 
@@ -35,16 +38,18 @@
 
 (defn card [{:keys [classes result color] :as props}]
   [:> ui/Card {:class (.-root classes)}
-   [:> ui/CardContent
+   [:> ui/CardContent {:class (.-content classes)}
     (if (= color "primary")
       [:<>
-       [:> count-text {:variant "h5"
-                       :display "inline"} (or (aget result "success") 0)]
-       [:> success-icon {:font-size "large"}]]
+       [:> count-text {:variant "button"
+                       :display "inline"}
+        (or (aget result "success") 0) " Success"]
+       [:> success-icon]]
       [:<>
-       [:> count-text {:variant "h5"
-                       :display "inline"} (or (aget result "failure") 0)]
-       [:> failure-icon {:font-size "large"}]])]])
+       [:> count-text {:variant "button"
+                       :display "inline"}
+        (or (aget result "failure") 0) " Fail"]
+       [:> failure-icon]])]])
 
 (def color-card
   (-> card
@@ -58,16 +63,16 @@
     [:> ui/Grid {:container true
                  :spacing   2}
      [:> ui/Typography {:variant "subtitle1"}
-      "Participants:"]
+      "Team Members:"]
      (into
        [col {:container true
              :spacing   1}]
        (for [player (sort people)]
          [:> ui/Chip {:label player}]))
      [:> ui/Typography {:variant "subtitle1"}
-      "Votes:"]
+      "Quest Cards:"]
      [:> ui/Grid {:container true
-                  :spacing   2
+                  :spacing   1
                   :justify   "space-between"}
       [col {:xs 6}
        [:> color-card {:color  "primary"
