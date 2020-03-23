@@ -17,18 +17,22 @@
                                  "outlined")
                    :color      "secondary"
                    :full-width true
+                   :size       "large"
+                   :end-icon   (r/as-element
+                                 [:> icons/HighlightOffOutlined])
                    :on-click   #(reset! selection :failure)}
-     [:> icons/HighlightOffOutlined
-      {:font-size "large"}]]]
+     "Fail"]]
    [col {:xs 6}
     [:> ui/Button {:variant    (if (= @selection :success)
                                  "contained"
                                  "outlined")
                    :color      "primary"
                    :full-width true
+                   :size       "large"
+                   :end-icon   (r/as-element
+                                 [:> icons/CheckCircleOutlineOutlined])
                    :on-click   #(reset! selection :success)}
-     [:> icons/CheckCircleOutlineOutlined
-      {:font-size "large"}]]]])
+     "Success"]]])
 
 (defn view [_]
   (let [selection (r/atom nil)]
@@ -42,7 +46,7 @@
           [:> ui/Grid {:container true
                        :spacing   2}
            [:> ui/Typography {:variant "subtitle1"}
-            "Participants:"]
+            "Team Members:"]
            (into
              [col {:container true
                    :spacing   1}]
@@ -51,7 +55,7 @@
            (if (:participant vote)
              [:<>
               [:> ui/Typography {:variant "subtitle1"}
-               "Vote:"]
+               "Choose Quest Card:"]
               [buttons {:vote      vote
                         :selection selection}]]
              [:<>
@@ -65,18 +69,18 @@
          [:> ui/DialogActions
           [:> ui/Button {:color    "default"
                          :on-click (fn []
-                                     (quests/open-alert {:title          "Cancel Vote"
-                                                         :message        "Are you sure you want to cancel this vote?"
-                                                         :confirm-button "Cancel Vote"
-                                                         :cancel-button  "Keep Voting"
+                                     (quests/open-alert {:title          "Cancel Quest"
+                                                         :message        "Are you sure you want to cancel this quest phase?"
+                                                         :confirm-button "Cancel Quest"
+                                                         :cancel-button  "Keep Going"
                                                          :on-confirm     (fn []
                                                                            (quests/clear-vote!)
                                                                            (reset! selection nil))}))}
-           "Cancel Vote"]
+           "Cancel Quest"]
           (if (:participant vote)
             [:> ui/Button {:color    "primary"
                            :disabled (not @selection)
                            :on-click (fn []
                                        (quests/vote! @selection)
                                        (reset! selection nil))}
-             "Send Vote"])]]))))
+             "Send Quest Card"])]]))))
