@@ -5,32 +5,33 @@
             [reagent.session :as session]
             [avalon.play.quests :as quests]))
 
+(def form-control-half
+  ((ui/withStyles
+     #js {:root #js {:min-width "50%"}})
+   ui/FormControl))
+
 (defn view []
   (let [{:keys [size picker]} (quests/state)
-        people (session/get-in [:game :people])
+        people (sort (session/get-in [:game :people]))
         error? (and (seq picker)
                     (not= (count picker) size))]
-    [:> ui/FormControl {:full-width true
-                        :error      error?}
-     [:> ui/InputLabel
-      {:id "quest-picker-label"}
-      (str "Choose " size " Players")]
-     (into
-       [:> ui/Select {:label-id     "quest-picker-label"
-                      :multiple     true
-                      :value        picker
-                      :on-change    #(quests/picker-selected (-> % .-target .-value))
-                      :render-value (fn [selected]
-                                      (r/as-element
-                                        (into
-                                          [:> ui/Grid {:container true}]
-                                          (for [item selected]
-                                            [:> ui/Chip {:label item}]))))}]
-
-       (for [[idx player] (map-indexed vector (sort people))]
-         [:> ui/MenuItem {:value player}
-          player]))
-     (if error? [:> ui/FormHelperText (str "Please choose " size " players")])]))
+    (into
+      [:<>
+       [:> ui/DialogContentText
+        (str "Choose " size " players")]]
+      (for [group (split-at (/ (count people) 2) people)]
+        [:> form-control-half {:component "fieldset"
+                               :error     error?}
+         (into
+           [:> ui/FormGroup {:on-change (fn [event]
+                                          (let [target (.-target event)]
+                                            (quests/picker-selected (.-name target) (.-checked target))))}]
+           (for [player group]
+             [:> ui/FormControlLabel
+              {:label   player
+               :control (r/as-element
+                          [:> ui/Checkbox {:name  player
+                                           :color "primary"}])}]))]))))
 
 (defn actions []
   [:<>

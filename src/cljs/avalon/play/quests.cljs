@@ -31,10 +31,13 @@
   ((:on-cancel (alert-state)))
   (session/remove! ::alert))
 
-(defn picker-selected [names]
-  (session/assoc-in!
+(defn picker-selected [name checked?]
+  (session/update-in!
     [::state :picker]
-    (into (sorted-set) names)))
+    (fn [picker]
+      (if checked?
+        (conj picker name)
+        (disj picker name)))))
 
 (defn picker-valid? []
   (let [{:keys [size picker]} (state)]
