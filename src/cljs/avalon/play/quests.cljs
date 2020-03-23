@@ -69,7 +69,7 @@
            :keywords?       true
            :handler         (fn [_]
                               (games/refresh-game))
-           :error-handler   (handle-error "Vote")})))
+           :error-handler   (handle-error "Send Quest Card")})))
 
 (defn clear-vote! []
   (let [id (session/get-in [:game :id])]
@@ -79,7 +79,7 @@
              :handler         (fn [_]
                                 (games/refresh-game)
                                 (close-dialog))
-             :error-handler (handle-error "Clear Vote")})))
+             :error-handler (handle-error "Cancel Quest")})))
 
 (defn clear-quest! [n]
   (let [id (session/get-in [:game :id])]
