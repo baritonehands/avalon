@@ -19,18 +19,18 @@
                nil)]
     (crud/create! games game)))
 
-(defn display-people [people]
-  (mapv #(:name (crud/get people/people %)) people))
-
-(defn display-quests [quests]
-  (->> (for [quest quests]
-         (update quest :people display-people))
-       (vec)))
+(defn people->names [{:keys [people] :as game}]
+  (let [pair (juxt identity #(:name (crud/get people/people %)))
+        id->name (into {} (map pair people))
+        names #(mapv id->name %)]
+    (-> game
+        (update :people names)
+        (update :seats names)
+        (update :quests #(mapv names %)))))
 
 (defn display-game [game]
   (-> (dissoc game :teams :first :vote)
-      (update :people display-people)
-      (update :quests display-quests)))
+      (people->names)))
 
 (defn add-person [id person]
   (crud/relate! games id :people (:id person)))

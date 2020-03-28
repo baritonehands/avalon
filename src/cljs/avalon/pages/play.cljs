@@ -6,6 +6,7 @@
             [avalon.utils :refer [row col spinner capitalize show-error make-styles]]
             [avalon.pages.games :as games]
             [avalon.play.quests.view :as quest-view]
+            [avalon.play.seats :as seats]
             [accountant.core :as route]))
 
 (def twins #{"twin1" "twin2"})
@@ -197,6 +198,7 @@
               [:ul
                [:li [:strong "Variant 1"] " - Three \"No Change\" cards, two \"Change Allegiance\" cards, draw a card in rounds 3, 4, and 5."]
                [:li [:strong "Variant 2"] " - Five \"No Change\" cards, two \"Change Allegiance\" cards, reveal a card for each round at game start. Evil Lancelot must always fail any quest."]]]])]]]
+       [seats/view (:seats game)]
        [col
         [:> ui/Card
          [:> ui/CardHeader {:title                      "Team Building Phase"

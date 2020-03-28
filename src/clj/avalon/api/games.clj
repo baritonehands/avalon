@@ -25,11 +25,20 @@
              :handle-ok (games/display-game (crud/get games/games id))
              :put! #(crud/save! games/games id (::data %)))
 
+(defn seat-virtually [{people :people
+                       fp     :first
+                       :as    game}]
+  (let [others (disj people fp)]
+    (->> (cons fp (shuffle others))
+         (vec)
+         (assoc game :seats))))
+
 (defn start-game [game]
   (-> game
       (assoc :status :playing)
       (assoc :teams (rules/assign-roles game))
-      (assoc :first (rand-nth (seq (:people game))))))
+      (assoc :first (rand-nth (seq (:people game))))
+      (seat-virtually)))
 
 (defresource play-game [id]
              :available-media-types ["application/json"]
@@ -47,7 +56,8 @@
       (assoc :teams {})
       (assoc :quests [])
       (assoc :vote nil)
-      (dissoc :first)))
+      (dissoc :first)
+      (dissoc :seats)))
 
 (defresource reset-game [id]
              :available-media-types ["application/json"]
