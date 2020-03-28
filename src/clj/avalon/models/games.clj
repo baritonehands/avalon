@@ -26,7 +26,8 @@
     (-> game
         (update :people names)
         (update :seats names)
-        (update :quests #(mapv names %)))))
+        (update :quests (fn [quests]
+                          (mapv #(update % :people names) quests))))))
 
 (defn display-game [game]
   (-> (dissoc game :teams :first :vote)
