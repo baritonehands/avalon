@@ -9,10 +9,19 @@
   (let [;group (groups/create-group "Testing" "123")
         game (games/create-game)]
     (dotimes [player n]
-      (let [person (people/create-person (str "Player" player))]
+      (let [person (people/create-person (str "Player " (inc player)))]
         (games/add-person (:id game) person)))
     ;(println "Group" (:id group))
     (println "Game" (:id game))))
+
+(defn fill-votes
+  ([id] (fill-votes id 0))
+  ([id fails]
+   (let [{:keys [vote]} (crud/get games/games id)
+         people (shuffle (:people vote))
+         choices (concat (repeat fails :failure) (repeat :success))]
+     (doseq [[person-id choice] (map vector people choices)]
+       (games/update-vote id person-id choice)))))
 
 (defn play-roles [id]
   (pprint

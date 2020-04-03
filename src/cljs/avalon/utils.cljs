@@ -1,6 +1,7 @@
 (ns avalon.utils
   (:require [reagent.session :as session]
-            [material-ui :as ui]))
+            [material-ui :as ui]
+            [reagent.core :as r]))
 
 (defn row [& children]
   (into [:div.row] children))
@@ -15,6 +16,20 @@
   [:> ui/Grid {:container true
                :justify   "center"}
    [:> ui/CircularProgress {:color "secondary"}]])
+
+(defn subheader-element [props & children]
+  (let [defaults {:disable-sticky true}]
+    (r/as-element
+      (if (map? props)
+        (into [:> ui/ListSubheader (merge defaults props)] children)
+        (into [:> ui/ListSubheader defaults] (cons props children))))))
+
+(def form-control-label-full
+  ((ui/styled ui/FormControlLabel)
+   #js {:display         "flex"
+        :width           "100%"
+        :justify-content "space-between"
+        :margin-right    "auto"}))
 
 (defn capitalize [s]
   (let [letter (-> s

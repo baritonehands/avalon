@@ -1,7 +1,7 @@
 (def build-version (or (System/getenv "BUILD_NUMBER") "0"))
-(def release-version (str "0.3." build-version))
+(def release-version (str "0.4." build-version))
 
-(defproject baritonehands/avalon "0.3.0"
+(defproject baritonehands/avalon "0.4.0"
   :description "An Avalon web app for starting the game and keeping stats"
   :url "https://github.com/baritonehands/avalon"
   :license {:name "Apache License, v2.0"
@@ -11,6 +11,7 @@
                  [ring-server "0.4.0"]
                  [javax.servlet/javax.servlet-api "3.1.0"]
                  [ring "1.7.1"]
+                 [amalloy/ring-gzip-middleware "0.1.4"]
                  [liberator "0.15.3"]
                  [org.clojure/data.json "0.2.6"]
                  [prone "0.8.2"]
@@ -50,7 +51,7 @@
                                     [:cljsbuild :builds :app :compiler :output-dir]
                                     [:cljsbuild :builds :app :compiler :output-to]]
 
-  :source-paths ["src/clj"]
+  :source-paths ["src/clj" "src/cljc"]
   :resource-paths ["resources" "target/cljsbuild"]
 
   :cljsbuild {:builds {:app {:source-paths ["src/cljs" "src/cljc"]

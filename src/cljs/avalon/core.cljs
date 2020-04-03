@@ -1,5 +1,5 @@
-(ns avalon.core
-  (:require [reagent.core :as reagent :refer [atom]]
+(ns ^:figwheel-hooks avalon.core
+  (:require [reagent.core :as r]
             [reagent.dom :as rdom]
             [reagent.session :as session]
             [material-ui :as ui]
@@ -38,9 +38,8 @@
         [:> ui/DialogContent (:message error)]
         [:> ui/DialogActions
          [:> ui/Button {:color    "primary"
-                        :on-click #(session/put! :error nil)
-                        :style    {:float "right"}}
-          "OK"]]])]))
+                        :on-click #(session/put! :error nil)}
+          "Dismiss"]]])]))
 
 (defn home-page []
   [base-layout [join/home-page]])
@@ -49,7 +48,7 @@
   [base-layout [play/play-page]])
 
 (defn current-page []
-  (reagent/as-element
+  (r/as-element
     [(session/get :current-page)]))
 
 ;; -------------------------
@@ -90,3 +89,6 @@
      :path-exists? secretary/locate-route})
   (accountant/dispatch-current!)
   (mount-root))
+
+(defn ^:after-load figwheel-reload []
+  (rdom/force-update-all))

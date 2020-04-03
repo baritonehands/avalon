@@ -2,7 +2,7 @@
   (:require [ajax.core :refer [GET POST DELETE]]
             [cljs.pprint :refer [pprint]]
             [reagent.session :as session]
-            [avalon.utils :refer [row col spinner capitalize show-error make-styles]]
+            [avalon.utils :refer [row col spinner subheader-element form-control-label-full capitalize show-error make-styles]]
             [material-ui :as ui]
             [material-ui-icons :as icons]
             [accountant.core :as route]
@@ -53,13 +53,6 @@
            :keywords?       true
            :handler         #(session/put! :game %)})))
 
-(def form-control-label-full
-  ((ui/styled ui/FormControlLabel)
-   #js {:display         "flex"
-        :width           "100%"
-        :justify-content "space-between"
-        :margin-right    "auto"}))
-
 (defn role-toggle [id roles role desc]
   (let [on (string? ((set roles) role))]
     [:> form-control-label-full
@@ -84,8 +77,8 @@
 
 (def role-options [["merlin" "Merlin"]
                    ["percival" "Percival"]
-                   ["mordred" "Mordred"]
                    ["morgana" "Morgana"]
+                   ["mordred" "Mordred"]
                    ["oberon" "Oberon"]
                    ["lancelot1" "Lancelot (known to each other)"]
                    ["lancelot2" "Lancelot (switch allegiance)"]
@@ -117,10 +110,6 @@
         props (js->clj js-props :keywordize-keys true)]
     (r/as-element
       [:> ui/Typography (merge {:class (:pre classes)} props)])))
-
-(defn subheader-element [& children]
-  (r/as-element
-    (into [:> ui/ListSubheader {:disable-sticky true}] children)))
 
 (defn game-page []
   (let [game (session/get :game)

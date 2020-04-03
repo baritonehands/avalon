@@ -30,11 +30,22 @@
                          (delete-fn id name)))
             :handle-ok (fn [_] (games/display-game (crud/get games/games id)))))
 
-(defn game-add-person [id] (gen-endpoint id games/games games/add-person games/delete-person))
+(defn game-people-resource [id] (gen-endpoint id games/games games/add-person games/delete-person))
 
 (defn get-people [sees teams]
   [(into #{} (for [[person-id role] teams :when (sees role)]
-              (:name (crud/get people/people person-id))))])
+               (:name (crud/get people/people person-id))))])
+
+(defn vote-info [person-id {:keys [type people votes] :as vote}]
+  (if vote
+    (let [participants (set (map #(crud/get people/people %) people))]
+      {:type        type
+       :people      (mapv :name participants)
+       :waiting     (->> participants
+                         (remove #(contains? votes (:id %)))
+                         (mapv :name))
+       :participant (and (some #(= % person-id) people)
+                         (not (contains? votes person-id)))})))
 
 (defn get-info [game role person-id]
   (let [teams (dissoc (:teams game) person-id)
@@ -62,7 +73,14 @@
     (contains? (:people game) person-id)
     false))
 
-(defresource get-person-info [id person-id]
+(defn info-response [game person-id]
+  (let [role ((:teams game) person-id)]
+    {:role  role
+     :first (:name (crud/get people/people (:first game)))
+     :info  (get-info game role person-id)
+     :vote  (vote-info person-id (:vote game))}))
+
+(defresource person-info-resource [id person-id]
              :available-media-types ["application/json"]
              :allowed-methods [:get]
              :exists? (person-exists? id person-id)
@@ -71,11 +89,24 @@
                                 [valid? errors] (rules/valid-info? game)]
                             (if-not valid?
                               (ring-response errors {:status 422})
-                              (let [role ((:teams game) person-id)]
-                                {:role role
-                                 :first (:name (crud/get people/people (:first game)))
-                                 :info (get-info game role person-id)})))))
+                              (info-response game person-id)))))
+
+(defresource person-vote-resource [id person-id]
+             :available-media-types ["application/json"]
+             :allowed-methods [:post]
+             :exists? (person-exists? id person-id)
+             :can-post-to-missing? false
+             :malformed? (util/malformed? ::data)
+             :new? false
+             :processable? #(rules/valid-vote? id person-id (::data %) ::errors)
+             :handle-unprocessable-entity ::errors
+             :post! (fn [ctx]
+                      (let [choice (-> ctx ::data :choice keyword)]
+                        (games/update-vote id person-id choice)))
+             :respond-with-entity? true
+             :handle-ok (fn [_] (info-response (crud/get games/games id) person-id)))
 
 (defroutes routes
-  (ANY "/games/:id/people" [id] (game-add-person (.toLowerCase id)))
-  (ANY "/games/:id/people/:person-id/info" [id person-id] (get-person-info (.toLowerCase id) (.toLowerCase person-id))))
+           (ANY "/games/:id/people" [id] (game-people-resource (.toLowerCase id)))
+           (ANY "/games/:id/people/:person-id/info" [id person-id] (person-info-resource (.toLowerCase id) (.toLowerCase person-id)))
+           (ANY "/games/:id/people/:person-id/vote" [id person-id] (person-vote-resource (.toLowerCase id) (.toLowerCase person-id))))

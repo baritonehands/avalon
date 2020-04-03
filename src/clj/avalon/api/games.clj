@@ -25,11 +25,20 @@
              :handle-ok (games/display-game (crud/get games/games id))
              :put! #(crud/save! games/games id (::data %)))
 
+(defn seat-virtually [{people :people
+                       fp     :first
+                       :as    game}]
+  (let [others (disj people fp)]
+    (->> (cons fp (shuffle others))
+         (vec)
+         (assoc game :seats))))
+
 (defn start-game [game]
   (-> game
       (assoc :status :playing)
       (assoc :teams (rules/assign-roles game))
-      (assoc :first (rand-nth (seq (:people game))))))
+      (assoc :first (rand-nth (seq (:people game))))
+      (seat-virtually)))
 
 (defresource play-game [id]
              :available-media-types ["application/json"]
@@ -45,7 +54,10 @@
   (-> game
       (assoc :status :waiting)
       (assoc :teams {})
-      (dissoc :first)))
+      (assoc :quests [])
+      (assoc :vote nil)
+      (dissoc :first)
+      (dissoc :seats)))
 
 (defresource reset-game [id]
              :available-media-types ["application/json"]
@@ -67,7 +79,7 @@
   (-> (update game :roles f k)
       (toggle-lancelot k)))
 
-(defn update-game [id name f]
+(defn update-game-roles [id name f]
   (fn [_]
     (crud/update! games/games id #(add-role % f (keyword name)))))
 
@@ -80,8 +92,31 @@
              :handle-unprocessable-entity ::errors
              :new? false
              :respond-with-entity? true
-             :post! (update-game id name conj)
-             :delete! (update-game id name disj)
+             :post! (update-game-roles id name conj)
+             :delete! (update-game-roles id name disj)
+             :handle-ok (fn [_] (games/display-game (crud/get games/games id))))
+
+(defresource votes-resource [id]
+             :available-media-types ["application/json"]
+             :allowed-methods [:post :delete]
+             :exists? (crud/exists? games/games id)
+             :can-post-to-missing? false
+             :malformed? (util/malformed? ::data)
+             :processable? (rules/valid-quest? id ::data ::errors)
+             :handle-unprocessable-entity ::errors
+             :new? false
+             :respond-with-entity? true
+             :post! (fn [ctx]
+                      (let [{:keys [names type]} (::data ctx)]
+                        (games/add-vote id type names)))
+             :delete! (fn [_] (games/cancel-vote id))
+             :handle-ok (fn [_] (games/display-game (crud/get games/games id))))
+
+(defresource quests-resource [id n]
+             :available-media-types ["application/json"]
+             :allowed-methods [:delete]
+             :exists? (crud/exists? games/games id)
+             :delete! (fn [_] (games/clear-quest id n))
              :handle-ok (fn [_] (games/display-game (crud/get games/games id))))
 
 (defroutes routes
@@ -89,4 +124,6 @@
            (ANY "/games/:id" [id] (get-or-put-game (.toLowerCase id)))
            (ANY "/games/:id/play" [id] (play-game (.toLowerCase id)))
            (ANY "/games/:id/reset" [id] (reset-game (.toLowerCase id)))
-           (ANY "/games/:id/roles/:name" [id name] (update-roles (.toLowerCase id) name)))
+           (ANY "/games/:id/roles/:name" [id name] (update-roles (.toLowerCase id) name))
+           (ANY "/games/:id/votes" [id] (votes-resource (.toLowerCase id)))
+           (ANY "/games/:id/quests/:n" [id n] (quests-resource (.toLowerCase id) (Integer/parseInt n))))
